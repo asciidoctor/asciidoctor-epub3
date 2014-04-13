@@ -1,0 +1,54 @@
+= Asciidoctor EPUB3
+OpenDevise Inc.; Asciidoctor Project
+
+Copyright (C) 2014 OpenDevise Inc. and the Asciidoctor Project.
+
+Please visit the Asciidoctor project site for more information:
+
+  - http://asciidoctor.org
+
+OpenDevise Inc. and the Asciidoctor Project licenses this product to you under the Apache License, version 2.0 (the "License").
+You may not use this product except in compliance with the License.
+You may obtain a copy of the License at:
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+
+== Third-party licensed work
+
+M+ OUTLINE FONTS (M+ TESTFLIGHT 058)::
+  The M+ OUTLINE FONTS are used for section titles, literal text and code annotation numbers and bundled in the EPUB3 archive.
+  These fonts are free software and are designed and maintained by Coji Morishita.
+  Unlimited permission is granted to use, copy, and distribute them, with or without modification, either commercially or noncommercially.
+  THESE FONTS ARE PROVIDED "AS IS" WITHOUT WARRANTY.
+
+  - http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/index-en.html
+
+Noto Serif font::
+  Noto is font family developed by the Google Internationalization Team that aims to support all the world's languages.
+  The Noto Serif font is used for body copy and bundled in the EPUB3 archive.
+  The Noto fonts are licensed under the Apache 2.0 License.
+  You may obtain a copy of the license at:
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  - https://code.google.com/p/noto/
+
+Font Awesome icon font (v4.0.3)::
+  Font Awesome, the iconic font designed for Bootstrap by David Gandy, is used for the admonition icons and other icons in author's content and bundled in the EPUB3 archive.
+  Font Awesome is fully open source and GPL compatible.
+  The font is licensed under the SIL Open Font 1.1 License (OFL).
+  You may obtain a copy of the license at:
+
+  http://scripts.sil.org/OFL
+
+  - http://fontawesome.io
+
+normalize.css (v3.0.1)::
+  A customized version of normalize.css is used to provide cross-reader consistency in the default styling of HTML elements.
+  The source of normalize.css is integrated into the default stylesheet that is bundled in the EPUB3 archive.
+  normalize.css is licensed under the MIT License.
+
+  - http://necolas.github.io/normalize.css

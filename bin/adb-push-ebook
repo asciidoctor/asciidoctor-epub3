@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ -z $ADB ]; then
+  ADB=~/opt/android-sdk/platform-tools/adb
+fi
+
+if [ -z $1 ]; then
+  DOCNAME=_output/sample-book
+else
+  DOCNAME=$1
+fi
+
+if [ -f $DOCNAME.epub ]; then
+  $ADB push $DOCNAME.epub /sdcard/
+fi
+if [ -f $DOCNAME.mobi ]; then
+  $ADB push $DOCNAME.mobi /sdcard/Android/data/com.amazon.kindle/files/
+fi

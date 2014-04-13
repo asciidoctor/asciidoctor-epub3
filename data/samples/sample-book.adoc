@@ -1,0 +1,16 @@
+= Asciidoctor EPUB3: Sample Book
+OpenDevise Inc.
+v1.0, 2014-04-15
+:doctype: book
+:producer: Asciidoctor
+:keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
+:copyright: CC-BY-SA 3.0
+:imagesdir: images
+
+include::asciidoctor-epub3-readme.adoc[]
+
+include::sample-content.adoc[]
+
+include::asciidoctor-js-introduction.adoc[]
+
+include::asciidoctor-js-extension.adoc[]

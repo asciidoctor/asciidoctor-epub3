@@ -1,0 +1,84 @@
+= WORKLOG
+
+== TODO
+
+.Gem
+//^
+
+.Converter
+* CRITICAL: dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
+* CRITICAL: try to pull username from author email field; pull image from gravatar
+* HIGH: don't include figcaption if empty
+* HIGH: cross references between chapters does not work (would it work if we used the smart cross reference syntax?)
+* HIGH: add full table of contents to nav.xhtml, but use hidden below first level (check if works in Kindle); respect toclevels
+* HIGH: if running on a single article, then the document id has a conflicting purpose
+* HIGH: require spine option on include directive in order to create a chapter file (requires change in Asciidoctor)
+* HIGH: move regexp to constants
+* HIGH: use more thorough image path resolution
+* HIGH: move navigation_document method to Packager
+* MEDIUM: move client sniffer JavaScript to file
+* QUESTION: add word joiner before inline tags too?
+* packager doesn't resolve include files in subdirectory totally correctly
+* implement checklists
+* quiet flag
+//^
+
+.Packager
+* CRITICAL: use "uid" attribute in favor of document id if available
+* MEDIUM: set modified date explicitly
+* MEDIUM: use function to build and manipulate image paths
+* support subtitle as separate from main title in package metadata
+* support collection title in package metadata
+
+.Stylesheet
+* HIGH: image border option (or add drop shadow to screenshots in README)
+* HIGH: review the table border color
+* HIGH: style example block
+* HIGH: allow theme to be customized using stylesheet attribute
+* MEDIUM: add landmarks nav list to nav.xhtml
+* add CSS transform options for font-based icon macro
+* support both jpg and png avatars
+* add docinfo support
+* add navigation links in meta, e.g.,
+
+  <link rel="up" href="#{node.attr 'up-uri'}" title="#{node.attr 'up-title'}"/>
+  <link rel="prev" href="#{node.attr 'prev-uri'}" title="#{node.attr 'prev-title'}"/>
+  <link rel="next" href="#{node.attr 'next-uri'}" title="#{node.attr 'next-title'}"/>
+
+* add title/subtitle delimiter into HTML and hide with CSS?
+* use less side padding in sidebar?
+* can we remove content wrapper in sidebar?
+* sidebar heading not right in readmill...maybe nothing to worry about?
+* manually style ordered list numbers
+* reduce vertical margins around basic lists
+* use float trick to fix line spacing for primary title like with the subtitle
+* better handling of title without subtitle, particularly HTML and CSS
+* add pink theme: http://designplus.co/en/designplus
+* warn on unresolved attribute reference
+* customize id of <item> elements in epub manifest?
+//^
+
+.Asciidoctor
+* patch subtitle support into Asciidoctor
+  - support delimiters question mark, exclamation point, or dash for subtitle
+* patch sanitize of any section or block title into Asciidoctor
+* generate id for chapter <= make part of Asciidoctor parsing API
+* patch Asciidoctor to replace smart quotes w/ unicode chars instead of entities (glyph replacement mode)
+//^
+
+== REVIEW
+
+* conversion of single file (no master document)
+* package images referenced by content
+* do we need the SVG property if the HTML links to an SVG document?
+
+== NOTES
+
+* use -webkit-transform: translate/translateX/translateY to move objects from origin by relative distances (alternative to relative positioning, which is not permitted on Kindle)
+* don't need attributes above header in sub-documents anymore (except for PDF; we'll cross that bridge when we get to it)
+* vw is 1% of viewport width (see http://dev.opera.com/articles/view/css-viewport-units/)
+* rhythm: 1.5, 1.25, 1.2, 1.05, 1
+* webkit gets confused about how to justify text for mixed content (adjacent character data and inline elements)
+  - wrap character data to solve
+  - alternatively, can use zero-width space (&#8203;) immediately after inline element to signal a separation
+* Kindle won't accept fonts that are less than 1K (typically can't create a font with just one or two characters)

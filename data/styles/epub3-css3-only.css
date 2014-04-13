@@ -1,0 +1,58 @@
+/* GitDen defaults to 16px font-size; bump it to 22px (137.5%) or 20px (125%) */
+body.gitden-reader {
+  /*
+  font-size: 137.5%;
+  */
+  margin: 5pt 13pt; /* close approx of margins used by Readmill */
+  margin: 0 25pt;
+  font-size: 125%;
+}
+
+/* for Nexus 4 or smaller, use tighter margins and smaller font */
+@media only screen and (max-device-width: 768px) and (max-device-height: 1280px),
+only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
+  body.gitden-reader {
+    margin: 0 5pt;
+    /*font-size: 118.75%;*/
+    font-size: 112.5%;
+  }
+}
+
+body.gitden-reader a:link {
+  color: #333332 !important;
+}
+
+@media amzn-kf8, amzn-mobi {
+  /* Kindle does its own margin management, so don't use an explicit margin */
+  body {
+    margin: 0 !important;
+  }
+
+  /* hack line height of subtitle using floats on Kindle */
+  h1.chapter-title .subtitle {
+    margin-top: -0.2em;
+    margin-bottom: 0.3em; /* compensate for reduced line height */
+  }
+
+  /* NOTE using b instead of span since Firefox ePubReader applies immutable styles to span */
+  h1.chapter-title .subtitle > b {
+    float: left;
+    display: inline-block;
+    margin-bottom: -0.3em; /* reduce the line height */
+    padding-right: 0.2em; /* spacing between words */
+  }
+
+  h1.chapter-title .subtitle > b:last-child {
+    padding-right: 0;
+  }
+  
+  h1.chapter-title .subtitle::after {
+    display: table;
+    content: ' ';
+    clear: both;
+  }
+}
+
+.chapter-header p.byline {
+  height: auto; /* Aldiko requires this value to be 0; reset it for all others */
+}
