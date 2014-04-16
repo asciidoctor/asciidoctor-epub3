@@ -223,8 +223,8 @@ v1.0, 2014-04-15
 The metadata in the generated EPUB3 file is populated from attributes in the AsciiDoc document.
 The names of the attributes and the metadata elements to which they map are documented in this section.
 
-The term [term]_package metadata_ in Table 1 is in reference to the http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-metadata-elem[metadata element in the EPUB3 package document, named [file]_package.opf_].
-The +dc+ prefix is in reference to the http://dublincore.org/documents/2004/12/20/dces[Dublin Core Metadata Element Set].
+The term [term]_package metadata_ in Table 1 is in reference to the http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-metadata-elem[<metadata> element] in the EPUB3 package document (e.g., [file]_package.opf_).
+The +dc+ namespace prefix is in reference to the http://dublincore.org/documents/2004/12/20/dces[Dublin Core Metadata Element Set].
 
 .AsciiDoc attributes that control the EPUB3 metadata (i.e., package.opf)
 [cols="1m,3"]
@@ -338,7 +338,7 @@ image::screenshots/table.png[]
 NOTE: The +asciidoctor-epub3+ command is a temporary solution for invoking the {project-name} converter.
 We plan to remove this script once we have completed proper integration with the +asciidoctor+ command.
 
-TIP: As another example, point the +asciidoctor-epub3+ command at the https://github.com/opendevise/github-guides-asciidoc[GitHub Guides] that we've ported to AsciiDoc.
+TIP: As another example, point +asciidoctor-epub3+ at the https://github.com/opendevise/github-guides-asciidoc[GitHub Guides] that we've ported to AsciiDoc, then compare the output to the real https://guides.github.com[GitHub Guides].
 
 === Validate the EPUB3 Archive
 
@@ -578,9 +578,10 @@ Below you can find the readers that are known to support this feature and the CS
 ,===
 Reader,CSS class name
 
-Gitden,gitden
+Gitden,gitden-reader
 Namo PubTreeViewer,namo-epub-library
 Readium,epub-js-viewer
+iBooks,ibooks
 ,===
 
 == Pushing to Android
@@ -628,6 +629,7 @@ Here's a list of some of the readers we know to have good EPUB3 support and the 
 * https://chrome.google.com/webstore/detail/readium/fepbnnnkkadjhjahcafoaglimekefifl?hl=en-US[Readium] (Chrome)
 * http://www.kobo.com/apps[Kobo] (Android, iOS, OSX and Windows)
 * http://www.namo.com/site/namo/menu/5074.do[Namo PubTreeViewer] (Android, iOS and Windows)
+* http://calibre-ebook.com[Calibre ebook-viewer] (Linux, OSX, Windows)
 
 IMPORTANT: To get the full experience, ensure that the reader is configured to use the publisher's styles.
 Different readers word this setting in different ways.
