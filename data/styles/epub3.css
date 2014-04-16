@@ -181,6 +181,7 @@ td, th {
 
 body a:link {
   color: #333332;
+  -webkit-text-fill-color: #333332; /* hack for font color in iBooks */
   /* Kindle requires the !important on text-decoration */
   /* In night mode, the only indicator of a link is the underline, so we need it or a background image */
   text-decoration: none !important;
@@ -201,6 +202,7 @@ body:first-of-type a:link {
 
 body a:visited {
   color: #666665;
+  -webkit-text-fill-color: #666665; /* hack for font color in iBooks */
 }
 
 code.literal {
