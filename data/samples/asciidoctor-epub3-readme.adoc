@@ -715,7 +715,7 @@ Feel free to use the {project-issues-uri}[issue tracker] or http://discuss.ascii
 
 == Authors
 
-{project-name} was written by https://github.com/mojavelinux[Dan Allen] and https://github.com/graphitefriction[Sarah White] of OpenDevise Inc.
+{project-name} was written by https://github.com/mojavelinux[Dan Allen] and https://github.com/graphitefriction[Sarah White] of OpenDevise Inc. on behalf of the Asciidoctor Project.
 
 == Copyright
 
