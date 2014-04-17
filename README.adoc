@@ -550,20 +550,25 @@ WebKit treats the space following an inline element as insignificant and thus fa
 At first glance, you might think to add a normal space character before the closing tag of the inline element (e.g., `<a href="...">Fork </a>`).
 However, that would cause any underline beneath links to extend past the end of the word.
 
-At second glance, you might think to add a zero-width space character immediately following the element (e.g., `<a href="...">Fork</a>&#8203;`).
+At second glance, you might think to add a zero-width space character immediately following the element (e.g., `<a href="...">Fork</a>&#x200b;`).
 However, that's problematic if the next character is a period or other punctuation because it introduces a wrap opportunity where there shouldn't be one.
 
-Reflecting on the problem of the zero-width space brings us to the word joiner character (e.g., `<a href="...">Fork</a>&#8288;`).
-Like the zero-width space, the word joiner occupies no space.
-However, instead of introducing a wrap opportunity, it prevents one.
+Reflecting on the problem of the zero-width space brings us to either the http://www.fileformat.info/info/unicode/char/FEFF/index.htm[zero-width no-break space] character (e.g., `<a href="...">Fork</a>&#xfeff`) or the http://www.fileformat.info/info/unicode/char/2060/index.htm[word joiner] character (e.g., `<a href="...">Fork</a>&#x2060;`).
+Like the zero-width space, these characters occupy no space.
+However, instead of introducing a wrap opportunity, they prevent one.
+
 But here's the clincher.
-If the character following the word joiner is a normal space (e.g., `<a href="...">Fork</a>&#8288; the`), then it acts as though the word joiner is not present.
-All the scenarios are accounted for!
-WebKit, you've been Unicode punked!
+If the character following a zero-width non-break space or a word joiner is a normal space (e.g., `<a href="...">Fork</a>&#xfeff; the`), then it behaves just like a regular space.
+We've covered all the scenarios!
+Hey WebKit, you've been Unicode punked!
 
-_By adding the word joiner character immediately after any inline element, we can trick WebKit into justifying the text properly, as shown in the second screenshot above._
+*UPDATE:* The zero-width no-break space was deprecated in favor of the word joiner.
+However, as we've discovered, font support for the word joiner is absymal, whereas the zero-width no-break space is supported everywhere we've checked.
+Therefore, we've decided to go with the zero-width no-break space to avoid nasty rectangle outlines from font bombing your content.
 
-NOTE: You won't see `&#8288;` anywhere in the HTML source.
+_By adding the +++<del>word joiner</del>+++ zero-width no-break space character immediately after any inline element, we can trick WebKit into justifying the text properly, as shown in the second screenshot above._
+
+NOTE: You won't see `&#xfeff;` anywhere in the HTML source.
 That's because we use the actual Unicode character so that any regular expressions being applied to the text still work as expected.
 
 Although the fix may seem minor enhancement, it plays an important role in reaching one of the core objectives of this converter: to make the text in the EPUB3 as readable as possible.
