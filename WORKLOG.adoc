@@ -8,7 +8,6 @@
 .Converter
 * CRITICAL: dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
 * CRITICAL: try to pull username from author email field; pull image from gravatar
-* HIGH: don't include figcaption if empty
 * HIGH: cross references between chapters does not work (would it work if we used the smart cross reference syntax?)
 * HIGH: add full table of contents to nav.xhtml, but use hidden below first level (check if works in Kindle); respect toclevels
 * HIGH: if running on a single article, then the document id has a conflicting purpose
@@ -25,10 +24,14 @@
 
 .Packager
 * CRITICAL: use "uid" attribute in favor of document id if available
+* HIGH: add NOTICE.adoc to e-book archive
 * MEDIUM: set modified date explicitly
 * MEDIUM: use function to build and manipulate image paths
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
+
+.Fonts
+* HIGH: continue optimizing subset for Noto Serif
 
 .Stylesheet
 * HIGH: image border option (or add drop shadow to screenshots in README)
@@ -82,3 +85,4 @@
   - wrap character data to solve
   - alternatively, can use zero-width space (&#8203;) immediately after inline element to signal a separation
 * Kindle won't accept fonts that are less than 1K (typically can't create a font with just one or two characters)
+* Control+Shift+u to type in a unicode sequent, then press enter to accept
