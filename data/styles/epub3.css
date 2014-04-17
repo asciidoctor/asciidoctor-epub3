@@ -435,6 +435,7 @@ ul > li::before {
   */
   float: left;
   margin-left: -1em;
+  margin-top: -0.05em;
   padding-left: 0.25em;
   /* guarantee it's out of the flow */
   width: 0;
@@ -442,22 +443,22 @@ ul > li::before {
 }
 
 ul > li::before {
-  content: '\25AA'; /* small black square */
+  content: "\25AA"; /* small black square */
   color: #666665;
 }
 
 ul ul > li::before {
-  content: '\25E6'; /* small white circle */
+  content: "\25E6"; /* small white circle */
   color: #57AD68;
 }
 
 ul ul ul > li::before {
-  content: '\2022'; /* small black circle */
+  content: "\2022"; /* small black circle */
   color: #666665;
 }
 
 ul ul ul ul > li::before {
-  content: '\25AB'; /* small white square */
+  content: "\25AB"; /* small white square */
   color: #57AD68;
 }
 
@@ -1248,6 +1249,7 @@ nav#toc ol {
   font-family: "Noto Serif";
   font-style: normal;
   font-weight: normal;
+  /* Enhanced with the zero-width word joiner character, U+2060 */ 
   src: url(../fonts/noto-serif-regular.ttf);
 }
 
@@ -1255,6 +1257,7 @@ nav#toc ol {
   font-family: "Noto Serif";
   font-style: italic;
   font-weight: normal;
+  /* Enhanced with the zero-width word joiner character, U+2060 */ 
   src: url(../fonts/noto-serif-italic.ttf);
 }
 
@@ -1262,6 +1265,7 @@ nav#toc ol {
   font-family: "Noto Serif";
   font-style: normal;
   font-weight: bold;
+  /* Enhanced with the zero-width word joiner character, U+2060 */ 
   src: url(../fonts/noto-serif-bold.ttf);
 }
 
@@ -1269,6 +1273,7 @@ nav#toc ol {
   font-family: "Noto Serif";
   font-style: italic;
   font-weight: bold;
+  /* Enhanced with the zero-width word joiner character, U+2060 */ 
   src: url(../fonts/noto-serif-bold-italic.ttf);
 }
 
