@@ -1283,8 +1283,8 @@ nav#toc ol {
   font-family: "M+ 1mn";
   font-style: italic;
   font-weight: normal;
-  /* represent italic as light font */
-  src: url(../fonts/mplus-1mn-latin-light.ttf);
+  /* actually the M+ 1mn light font repurposed using FontForge to stand-in for Italic */
+  src: url(../fonts/mplus-1mn-latin-italic.ttf);
 }
 
 @font-face {
@@ -1298,8 +1298,8 @@ nav#toc ol {
   font-family: "M+ 1mn";
   font-style: italic;
   font-weight: bold;
-  /* represent bold italic as heavy bold font */
-  src: url(../fonts/mplus-1mn-latin-bold.ttf);
+  /* actually the M+ 1mn bold font repurposed using FontForge to stand-in for Bold Italic */
+  src: url(../fonts/mplus-1mn-latin-bold-italic.ttf);
 }
 
 @font-face {
