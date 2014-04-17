@@ -10,7 +10,11 @@ class Converter
   include ::Asciidoctor::Writer
   register_for 'epub3'
   EOL = "\n"
-  WordJoiner = [8288].pack 'U*'
+  #WordJoiner = [8288].pack 'U*'
+  WordJoiner = [65279].pack 'U*'
+  NoBreakSpace = '&#xa0;'
+  ThinNoBreakSpace = '&#x202f;'
+  RightAngleQuote = '&#x203a;'
 
   XmlElementRx = /<\/?.+?>/
   CharEntityRx = /&#(\d{2,5});/
@@ -291,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>
 ) : nil
     # patches conums to fix extra or missing leading space
+    # TODO apply this patch upstream to Asciidoctor
     %(<figure class="#{figure_classes * ' '}">
 #{title_div}<pre class="#{pre_classes * ' '}"><code>#{node.content.gsub(/(?<! )<i class="conum"| +<i class="conum"/, ' <i class="conum"')}</code></pre>
 </figure>)
@@ -626,8 +631,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
     %(<figure class="image">
 <div class="content">
 <img src="#{node.image_uri node.attr('target')}" #{img_attrs * ' '}/>
-</div>
-<figcaption>#{node.captioned_title}</figcaption>
+</div>#{node.title? ? %[
+<figcaption>#{node.captioned_title}</figcaption>] : nil}
 </figure>)
   end
 
@@ -658,7 +663,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   end
 
   def inline_button node
-    %(<b class="button">[&#x202f;#{node.text}&#x202f;]</b>#{WordJoiner})
+    %(<b class="button">[<span class="label">#{node.text}</span>]</b>#{WordJoiner})
   end
 
   def inline_callout node
@@ -701,7 +706,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
   def inline_menu node
     menu = node.attr 'menu'
-    caret = '&#160;<span class="caret">&#xf054;</span> '
+    # NOTE we swap right angle quote with chevron right from FontAwesome using CSS
+    caret = %(#{NoBreakSpace}<span class="caret">#{RightAngleQuote}</span> )
     if !(submenus = node.attr 'submenus').empty?
       submenu_path = submenus.map {|submenu| %(<span class="submenu">#{submenu}</span>#{caret}) }.join.chop
       %(<span class="menuseq"><span class="menu">#{menu}</span>#{caret}#{submenu_path} <span class="menuitem">#{node.attr 'menuitem'}</span></span>)
@@ -721,15 +727,15 @@ document.addEventListener('DOMContentLoaded', function(event) {
     when :monospaced
       %(<code class="literal">#{node.text}</code>#{WordJoiner})
     when :double
-      #%(&#8220;#{node.text}&#8221;)
+      #%(&#x201c;#{node.text}&#x201d;)
       %(“#{node.text}”)
     when :single
-      #%(&#8216;#{node.text}&#8217;)
+      #%(&#x2018;#{node.text}&#x2019;)
       %(‘#{node.text}’)
     when :superscript
-      %(<sup>#{node.text}</sup>)
+      %(<sup>#{node.text}</sup>#{WordJoiner})
     when :subscript
-      %(<sub>#{node.text}</sub>)
+      %(<sub>#{node.text}</sub>#{WordJoiner})
     else
       node.text
     end

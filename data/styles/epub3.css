@@ -88,6 +88,10 @@ b.button {
   color: #191918;
 }
 
+b.button .label {
+  padding: 0 0.25em;
+}
+
 kbd {
   display: inline-block;
   font-size: 0.8em;
@@ -108,14 +112,36 @@ kbd {
 }
 
 .menuseq .caret {
-  font-family: "FontAwesome";
   /*
   text-rendering: optimizeLegibility;
   */
+  /*
+  font-family: "FontAwesome";
   font-size: 0.7em;
   line-height: 1;
   font-weight: bold;
   vertical-align: 0.08rem;
+  */
+
+  font-weight: bold;
+}
+
+.menuseq span[class~="caret"] {
+  visibility: hidden;
+}
+
+.menuseq .caret::before {
+  font-family: "FontAwesome";
+  /*
+  text-rendering: optimizeLegibility;
+  */
+  content: "\f054";
+  font-size: 0.6em;
+  vertical-align: 0.15em;
+  visibility: visible;
+  display: inline-block;
+  width: 0;
+  padding-right: 0.15em;
 }
 
 img {
@@ -207,7 +233,8 @@ body a:visited {
 
 code.literal {
   /* don't let it affect line spacing */
-  line-height: 1;
+  /* disable since M+ 1mn won't interrupt line height */
+  /*line-height: 1;*/
   /*
   white-space: nowrap;
   */
