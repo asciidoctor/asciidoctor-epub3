@@ -28,6 +28,14 @@ body.gitden-reader a:link {
     margin: 0 !important;
   }
 
+  /* text-rendering is the only way to enable kerning in Kindle */
+  /* personally, I think Kindle overdoes kerning, but oh well */
+  h1, h2, h3, h4, h5, h6,
+  body p, li, dd, blockquote > footer,
+  th, td, figcaption, caption {
+    text-rendering: optimizeLegibility;
+  }
+
   /* hack line height of subtitle using floats on Kindle */
   h1.chapter-title .subtitle {
     margin-top: -0.2em;

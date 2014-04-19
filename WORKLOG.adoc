@@ -32,6 +32,8 @@
 
 .Fonts
 * HIGH: continue optimizing subset for Noto Serif
+* HIGH: optimizing M+ 1p fonts beyond latin, toss hinting
+* document the addition of the word joiner character (U+2060), though technically we no longer need it
 
 .Stylesheet
 * HIGH: image border option (or add drop shadow to screenshots in README)

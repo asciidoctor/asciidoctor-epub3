@@ -28,11 +28,8 @@ body {
   /* don't use !important on margin as it breaks calibre */
   margin: 0;
   font-size: 100%;
-  /* NOTE putting optimizeLegibility on the body appears to slow down rendering */
-  /*
+  /* NOTE putting optimizeLegibility on the body slow down rendering considerably */
   text-rendering: optimizeSpeed;
-  text-rendering: optimizeLegibility;
-  */
   -webkit-font-smoothing: antialiased; /* appears to be the default */
 }
 
@@ -113,9 +110,6 @@ kbd {
 
 .menuseq .caret {
   /*
-  text-rendering: optimizeLegibility;
-  */
-  /*
   font-family: "FontAwesome";
   font-size: 0.7em;
   line-height: 1;
@@ -132,9 +126,6 @@ kbd {
 
 .menuseq .caret::before {
   font-family: "FontAwesome";
-  /*
-  text-rendering: optimizeLegibility;
-  */
   content: "\f054";
   font-size: 0.6em;
   vertical-align: 0.15em;
@@ -207,7 +198,8 @@ td, th {
 
 body a:link {
   color: #333332;
-  -webkit-text-fill-color: #333332; /* hack for font color in iBooks */
+  /* hack for font color in iBooks */
+  -webkit-text-fill-color: #333332;
   /* Kindle requires the !important on text-decoration */
   /* In night mode, the only indicator of a link is the underline, so we need it or a background image */
   text-decoration: none !important;
@@ -228,7 +220,8 @@ body:first-of-type a:link {
 
 body a:visited {
   color: #666665;
-  -webkit-text-fill-color: #666665; /* hack for font color in iBooks */
+  /* hack for font color in iBooks */
+  -webkit-text-fill-color: #666665;
 }
 
 code.literal {
@@ -247,6 +240,10 @@ h1, h2, h3, h4, h5, h6 {
   text-align: left;
   color: #333332;
   letter-spacing: -0.01em;
+  /* disable hyphenation, such as in iBooks */
+  -webkit-hyphens: none;
+  /* force super-long words to break */
+  word-break: break-word;
 
   /* NOTE: Kindle doesn't allow the line-height to be less than the font size (refer to heading font sizes) */
   line-height: 1.4; /* or 1.2125 */
@@ -271,6 +268,8 @@ body p {
   color: #333332;
   line-height: 1.6;
   text-align: justify;
+  /* Signal to iBooks that hypens are okay here */
+  -webkit-hyphens: auto;
 
   widows: 2;
   orphans: 2;
@@ -296,18 +295,19 @@ code, kbd, pre {
 }
 
 h1, h2, h3, h4, h5, h6,
-p, span.principal, th, td,
-figcaption, caption, blockquote > footer {
-  text-rendering: optimizeLegibility;
+body p, li, dd, blockquote > footer,
+th, td, figcaption, caption {
+  /* forward-compatible CSS to enable kerning and ligatures */
+  -webkit-font-feature-settings: "kern", "liga", "dlig";
+  font-feature-settings: "kern", "liga", "dlig";
+  font-kerning: normal;
+  /* => see Kindle hack in epub3-css3-only.css for parallel settings */
 }
 
 p.last::after {
   color: #57AD68;
   display: inline-block;
   font-family: "FontAwesome";
-  /*
-  text-rendering: optimizeLegibility;
-  */
   font-size: 1em;
   content: "\f121"; /* </> */
   margin-left: 0.25em;
@@ -680,7 +680,9 @@ div.abstract > p {
 }
 
 div.abstract > p a:link {
-  color: #666665 !important;
+  color: #666665;
+  /* hack for font color in iBooks */
+  -webkit-text-fill-color: #666665;
 }
 
 div.abstract > p:first-child::first-line {
@@ -876,9 +878,6 @@ blockquote > p:first-of-type::before {
 
   /* using serif quote from entypo */
   font-family: "FontIcons";
-  /*
-  text-rendering: optimizeLegibility;
-  */
 
   /*content: "\f10e";*/ /* quote-right from Entypo */
   /*
@@ -1020,9 +1019,6 @@ aside.important {
 aside.admonition::before {
   display: block;
   font-family: "FontAwesome";
-  /*
-  text-rendering: optimizeLegibility;
-  */
   font-size: 2em;
   line-height: 1em;
   width: 1em;
