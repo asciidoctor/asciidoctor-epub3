@@ -15,6 +15,7 @@
 * HIGH: move regexp to constants
 * HIGH: use more thorough image path resolution
 * HIGH: move navigation_document method to Packager
+* MEDIUM: auto-space button in btn macro, or add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file
 * QUESTION: add word joiner before inline tags too?
 * packager doesn't resolve include files in subdirectory totally correctly
@@ -25,23 +26,23 @@
 .Packager
 * CRITICAL: use "uid" attribute in favor of document id if available
 * HIGH: add NOTICE.adoc to e-book archive
+* HIGH: minimize CSS (and any other assets worth minimizing)
 * MEDIUM: set modified date explicitly
 * MEDIUM: use function to build and manipulate image paths
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
 
 .Fonts
-* HIGH: continue optimizing subset for Noto Serif
-* HIGH: optimizing M+ 1p fonts beyond latin, toss hinting
-* document the addition of the word joiner character (U+2060), though technically we no longer need it
+* HIGH: script to generate optimized M+ 1p fonts beyond latin
+* HIGH: script to generate M+ 1mn fonts that map to italic and bold italic
 
 .Stylesheet
+* HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute (don't use word joiner in this case)
 * HIGH: image border option (or add drop shadow to screenshots in README)
 * HIGH: review the table border color
 * HIGH: style example block
 * HIGH: allow theme to be customized using stylesheet attribute
 * MEDIUM: add landmarks nav list to nav.xhtml
-* add CSS transform options for font-based icon macro
 * support both jpg and png avatars
 * add docinfo support
 * add navigation links in meta, e.g.,
