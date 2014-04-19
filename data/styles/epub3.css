@@ -30,7 +30,7 @@ body {
   font-size: 100%;
   /* NOTE putting optimizeLegibility on the body slow down rendering considerably */
   text-rendering: optimizeSpeed;
-  -webkit-font-smoothing: antialiased; /* appears to be the default */
+  /* -webkit-font-smoothing has no noticable effect and is controversial, so leaving it off */
 }
 
 /* disables night mode in Aldiko, hoo-ha! */
@@ -1266,6 +1266,10 @@ sup.noteref a {
 
 nav#toc ol {
   list-style-type: none;
+}
+
+.icon {
+  display: none;
 }
 
 @font-face {

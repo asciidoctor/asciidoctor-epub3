@@ -1,19 +1,19 @@
-/* GitDen defaults to 16px font-size; bump it to 22px (137.5%) or 20px (125%) */
+/* Namo defaults to 16px font-size; bump it up to 18px (112.5%) */
+body.namo-epub-library {
+  font-size: 112.5%;
+}
+
+/* GitDen defaults to 16px font-size; bump it to 20px (125%) and apply some side margins */
 body.gitden-reader {
-  /*
-  font-size: 137.5%;
-  */
-  margin: 5pt 13pt; /* close approx of margins used by Readmill */
   margin: 0 25pt;
   font-size: 125%;
 }
 
-/* for Nexus 4 or smaller, use tighter margins and smaller font */
+/* for Nexus 4 or smaller, use tighter margins and smaller font (18px) */
 @media only screen and (max-device-width: 768px) and (max-device-height: 1280px),
 only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
   body.gitden-reader {
     margin: 0 5pt;
-    /*font-size: 118.75%;*/
     font-size: 112.5%;
   }
 }
@@ -63,4 +63,86 @@ body.gitden-reader a:link {
 
 .chapter-header p.byline {
   height: auto; /* Aldiko requires this value to be 0; reset it for all others */
+}
+
+/* Font-based icons */
+.icon {
+  display: inline-block;
+  font-family: "FontAwesome";
+  font-style: normal !important;
+  font-weight: normal !important;
+  line-height: 1;
+}
+
+.icon-1_5x {
+  padding: 0 0.25em;
+  -webkit-transform: scale(1.5, 1.5);
+  transform: scale(1.5, 1.5); 
+}
+
+.icon-2x {
+  padding: 0 0.5em;
+  -webkit-transform: scale(2, 2);
+  transform: scale(2, 2); 
+}
+
+.icon-small {
+  font-size: 0.85em;
+  vertical-align: 0.075em;
+}
+
+.icon-1_5em {
+  font-size: 1.5em;
+}
+
+.icon-2em {
+  font-size: 2em;
+}
+
+.icon-3em {
+  font-size: 3em;
+}
+
+.icon-4em {
+  font-size: 4em;
+}
+
+.icon-rotate-90 {
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.icon-rotate-90i {
+  -webkit-transform: scale(-1, 1) rotate(90deg);
+  transform: scale(-1, 1) rotate(90deg);
+}
+
+.icon-rotate-180 {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.icon-rotate-180i {
+  -webkit-transform: scale(-1, 1) rotate(180deg);
+  transform: scale(-1, 1) rotate(180deg);
+}
+
+.icon-rotate-270 {
+  -webkit-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+
+.icon-rotate-270i {
+  -webkit-transform: scale(-1, 1) rotate(270deg);
+  transform: scale(-1, 1) rotate(270deg);
+}
+
+.icon-flip-h {
+  -webkit-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+
+.icon-flip-v {
+  -webkit-transform: scale(1, -1);
+  transform: scale(1, -1);
 }

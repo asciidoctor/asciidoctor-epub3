@@ -114,17 +114,9 @@ class Converter
     # NOTE must run after content is resolved
     icon_css = unless @icon_names.empty?
       icon_defs = @icon_names.map {|name|
-        %(.icon-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
+        %(.i-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
       } * EOL
       %(<style type="text/css">
-i.icon {
-  display: inline-block;
-  font-family: "FontAwesome";
-  font-style: normal;
-  font-weight: normal;
-  line-height: 1;
-  /*text-rendering: optimizeLegibility;*/
-}
 #{icon_defs}
 </style>
 )
@@ -175,9 +167,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
 </footer>'
     end
 
-    lines << '</section>
-</body>
-</html>'
+    # NOTE pubtree requires icon CSS to be at end of html body (or in a linked stylesheet); perhaps create dynamic CSS file?
+    lines << %(</section>
+#{icon_css}</body>
+</html>)
 
     lines * EOL
   end
@@ -684,10 +677,15 @@ document.addEventListener('DOMContentLoaded', function(event) {
   def inline_image node
     if (type = node.type) == 'icon'
       @icon_names << (icon_name = node.target)
-      %(<i class="icon icon-#{icon_name}"></i>)
+      i_classes = ['icon', %(i-#{icon_name})]
+      i_classes << %(icon-#{node.attr 'size'}) if node.attr? 'size'
+      i_classes << %(icon-flip-#{(node.attr 'flip')[0]}) if node.attr? 'flip'
+      i_classes << %(icon-rotate-#{node.attr 'rotate'}) if node.attr? 'rotate'
+      i_classes << node.role if node.role?
+      %(<i class="#{i_classes * ' '}"></i>)
     else
-      class_attr = node.role? ? %( class="#{node.role}") : nil
-      %(<img src="#{node.image_uri node.target}"#{class_attr}/>)
+      class_attr = %( class="#{node.role}") if node.role?
+      %(<img src="#{node.image_uri node.target}" alt="#{node.attr 'alt'}"#{class_attr}/>)
     end
   end
 
