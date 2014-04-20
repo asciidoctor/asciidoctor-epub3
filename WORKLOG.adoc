@@ -92,3 +92,4 @@
   - alternatively, can use zero-width space (&#8203;) immediately after inline element to signal a separation
 * Kindle won't accept fonts that are less than 1K (typically can't create a font with just one or two characters)
 * Control+Shift+u to type in a unicode sequent, then press enter to accept
+* Calibre gets confused when there are local fonts that closely match font in stylesheet, uses them over embedded styles (in particular M+ weights)

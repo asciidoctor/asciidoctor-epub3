@@ -4,6 +4,8 @@
 #
 # $ ./generate-font-subsets.pe <target directory>
 #
+# NOTE: Ignore "GID out of range" warnings; fontforge has to kick the tires a bit to flush out these dead references
+#
 # Use with Noto Serif fonts from https://code.google.com/p/noto/source/browse/#svn%2Ftrunk%2Ffonts%2Findividual%2Funhinted
 # Use with M+ fonts from http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/download/index-en.html
 #
@@ -41,14 +43,14 @@ endif
 fi = 0
 while (fi < num_copy_fonts)
   new_basename = ToLower(copy_fonts[fi]:r)
+  is_mplus = Strstr(new_basename, "mplus") >= 0
   # remove hyphen from mplus-1
-  if (Strstr(new_basename, "mplus-1") >= 0)
+  if (is_mplus)
     new_basename = "mplus1" + StrJoin(StrSplit(new_basename, "mplus-1"), "")
   endif
   si = 0
   while (si < num_copy_scripts)
     script = copy_scripts[si]
-    new_filename = new_basename + "-" + script + ".ttf"
     Open(copy_fonts[fi])
     SelectAll()
     # Remove TrueType instructions
@@ -94,16 +96,34 @@ while (fi < num_copy_fonts)
       # Latin Extended Additional (Vietnamese, Hindi, ...)
       SelectMore(0u1e00,0u1eff)
     endif
-    # BOM (NOTE: M+ doesn't have the BOM)
+    # BOM
     SelectMore(0ufeff)
     # Non-marking return (QUESTION do we really need this?)
-    SelectMore(0u000d)
+    #SelectMore(0u000d)
     SelectInvert()
     Clear()
     SelectNone()
+    # Generate BOM from no-break space (for M+ fonts)
+    if (is_mplus)
+      Select(0u00a0)
+      Copy()
+      SelectNone()
+      Select(0ufeff)
+      Paste()
+      SetWidth(0)
+      SelectNone()
+    endif
+    new_filename = new_basename + "-" + script + ".ttf"
+    new_filepath = output_dir + "/" + new_filename
     Print("Generating " + new_filename + "...")
-    Generate(output_dir + "/" + new_filename, "", genflags)
+    Generate(new_filepath, "", genflags)
     Close()
+    if (is_mplus)
+      # Regenerate to drop invalid cmap format 14 table (ignore warnings)
+      Open(new_filepath)
+      Generate(new_filepath, "", genflags)
+      Close()
+    endif
     si = si + 1
   endloop
   fi = fi + 1
@@ -167,9 +187,22 @@ while (fi < num_code_fonts)
     SetTTFName(0x411, 17, "")
     new_basename = "mplus1mn-bolditalic"
   endif
+  # Generate BOM from no-break space (for M+ fonts)
+  Select(0u00a0)
+  Copy()
+  SelectNone()
+  Select(0ufeff)
+  Paste()
+  SetWidth(0)
+  SelectNone()
   new_filename = new_basename + new_suffix
+  new_filepath = output_dir + "/" + new_filename
   Print("Generating " + new_filename + "...")
-  Generate(output_dir + "/" + new_filename, "", genflags)
+  Generate(new_filepath, "", genflags)
+  Close()
+  # Regenerate to drop invalid cmap format 14 table (ignore warnings)
+  Open(new_filepath)
+  Generate(new_filepath, "", genflags)
   Close()
   fi = fi + 1
 endloop

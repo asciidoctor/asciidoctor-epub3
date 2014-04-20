@@ -26,10 +26,11 @@
   src: url(../fonts/notoserif-bolditalic-latin.ttf);
 }
 
+/* NOTE: use numeric font weights for M+ 1p since we're using weight variations */
 @font-face {
   font-family: "M+ 1p";
   font-style: normal;
-  font-weight: normal;
+  font-weight: 400;
   src: url(../fonts/mplus1p-regular-latin.ttf);
 }
 
@@ -43,7 +44,7 @@
 @font-face {
   font-family: "M+ 1p";
   font-style: normal;
-  font-weight: bold;
+  font-weight: 700;
   src: url(../fonts/mplus1p-bold-latin.ttf);
 }
 

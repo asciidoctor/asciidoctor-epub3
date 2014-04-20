@@ -237,7 +237,7 @@ code.literal {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "M+ 1p", sans-serif;
-  font-weight: normal;
+  font-weight: 400;
   text-align: left;
   color: #333332;
   letter-spacing: -0.01em;
@@ -299,11 +299,13 @@ code, kbd, pre {
 h1, h2, h3, h4, h5, h6,
 body p, li, dd, blockquote > footer,
 th, td, figcaption, caption {
-  /* forward-compatible CSS to enable kerning and ligatures */
-  -webkit-font-feature-settings: "kern", "liga", "dlig";
-  font-feature-settings: "kern", "liga", "dlig";
+  /* forward-compatible CSS to enable kerning (if we want ligatures, add "liga" and "dlig") */
+  /* WebKits that doesn't recognize these properties don't kern well, hence why we don't just enable kerning via text-rendering */
+  /*text-rendering: optimizeLegibility;*/
+  -webkit-font-feature-settings: "kern";
+  font-feature-settings: "kern";
   font-kerning: normal;
-  /* => see Kindle hack in epub3-css3-only.css for parallel settings */
+  /* NOTE: see Kindle hack in epub3-css3-only.css for additional kerning settings */
 }
 
 p.last::after {
@@ -591,7 +593,7 @@ h5 {
   */
 
   font-size: 0.9em;
-  font-weight: bold;
+  font-weight: 700;
   text-transform: uppercase;
   margin-top: 1.11em; /* 1rem */
   margin-bottom: -0.972em; /* -0.875rem */
@@ -627,7 +629,7 @@ h1.chapter-title {
 }
 
 h1.chapter-title .subtitle {
-  font-weight: normal;
+  font-weight: 400;
   color: #FFFFFF;
   display: block;
   font-size: 1.5em;
@@ -689,6 +691,10 @@ div.abstract > p a:link {
 
 div.abstract > p:first-child::first-line {
   font-weight: bold;
+  /* text-rendering: optimizeSpeed; */
+  -webkit-font-feature-settings: "kern" off;
+  font-feature-settings: "kern" off;
+  font-kerning: none;
 }
 
 div.abstract p strong {
@@ -812,9 +818,9 @@ aside.sidebar > h2 {
   /*text-transform: uppercase;*/ /* uppercase done manually to support Aldiko */
   font-size: 1em;
   /*
-  font-weight: bold;
+  font-weight: 700;
   */
-  font-weight: normal;
+  font-weight: 400;
   letter-spacing: 0;
   display: inline-block;
   white-space: nowrap; /* for some reason it's wrapping prematurely */
