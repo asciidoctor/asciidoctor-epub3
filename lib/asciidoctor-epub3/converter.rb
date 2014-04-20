@@ -112,11 +112,12 @@ class Converter
     content = node.content
 
     # NOTE must run after content is resolved
+    # NOTE pubtree requires icon CSS to be repeated inside <body> (or in a linked stylesheet); perhaps create dynamic CSS file?
     icon_css = unless @icon_names.empty?
       icon_defs = @icon_names.map {|name|
         %(.i-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
       } * EOL
-      %(<style type="text/css">
+      %(<style>
 #{icon_defs}
 </style>
 )
@@ -144,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 </head>
 <body>
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
-<header>
+#{icon_css && (icon_css.sub '<style>', '<style scoped="scoped">')}<header>
 <div class="chapter-header">
 <p class="byline"><img src="#{imagesdir}avatars/#{username}.png"/> <b class="author">#{author}</b></p>
 <h1 class="chapter-title">#{title_upper}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted_upper}</small>] : nil}</h1>
@@ -167,10 +168,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
 </footer>'
     end
 
-    # NOTE pubtree requires icon CSS to be at end of html body (or in a linked stylesheet); perhaps create dynamic CSS file?
-    lines << %(</section>
-#{icon_css}</body>
-</html>)
+    lines << '</section>
+</body>
+</html>'
 
     lines * EOL
   end

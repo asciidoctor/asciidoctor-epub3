@@ -6,6 +6,7 @@
 //^
 
 .Converter
+* CRITICAL: put e-book reader class on html instead of body
 * CRITICAL: dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
 * CRITICAL: try to pull username from author email field; pull image from gravatar
 * HIGH: cross references between chapters does not work (would it work if we used the smart cross reference syntax?)
@@ -33,10 +34,12 @@
 * support collection title in package metadata
 
 .Fonts
-* HIGH: script to generate optimized M+ 1p fonts beyond latin
-* HIGH: script to generate M+ 1mn fonts that map to italic and bold italic
+* script to merge entypo icons from Font Icons into Font Awesome (name it font-awesomer.ttf)
+* add BOM glyph to M+ 1p fonts
 
 .Stylesheet
+* CRITICAL: add support for different numbering systems (lowergreek, etc)
+* CRITICAL: support custom CSS via the stylesheet attribute
 * HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute (don't use word joiner in this case)
 * HIGH: image border option (or add drop shadow to screenshots in README)
 * HIGH: review the table border color

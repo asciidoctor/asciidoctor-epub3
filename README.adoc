@@ -239,6 +239,9 @@ The recommended practice is to identify the document by means of a string or num
 |lang
 |Populates the content language / locale (`<dc:language>`) in the package metadata.
 
+|scripts
+|Controls the font subsets that are selected based on the specified scripts (e.g., alphabets). (values: *latin*, latin-ext, latin-cyrillic or multilingual)
+
 |revdate
 |Populates the publication date (`<dc:date>`) in the package metadata.
 The date should be specified in a parsable format, such as +2014-01-01+.

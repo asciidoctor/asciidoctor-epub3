@@ -1,0 +1,175 @@
+#!/usr/bin/env fontforge
+
+# Run using:
+#
+# $ ./generate-font-subsets.pe <target directory>
+#
+# Use with Noto Serif fonts from https://code.google.com/p/noto/source/browse/#svn%2Ftrunk%2Ffonts%2Findividual%2Funhinted
+# Use with M+ fonts from http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/download/index-en.html
+#
+# TODO: Add cjkv profile
+#
+# IMPORTANT: Must generate Apple format (0x10) or include old-fashioned 'kern' table for kerning to work in Prawn
+#
+# generate flags (additive):
+# * 0x00 - OpenType
+# * 0x10 - Apple
+# * 0x80 - OpenType and Apple
+# * 0x90 - Neither OpenType or Apple
+# * 0x800 - Generate old-style 'kern' table
+# * 0x08 - exclude TrueType instructions
+#
+# QUESTION: do we need to apply RoundToInt() after ClearInstrs()?
+
+copy_fonts = ["NotoSerif-Regular.ttf", "NotoSerif-Bold.ttf", "NotoSerif-Italic.ttf", "NotoSerif-BoldItalic.ttf", "mplus-1p-regular.ttf", "mplus-1p-bold.ttf", "mplus-1p-light.ttf"]
+#copy_fonts = ["NotoSerif-Regular.ttf"]
+num_copy_fonts = SizeOf(copy_fonts)
+copy_scripts = ["latin", "latin-ext", "latin-cyrillic", "multilingual"]
+#copy_scripts = ["latin"]
+num_copy_scripts = SizeOf(copy_scripts)
+code_fonts = ["mplus-1mn-light.ttf", "mplus-1mn-regular.ttf", "mplus-1mn-medium.ttf", "mplus-1mn-bold.ttf"]
+#code_fonts = []
+num_code_fonts = SizeOf(code_fonts)
+genflags = 0x08
+if ($argc == 2)
+  output_dir = $argv[1]
+else
+  #output_dir = "../data/fonts"
+  output_dir = "generated"
+endif
+
+fi = 0
+while (fi < num_copy_fonts)
+  new_basename = ToLower(copy_fonts[fi]:r)
+  # remove hyphen from mplus-1
+  if (Strstr(new_basename, "mplus-1") >= 0)
+    new_basename = "mplus1" + StrJoin(StrSplit(new_basename, "mplus-1"), "")
+  endif
+  si = 0
+  while (si < num_copy_scripts)
+    script = copy_scripts[si]
+    new_filename = new_basename + "-" + script + ".ttf"
+    Open(copy_fonts[fi])
+    SelectAll()
+    # Remove TrueType instructions
+    ClearInstrs()
+    SelectNone()
+    # Basic Latin (e.g., English)
+    SelectMore(0u0020,0u007e)
+    # Latin-1 Supplement (covers core Western European languages)
+    SelectMore(0u00a0,0u00ff)
+    # Mathematical Operators (e.g., infinity, sum, partial differential)
+    SelectMore(0u2200,0u22ff)
+    # General Punctuation (most of it) (e.g., dashes, smart quotes, bullet)
+    SelectMore(0u2000,0u203a)
+    # Trademark sign (selected from Letterlike Symbols set)
+    SelectMore(0u2122)
+    # Geometric Shapes (e.g., list bullets)
+    SelectMore(0u25a0,0u25ff)
+    # Greek (frequently used for math and bullets)
+    SelectMore(0u0370,0u03ff)
+    # Additional Currency Symbols (QUESTION: do we need all of them in basic latin?)
+    SelectMore(0u20a0,0u20d0)
+    if (script == "latin-ext" || script == "latin-cyrillic" || script == "multilingual")
+      # Latin Extended-A, Latin Extended-B
+      SelectMore(0u0100,0u024f)
+      # IPA Extensions (i.e., core phonetics)
+      #SelectMore(0u0250,0u02af)
+      # Upside-down e (from IPA Extensions)
+      SelectMore(0u0259)
+      # Spacing Modifier Letters (e.g., diacritics)
+      SelectMore(0u02b0,0u02ff)
+      # Latin Ligatures (e.g., fi) (Noto Serif doesn't auto-detect them, so leave them off)
+      #SelectMore(0ufb00,0ufb06)
+    endif
+    if (script == "latin-cyrillic" || script == "multilingual")
+      # Cyrillic
+      SelectMore(0u0400,0u04ff)
+      # Cyrillic Supplement (QUESTION should this go in multilingual only?)
+      SelectMore(0u0500,0u052f)
+    endif
+    if (script == "multilingual")
+      # Greek Extended
+      SelectMore(0u1f00,0u1fff)
+      # Latin Extended Additional (Vietnamese, Hindi, ...)
+      SelectMore(0u1e00,0u1eff)
+    endif
+    # BOM (NOTE: M+ doesn't have the BOM)
+    SelectMore(0ufeff)
+    # Non-marking return (QUESTION do we really need this?)
+    SelectMore(0u000d)
+    SelectInvert()
+    Clear()
+    SelectNone()
+    Print("Generating " + new_filename + "...")
+    Generate(output_dir + "/" + new_filename, "", genflags)
+    Close()
+    si = si + 1
+  endloop
+  fi = fi + 1
+endloop
+
+fi = 0
+while (fi < num_code_fonts)
+  new_basename = code_fonts[fi]:r
+  # remove hyphen from mplus-1
+  new_basename = "mplus1" + StrJoin(StrSplit(new_basename, "mplus-1"), "")
+  new_suffix = "-ascii.ttf"
+  Open(code_fonts[fi])
+  SelectAll()
+  # NOTE: M+ fonts don't have hinting, so technically this is redundant
+  ClearInstrs()
+  SelectNone()
+  # Basic Latin (e.g., Code)
+  SelectMore(0u0020,0u007e)
+  # No-break space
+  SelectMore(0u00a0)
+  if (new_basename == "mplus1mn-regular")
+    # Enclosed numbers (1-20)
+    SelectMore(0u2460,0u2473)
+    new_suffix = "-ascii-conums.ttf"
+  endif
+  SelectInvert()
+  Clear()
+  SelectNone()
+  SetFontNames(new_basename, "M+ 1mn")
+  # repurpose light as italic
+  if (new_basename == "mplus1mn-light")
+    SetFontNames("mplus1mn-italic", "M+ 1mn", "M+ 1mn Italic")
+    SetOS2Value("Weight", 400)
+    SetPanose(2, 5)
+    SetTTFName(0x409, 2, "Italic")
+    SetTTFName(0x409, 16, "")
+    SetTTFName(0x409, 17, "")
+    SetTTFName(0x411, 16, "")
+    SetTTFName(0x411, 17, "")
+    new_basename = "mplus1mn-italic"
+  # repurpose medium as bold
+  elseif (new_basename == "mplus1mn-medium")
+    SetFontNames("mplus1mn-bold", "M+ 1mn", "M+ 1mn Bold")
+    SetOS2Value("Weight", 700)
+    SetPanose(2, 8)
+    SetTTFName(0x409, 2, "Bold")
+    SetTTFName(0x409, 16, "")
+    SetTTFName(0x409, 17, "")
+    SetTTFName(0x411, 16, "")
+    SetTTFName(0x411, 17, "")
+    new_basename = "mplus1mn-bold"
+  # repurpose bold as bold italic
+  elseif (new_basename == "mplus1mn-bold")
+    SetFontNames("mplus1mn-bolditalic", "M+ 1mn", "M+ 1mn Bold Italic")
+    SetOS2Value("Weight", 700)
+    SetPanose(2, 8)
+    SetTTFName(0x409, 2, "Bold Italic")
+    SetTTFName(0x409, 16, "")
+    SetTTFName(0x409, 17, "")
+    SetTTFName(0x411, 16, "")
+    SetTTFName(0x411, 17, "")
+    new_basename = "mplus1mn-bolditalic"
+  endif
+  new_filename = new_basename + new_suffix
+  Print("Generating " + new_filename + "...")
+  Generate(output_dir + "/" + new_filename, "", genflags)
+  Close()
+  fi = fi + 1
+endloop

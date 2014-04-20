@@ -28,15 +28,17 @@ module GepubBuilderMixin
     title.gsub WordJoiner, ''
   end
 
-  def add_theme_assets
+  def add_theme_assets doc
     builder = self
     format = @format
     resources workdir: DATA_DIR do
       # TODO support custom theme
       file 'styles/epub3.css' => (builder.postprocess_css_file 'styles/epub3.css', format)
+      font_list, font_css = builder.select_fonts 'styles/epub3-fonts.css', (doc.attr 'scripts', 'latin')
+      file 'styles/epub3-fonts.css' => font_css
       file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'styles/epub3-css3-only.css', format)
       with_media_type 'application/x-font-ttf' do
-        glob 'fonts/*.ttf'
+        files(*font_list)
       end
     end
   end
@@ -178,6 +180,15 @@ body > svg {
     end
   end
 
+  # Swap fonts in CSS based on the value of the document attribute 'scripts',
+  # then return the list of fonts as well as the font CSS.
+  def select_fonts filename, scripts = 'latin'
+    font_css = ::File.read(filename)
+    font_css = font_css.gsub(/(?<=-)latin(?=\.ttf\))/, scripts) unless scripts == 'latin'
+    font_list = font_css.scan(/url\(\.\.\/(.+\.ttf)\);$/).flatten
+    return [font_list, font_css.to_ios]
+  end
+
   def postprocess_css_file filename, format
     return filename unless format == :kf8
     postprocess_css ::File.read(filename), format
@@ -302,7 +313,7 @@ class Packager
         rights(doc.attr 'copyright')
       end
 
-      add_theme_assets
+      add_theme_assets doc
       add_cover_image doc
       add_avatar_images doc, usernames
       # QUESTION move add_content_images to add_content method?

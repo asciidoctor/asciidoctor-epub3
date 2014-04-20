@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url("epub3-fonts.css");
 
 *, *:before, *:after {
   box-sizing: border-box;
@@ -294,6 +295,7 @@ code, kbd, pre {
   color: #191918;
 }
 
+/* QUESTION should we kern preformatted text blocks? */
 h1, h2, h3, h4, h5, h6,
 body p, li, dd, blockquote > footer,
 th, td, figcaption, caption {
@@ -379,7 +381,7 @@ div.callout-list ol li {
 
 i.conum {
   font-family: "M+ 1mn", monospace;
-  text-rendering: geometricPrecision;
+  /*text-rendering: geometricPrecision;*/
   color: #468C54;
   font-style: normal;
 }
@@ -809,7 +811,10 @@ aside.sidebar.titled {
 aside.sidebar > h2 {
   /*text-transform: uppercase;*/ /* uppercase done manually to support Aldiko */
   font-size: 1em;
+  /*
   font-weight: bold;
+  */
+  font-weight: normal;
   letter-spacing: 0;
   display: inline-block;
   white-space: nowrap; /* for some reason it's wrapping prematurely */
@@ -1270,101 +1275,4 @@ nav#toc ol {
 
 .icon {
   display: none;
-}
-
-@font-face {
-  font-family: "Noto Serif";
-  font-style: normal;
-  font-weight: normal;
-  /* Enhanced with the zero-width word joiner character, U+2060 */ 
-  src: url(../fonts/noto-serif-regular.ttf);
-}
-
-@font-face {
-  font-family: "Noto Serif";
-  font-style: italic;
-  font-weight: normal;
-  /* Enhanced with the zero-width word joiner character, U+2060 */ 
-  src: url(../fonts/noto-serif-italic.ttf);
-}
-
-@font-face {
-  font-family: "Noto Serif";
-  font-style: normal;
-  font-weight: bold;
-  /* Enhanced with the zero-width word joiner character, U+2060 */ 
-  src: url(../fonts/noto-serif-bold.ttf);
-}
-
-@font-face {
-  font-family: "Noto Serif";
-  font-style: italic;
-  font-weight: bold;
-  /* Enhanced with the zero-width word joiner character, U+2060 */ 
-  src: url(../fonts/noto-serif-bold-italic.ttf);
-}
-
-@font-face {
-  font-family: "M+ 1mn";
-  font-style: normal;
-  font-weight: normal;
-  src: url(../fonts/mplus-1mn-latin-regular.ttf);
-}
-
-@font-face {
-  font-family: "M+ 1mn";
-  font-style: italic;
-  font-weight: normal;
-  /* actually the M+ 1mn light font repurposed using FontForge to stand-in for Italic */
-  src: url(../fonts/mplus-1mn-latin-italic.ttf);
-}
-
-@font-face {
-  font-family: "M+ 1mn";
-  font-style: normal;
-  font-weight: bold;
-  src: url(../fonts/mplus-1mn-latin-medium.ttf);
-}
-
-@font-face {
-  font-family: "M+ 1mn";
-  font-style: italic;
-  font-weight: bold;
-  /* actually the M+ 1mn bold font repurposed using FontForge to stand-in for Bold Italic */
-  src: url(../fonts/mplus-1mn-latin-bold-italic.ttf);
-}
-
-@font-face {
-  font-family: "M+ 1p";
-  font-style: normal;
-  font-weight: 200;
-  src: url(../fonts/mplus-1p-latin-light.ttf);
-}
-
-@font-face {
-  font-family: "M+ 1p";
-  font-style: normal;
-  font-weight: normal;
-  src: url(../fonts/mplus-1p-latin-regular.ttf);
-}
-
-@font-face {
-  font-family: "M+ 1p";
-  font-style: normal;
-  font-weight: bold;
-  src: url(../fonts/mplus-1p-latin-bold.ttf);
-}
-
-@font-face {
-  font-family: "FontAwesome";
-  font-style: normal;
-  font-weight: normal;
-  src: url(../fonts/font-awesome.ttf);
-}
-
-@font-face {
-  font-family: "FontIcons";
-  font-style: normal;
-  font-weight: normal;
-  src: url(../fonts/font-icons.ttf);
 }
