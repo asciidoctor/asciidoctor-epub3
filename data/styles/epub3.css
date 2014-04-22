@@ -691,10 +691,11 @@ div.abstract > p a:link {
 
 div.abstract > p:first-child::first-line {
   font-weight: bold;
-  /* text-rendering: optimizeSpeed; */
   -webkit-font-feature-settings: "kern" off;
   font-feature-settings: "kern" off;
   font-kerning: none;
+  /* and for Kindle... */
+  text-rendering: optimizeSpeed;
 }
 
 div.abstract p strong {
