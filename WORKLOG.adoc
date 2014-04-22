@@ -2,6 +2,8 @@
 
 == TODO
 
+* create a video to demonstrate Google Play Books read aloud reading complete sentences in books generated with Asciidoctor EPUB3
+
 .Gem
 //^
 
@@ -38,6 +40,9 @@
 * add BOM glyph to M+ 1p fonts
 
 .Stylesheet
+* CRITICAL: use CSS3 filter scheme that allows admonitions to appear correctly on Google Play Books
+  - see if Google Play books supports JavaScript and epubReadingSystem (no, but adds its own class to body)
+* CRITICAL: use a following sibling selector for :first-line in abstract so it works when page is partitioned (e.g., in Google Play Books)
 * CRITICAL: add support for different numbering systems (lowergreek, etc)
 * CRITICAL: support custom CSS via the stylesheet attribute
 * HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute (don't use word joiner in this case)
