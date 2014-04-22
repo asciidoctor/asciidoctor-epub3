@@ -42,8 +42,8 @@ The {project-name} project aims to produce EPUB3 documents that meet the followi
 
 [itemized,subject-stop=.]
 Fully Semantic::
-  Produce highly semantic XHTML documents, including use of the recommended +epub:type+ attribute.
-Optimal Readability::
+  Produce deeply semantic XHTML5 documents, including use of the recommended +epub:type+ attribute.
+Exceptional Readability::
   Readers should be drawn into the text so that they read and absorb it, not scared away from it.
   Maximize the readability of the text using carefully crafted styles, focusing on:
   - Custom, readable fonts with strong UTF-8 character support
@@ -584,12 +584,13 @@ This enhancement allows you to use styles targeted specifically at that reader.
 Below you can find the readers that are known to support this feature and the CSS class name that gets added to the body element.
 
 ,===
-Reader,CSS class name
+Reader,body class name
 
 Gitden,gitden-reader
 Namo PubTreeViewer,namo-epub-library
 Readium,epub-js-viewer
 iBooks,ibooks
+Google Books,gb-reader-container (div)
 ,===
 
 == Pushing to Android
