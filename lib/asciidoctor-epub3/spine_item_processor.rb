@@ -26,9 +26,14 @@ class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
         parse_header_only: true 
 
     # blank out author information if present in sub-document
-    # FIXME this doesn't hit all the author attributes
+    # FIXME this is a huge hack...we need a cleaner way to do this; perhaps an API method that retrieves all the author attribute names
     if spine_item_doc_meta.attr? 'author'
       %w(author firstname lastname email authorinitials authors authorcount).each {|key| inherited_attributes.delete key }
+      idx = 1
+      while inherited_attributes.key? %(author_#{idx})
+        %W(author_#{idx} firstname_#{idx} lastname_#{idx} email_#{idx} authorinitials_#{idx}).each {|key| inherited_attributes.delete key }
+        idx += 1
+      end
     end
 
     # REVIEW reaching into converter to resolve document id feels like a hack; should happen in Asciidoctor parser
