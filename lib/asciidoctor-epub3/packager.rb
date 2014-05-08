@@ -15,6 +15,7 @@ module GepubBuilderMixin
   InlineImageMacroRx = /^image:(.*?)\[(.*?)\]$/
 
   def sanitized_doctitle doc, target = :plain
+    return (doc.attr 'untitled-label') unless doc.header?
     title = case target
     when :attribute_cdata
       doc.doctitle(sanitize: true).gsub('"', '&quot;')
@@ -276,7 +277,11 @@ class Packager
     images = spine.map {|item| (item.find_by :image) || [] }.flatten
     usernames = spine.map {|item| item.attr 'username' }.compact.uniq
     # FIXME authors should be aggregated already on parent document
-    authors = (doc.attr 'authors').split(CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }).uniq
+    authors = if doc.attr? 'authors'
+      (doc.attr 'authors').split(CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }).uniq
+    else
+      []
+    end
 
     builder = ::GEPUB::Builder.new do
       extend GepubBuilderMixin

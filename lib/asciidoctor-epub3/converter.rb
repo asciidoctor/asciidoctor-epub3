@@ -59,7 +59,7 @@ class Converter
 
   # TODO aggregate authors of spine document into authors attribute(s) on main document
   def navigation_document node, spine
-    doctitle_sanitized = node.doctitle(sanitize: true).gsub WordJoiner, ''
+    doctitle_sanitized = ((node.doctitle sanitize: true) || (node.attr 'untitled-label')).gsub WordJoiner, ''
     lines = [%(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = (node.attr 'lang', 'en')}" lang="#{lang}">
 <head>
@@ -74,7 +74,7 @@ class Converter
 <h2>#{node.attr 'toc-title'}</h2>
 <ol>)]
     spine.each do |item|
-      lines << %(<li><a href="#{item.attr 'docname'}.xhtml">#{(item.doctitle sanitize: true).gsub WordJoiner, ''}</a></li>)
+      lines << %(<li><a href="#{item.attr 'docname'}.xhtml">#{((item.doctitle sanitize: true) || (item.attr 'untitled-label')).gsub WordJoiner, ''}</a></li>)
     end
     lines << %(</ol>
 </nav>
@@ -85,8 +85,8 @@ class Converter
 
   def document node
     docid = node.id
-    doctitle = node.doctitle
-    doctitle_sanitized = (node.doctitle sanitize: true).gsub WordJoiner, ''
+    doctitle = node.doctitle || (node.attr 'untitled-label')
+    doctitle_sanitized = ((node.doctitle sanitize: true) || (node.attr 'untitled-label')).gsub WordJoiner, ''
 
     if doctitle.include? ': '
       title, subtitle = doctitle.split ': ', 2
@@ -686,8 +686,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
       i_classes << node.role if node.role?
       %(<i class="#{i_classes * ' '}"></i>)
     else
+      # FIXME dirty hack!!
+      target = node.role == 'headshot' ? %(images/avatars/#{::File.basename node.target}) : (node.image_uri node.target)
       class_attr = %( class="#{node.role}") if node.role?
-      %(<img src="#{node.image_uri node.target}" alt="#{node.attr 'alt'}"#{class_attr}/>)
+      %(<img src="#{target}" alt="#{node.attr 'alt'}"#{class_attr}/>)
     end
   end
 
