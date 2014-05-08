@@ -105,8 +105,10 @@ class Converter
 
     author = node.attr 'author'
     username = node.attr 'username', 'default'
-    imagesdir = (node.attr 'imagesdir', '.').chomp '/'
-    imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
+    # FIXME needs to resolve to the imagesdir of the master document, not this document
+    #imagesdir = (node.attr 'imagesdir', '.').chomp '/'
+    #imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
+    imagesdir = 'images/'
 
     mark_last_paragraph node
     content = node.content
@@ -151,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 <h1 class="chapter-title">#{title_upper}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted_upper}</small>] : nil}</h1>
 </div>
 </header>
-#{node.content})]
+#{content})]
 
     if node.footnotes?
       # NOTE kindlegen seems to mangle the <footer> element, so we wrap its content in a div
@@ -563,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     div_classes = ['itemized-list', node.style, node.role].compact
     # TODO could strip WordJoiner if brief since not using justify
     ul_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
-    ul_class_attr = ul_classes.empty? ? nil : %( class="#{ul_classes * ' '})
+    ul_class_attr = ul_classes.empty? ? nil : %( class="#{ul_classes * ' '}")
     id_attribute = node.id ? %( id="#{node.id}") : nil
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
     lines << %(<h3>#{node.title}</h3>) if node.title?
@@ -751,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   def resolve_document_id node
     unless (doc_id = node.id)
       doc_id = if node.header?
-        node.doctitle(sanitize: true).gsub(WordJoiner, '').downcase.delete(':').tr_s ' ', '-'
+        node.doctitle(sanitize: true).gsub(WordJoiner, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
       elsif (first_section = node.first_section)
         first_section.id
       else
