@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
 An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/MOBI e-book archives.
   EOS
 
-  s.author = 'OpenDevise, Inc.'
+  s.author = 'OpenDevise Inc.'
   s.email = 'dan@opendevise.io'
   s.homepage = 'https://github.com/asciidoctor/asciidoctor-epub3'
   s.license = 'MIT'
