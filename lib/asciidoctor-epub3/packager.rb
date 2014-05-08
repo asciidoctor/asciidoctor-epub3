@@ -31,12 +31,23 @@ module GepubBuilderMixin
   def add_theme_assets doc
     builder = self
     format = @format
+    workdir = if doc.attr? 'epub3-stylesdir'
+      ::File.join doc.attr('docdir'), doc.attr('epub3-stylesdir')
+    else
+      ::File.join DATA_DIR, 'styles'
+    end
+
+    # TODO improve design/UX of custom theme functionality, including custom fonts
+    resources workdir: workdir do
+      file 'styles/epub3.css' => (builder.postprocess_css_file 'epub3.css', format)
+      file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'epub3-css3-only.css', format)
+    end
+
     resources workdir: DATA_DIR do
-      # TODO support custom theme
-      file 'styles/epub3.css' => (builder.postprocess_css_file 'styles/epub3.css', format)
+      #file 'styles/epub3.css' => (builder.postprocess_css_file 'styles/epub3.css', format)
+      #file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'styles/epub3-css3-only.css', format)
       font_list, font_css = builder.select_fonts 'styles/epub3-fonts.css', (doc.attr 'scripts', 'latin')
       file 'styles/epub3-fonts.css' => font_css
-      file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'styles/epub3-css3-only.css', format)
       with_media_type 'application/x-font-ttf' do
         files(*font_list)
       end
@@ -115,13 +126,30 @@ body > svg {
     book.spine.itemref_by_id['item_cover1'].idref = 'cover'
   end
 
+  def add_images_from_front_matter
+    if ::File.exist? 'front-matter.html'
+      ::File.read('front-matter.html').scan(/<img src="(.+?)"/) do
+        resources do
+          file $1
+        end
+      end
+    end
+  end
+
+  def add_front_matter_page doc, spine_builder, builder, format
+    if ::File.exist? 'front-matter.html'
+      spine_builder.file 'front-matter.html' => (builder.postprocess_xhtml_file 'front-matter.html', format)
+      (spine_builder.instance_variable_get :@last_defined_item).properties << 'svg'
+    end
+  end
+
   # FIXME don't add same image more than once
   # FIXME add inline images
   def add_content_images doc, images
     docimagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
 
-    resources workdir: doc.attr('docdir') do
+    resources workdir: (doc.attr 'docdir') do
       images.each do |image|
         imagesdir = (image.document.attr 'imagesdir', '.').chomp '/'
         imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
@@ -145,7 +173,7 @@ body > svg {
       file %(#{imagesdir}avatars/default.png) => %(images/default-avatar.png)
     end
 
-    resources workdir: doc.attr('docdir') do
+    resources workdir: (doc.attr 'docdir') do
       usernames.each do |username|
         if ::File.readable?(avatar = %(#{imagesdir}avatars/#{username}.png))
           file avatar
@@ -163,11 +191,13 @@ body > svg {
     builder = self
     spine = @spine
     format = @format
-    resources workdir: doc.attr('docdir') do
+    resources workdir: (doc.attr 'docdir') do
+      builder.add_images_from_front_matter
       # QUESTION should we move navigation_document to the Packager class? seems to make sense
       nav 'nav.xhtml' => (builder.postprocess_xhtml doc.converter.navigation_document(doc, spine), format)
       ordered do
         builder.add_cover_page doc, self, @book unless format == :kf8
+        builder.add_front_matter_page doc, self, builder, format
         spine.each_with_index do |item, i|
           content_path = %(#{item.attr 'docname'}.xhtml)
           file content_path => (builder.postprocess_xhtml item.convert, format)
@@ -258,31 +288,43 @@ class Packager
       language(doc.attr 'lang', 'en')
       id 'pub-language'
 
-      unique_identifier doc.id, 'pub-identifier', 'uuid'
+      if doc.attr? 'uuid'
+        unique_identifier doc.attr('uuid'), 'pub-identifier', 'uuid'
+      else
+        unique_identifier doc.id, 'pub-identifier', 'uuid'
+      end
       # replace with next line once the attributes argument is supported
       #unique_identifier doc.id, 'pub-id', 'uuid', 'scheme' => 'xsd:string'
 
       title sanitized_doctitle(doc)
       id 'pub-title'
 
-      if doc.attr? 'producer'
-        producer = doc.attr 'producer'
-        if doc.attr? 'creator'
-          # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
-          creator doc.attr('creator'), 'cre'
-        else
-          # marc role: Book producer
-          creator producer, 'bkp'
-        end
-        publisher producer
+      # FIXME this logic needs some work
+      if doc.attr? 'publisher'
+        publisher(publisher_name = doc.attr('publisher'))
+        # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+        creator doc.attr('producer', publisher_name), 'bkp'
       else
-        if doc.attr? 'author'
-          # marc role: Author
+        # NOTE Use producer as both publisher and producer if publisher isn't specified
+        if doc.attr? 'producer'
+          producer_name = doc.attr 'producer'
+          publisher producer_name
+          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+          creator producer_name, 'bkp'
+        # NOTE Use author as creator if both publisher or producer are absent
+        elsif doc.attr? 'author'
+          # marc role: Author (see http://www.loc.gov/marc/relators/relaterm.html)
           creator doc.attr('author'), 'aut'
-        else
-          # marc role: Provider
-          creator 'Asciidoctor', 'prv'
         end
+      end
+
+      if doc.attr? 'creator'
+        # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
+        creator doc.attr('creator'), 'cre'
+      else
+        # marc role: Manufacturer (see http://www.loc.gov/marc/relators/relaterm.html)
+        # QUESTION should this be bkp?
+        creator 'Asciidoctor', 'mfr'
       end
 
       # TODO getting author list should be a method on Asciidoctor API
@@ -312,6 +354,8 @@ class Packager
       if doc.attr? 'copyright'
         rights(doc.attr 'copyright')
       end
+
+      #add_metadata 'ibooks:specified-fonts', true 
 
       add_theme_assets doc
       add_cover_image doc
