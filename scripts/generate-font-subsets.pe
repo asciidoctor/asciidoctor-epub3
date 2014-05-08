@@ -22,7 +22,10 @@
 # * 0x08 - exclude TrueType instructions
 #
 # QUESTION: do we need to apply RoundToInt() after ClearInstrs()?
+# FIXME: need to generate cjk font
 
+genflags = 0x08
+#genflags = 0x18
 copy_fonts = ["NotoSerif-Regular.ttf", "NotoSerif-Bold.ttf", "NotoSerif-Italic.ttf", "NotoSerif-BoldItalic.ttf", "mplus-1p-regular.ttf", "mplus-1p-bold.ttf", "mplus-1p-light.ttf"]
 #copy_fonts = ["NotoSerif-Regular.ttf"]
 num_copy_fonts = SizeOf(copy_fonts)
@@ -32,7 +35,6 @@ num_copy_scripts = SizeOf(copy_scripts)
 code_fonts = ["mplus-1mn-light.ttf", "mplus-1mn-regular.ttf", "mplus-1mn-medium.ttf", "mplus-1mn-bold.ttf"]
 #code_fonts = []
 num_code_fonts = SizeOf(code_fonts)
-genflags = 0x08
 if ($argc == 2)
   output_dir = $argv[1]
 else
