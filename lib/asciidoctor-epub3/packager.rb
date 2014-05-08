@@ -149,7 +149,7 @@ body > svg {
     docimagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
 
-    resources workdir: (doc.attr 'docdir') do
+    resources(workdir: (doc.attr 'docdir')) do
       images.each do |image|
         imagesdir = (image.document.attr 'imagesdir', '.').chomp '/'
         imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
@@ -173,7 +173,7 @@ body > svg {
       file %(#{imagesdir}avatars/default.png) => %(images/default-avatar.png)
     end
 
-    resources workdir: (doc.attr 'docdir') do
+    resources(workdir: (doc.attr 'docdir')) do
       usernames.each do |username|
         if ::File.readable?(avatar = %(#{imagesdir}avatars/#{username}.png))
           file avatar
@@ -191,7 +191,7 @@ body > svg {
     builder = self
     spine = @spine
     format = @format
-    resources workdir: (doc.attr 'docdir') do
+    resources(workdir: (doc.attr 'docdir')) do
       builder.add_images_from_front_matter
       # QUESTION should we move navigation_document to the Packager class? seems to make sense
       nav 'nav.xhtml' => (builder.postprocess_xhtml doc.converter.navigation_document(doc, spine), format)
