@@ -141,7 +141,7 @@ img {
 }
 
 mark {
-  background: #FFC14F;
+  background-color: #FFC14F;
   color: #191918;
 }
 
@@ -204,10 +204,11 @@ body a:link {
   /* Kindle requires the !important on text-decoration */
   /* In night mode, the only indicator of a link is the underline, so we need it or a background image */
   text-decoration: none !important;
+  border-bottom: 1px dashed #666665;
+  /* allow URLs to break anywhere if they don't fit on a line; but how do we know it's a URL? */
   /*
-  border-bottom: 1px solid;
+  word-break: break-all;
   */
-  border-bottom: 1px dashed #B3B3B1;
 }
 
 body:first-of-type a:link {
@@ -533,8 +534,15 @@ li strong.subject a:link {
   word-spacing: 0.1em;
 }*/
 
+/*
 .bibliography ul li,
 .references ul li {
+  text-align: left;
+}
+*/
+
+ul.bibliography > li > span.principal,
+ul.references > li > span.principal {
   text-align: left;
 }
 
