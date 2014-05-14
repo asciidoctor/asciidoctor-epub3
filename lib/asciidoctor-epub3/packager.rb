@@ -166,25 +166,54 @@ body > svg {
     end
   end
 
-  def add_avatar_images doc, usernames
+  def add_profile_images doc, usernames
+    spine = @spine
     imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
 
     resources workdir: DATA_DIR do
-      file %(#{imagesdir}avatars/default.png) => %(images/default-avatar.png)
+      file %(#{imagesdir}avatars/default.jpg) => %(images/default-avatar.jpg)
+      file %(#{imagesdir}headshots/default.jpg) => %(images/default-headshot.jpg)
     end
 
     resources(workdir: (doc.attr 'docdir')) do
       usernames.each do |username|
-        if ::File.readable?(avatar = %(#{imagesdir}avatars/#{username}.png))
+        if ::File.readable?(avatar = %(#{imagesdir}avatars/#{username}.jpg))
           file avatar
         else
-          warn %(Avatar #{avatar} not found or not readable. Falling back to default avatar for #{username}.)
+          warn %(Avatar #{avatar} not found or readable. Falling back to default avatar for #{username}.)
           ::Dir.chdir DATA_DIR do
-            file avatar => %(images/default-avatar.png)
+            file avatar => %(images/default-avatar.jpg)
+          end
+        end
+
+        if ::File.readable? (headshot = %(#{imagesdir}headshots/#{username}.jpg))
+          file headshot
+        else
+          warn %(Headshot #{headshot} not found or readable. Falling back to default headshot for #{username}.)
+          ::Dir.chdir DATA_DIR do
+            file headshot => %(images/default-headshot.jpg)
           end
         end
       end
+=begin
+      spine.each do |item|
+        username = (item.attr 'username') || 'default'
+        avatar_target = %(#{imagesdir}avatars/#{username}.jpg)
+        if ::File.readable?(avatar = %(#{item.attr 'docname'}/avatar.jpg))
+          file avatar_target => avatar
+        else
+          warn %(Avatar #{avatar} not found or not readable. Falling back to default avatar for #{username}.)
+          ::Dir.chdir DATA_DIR do
+            file avatar_target => %(images/default-avatar.jpg)
+          end
+        end
+        if ::File.readable? (headshot = %(#{item.attr 'docname'}/headshot.jpg))
+          file headshot
+          # TODO default headshot?
+        end
+      end
+=end
     end
   end
 
@@ -200,7 +229,7 @@ body > svg {
         builder.add_cover_page doc, self, @book unless format == :kf8
         builder.add_front_matter_page doc, self, builder, format
         spine.each_with_index do |item, i|
-          content_path = %(#{item.attr 'docname'}.xhtml)
+          content_path = %(#{item.id || (item.attr 'docname')}.xhtml)
           file content_path => (builder.postprocess_xhtml item.convert, format)
           # NOTE heading for ePub2 navigation file; toc.ncx requires headings to be plain text
           heading builder.sanitized_doctitle(item)
@@ -261,8 +290,8 @@ class Packager
   EpubExtensionRx = /\.epub$/
   Kf8ExtensionRx = /-kf8\.epub$/
 
-  def initialize master_doc, spine, dest_dir, format = :epub3, options = {}
-    @document = master_doc
+  def initialize spine_doc, spine, dest_dir, format = :epub3, options = {}
+    @document = spine_doc
     @spine = spine || []
     @dest_dir = dest_dir
     @format = format
@@ -364,7 +393,7 @@ class Packager
 
       add_theme_assets doc
       add_cover_image doc
-      add_avatar_images doc, usernames
+      add_profile_images doc, usernames
       # QUESTION move add_content_images to add_content method?
       add_content_images doc, images
       add_content doc

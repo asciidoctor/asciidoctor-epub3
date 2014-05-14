@@ -8,19 +8,19 @@ class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
     @document = document
   end
 
-  # NOTE only fires for includes in master document if registered directly on the instance of the master document
+  # NOTE only fires for includes in spine document if registered directly on the instance of the spine document
   def process reader, target, attributes
-    master_doc = @document
-    unless ::File.exist?(include_file = (master_doc.normalize_system_path target, reader.dir, nil, target_name: 'include file'))
+    spine_doc = @document
+    unless ::File.exist?(include_file = (spine_doc.normalize_system_path target, reader.dir, nil, target_name: 'include file'))
       warn %(asciidoctor: WARNING: #{reader.line_info}: include file not found: #{include_file})
       return
     end
-    inherited_attributes = master_doc.attributes.dup
-    %w(master doctitle docfile docdir docname).each {|key| inherited_attributes.delete key }
+    inherited_attributes = spine_doc.attributes.dup
+    %w(spine doctitle docfile docdir docname).each {|key| inherited_attributes.delete key }
 
     # parse header to get author information
     spine_item_doc_meta = ::Asciidoctor.load_file include_file,
-        safe: master_doc.safe,
+        safe: spine_doc.safe,
         backend: :epub3,
         doctype: :article,
         parse_header_only: true 
@@ -39,21 +39,23 @@ class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
     # REVIEW reaching into converter to resolve document id feels like a hack; should happen in Asciidoctor parser
     # also, strange that "id" doesn't work here
     inherited_attributes['css-signature'] = spine_item_doc_meta.converter.resolve_document_id spine_item_doc_meta
+    inherited_attributes['docreldir'] = ::File.dirname target
 
-    # NOTE can't assign master as parent document since there's too many assumptions in the processor
+    # NOTE can't assign spine document as parent since there's too many assumptions in the Asciidoctor processor
     spine_item_doc = ::Asciidoctor.load_file include_file,
-        # setting base_dir breaks if outdir is not a subdirectory of master_doc.base_dir
-        #base_dir: master_doc.base_dir,
+        # setting base_dir breaks if outdir is not a subdirectory of spine_doc.base_dir
+        #base_dir: spine_doc.base_dir,
         # NOTE won't write to correct directory if safe mode is :secure
-        safe: master_doc.safe,
+        safe: spine_doc.safe,
         backend: :epub3,
         doctype: :article,
         header_footer: true,
         attributes: inherited_attributes
 
-    # TODO may need to reset attributes before leaving this method
+    # restore attributes to those defined in the document header
+    spine_item_doc.restore_attributes
 
-    (master_doc.references[:spine] ||= []) << spine_item_doc
+    (spine_doc.references[:spine_items] ||= []) << spine_item_doc
     # NOTE if there are attribute assignments between the include directives,
     # then this ordered list is not continguous, so bailing on the idea
     #reader.replace_line %(. link:#{::File.basename(spine_item_doc.attr 'outfile')}[#{spine_item_doc.doctitle}])
@@ -61,7 +63,7 @@ class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
 
   # handles? should get the attributes on include directive as the second argument
   def handles? target
-    (@document.attr? 'master') && (ASCIIDOC_EXTENSIONS.include? ::File.extname(target))
+    (@document.attr? 'spine') && (ASCIIDOC_EXTENSIONS.include? ::File.extname(target))
   end
 
   # FIXME this method shouldn't be required

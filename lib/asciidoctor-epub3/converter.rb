@@ -74,7 +74,7 @@ class Converter
 <h2>#{node.attr 'toc-title'}</h2>
 <ol>)]
     spine.each do |item|
-      lines << %(<li><a href="#{item.attr 'docname'}.xhtml">#{((item.doctitle sanitize: true) || (item.attr 'untitled-label')).gsub WordJoiner, ''}</a></li>)
+      lines << %(<li><a href="#{item.id || (item.attr 'docname')}.xhtml">#{((item.doctitle sanitize: true) || (item.attr 'untitled-label')).gsub WordJoiner, ''}</a></li>)
     end
     lines << %(</ol>
 </nav>
@@ -105,7 +105,7 @@ class Converter
 
     author = node.attr 'author'
     username = node.attr 'username', 'default'
-    # FIXME needs to resolve to the imagesdir of the master document, not this document
+    # FIXME needs to resolve to the imagesdir of the spine document, not this document
     #imagesdir = (node.attr 'imagesdir', '.').chomp '/'
     #imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
     imagesdir = 'images/'
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
 #{icon_css && (icon_css.sub '<style>', '<style scoped="scoped">')}<header>
 <div class="chapter-header">
-<p class="byline"><img src="#{imagesdir}avatars/#{username}.png"/> <b class="author">#{author}</b></p>
+<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>
 <h1 class="chapter-title">#{title_upper}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted_upper}</small>] : nil}</h1>
 </div>
 </header>
@@ -686,8 +686,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
       i_classes << node.role if node.role?
       %(<i class="#{i_classes * ' '}"></i>)
     else
-      # FIXME dirty hack!!
-      target = node.role == 'headshot' ? %(images/avatars/#{::File.basename node.target}) : (node.image_uri node.target)
+      target = node.image_uri node.target
       class_attr = %( class="#{node.role}") if node.role?
       %(<img src="#{target}" alt="#{node.attr 'alt'}"#{class_attr}/>)
     end
@@ -810,16 +809,19 @@ document.addEventListener('DOMContentLoaded', function(event) {
     # TODO if to_dir not given, make and use tmp directory
     to_dir = ::File.expand_path(options.delete(:to_dir) || ::Dir.pwd)
     # TODO handle case that attributes is not a string
-    options[:attributes] = %(master ebook-format=#{ebook_format} ebook-format-#{ebook_format} #{options[:attributes]})
+    options[:attributes] = %(spine ebook-format=#{ebook_format} ebook-format-#{ebook_format} #{options[:attributes]})
+    # FIXME honor existing registry
     options[:extensions_registry] = ::Asciidoctor::Extensions.build_registry :epub3 do
-      # NOTE register directly on master document so it only fires for top-level includes
-      # also, we need access to the document instance
+      # NOTE register directly on spine document so it only fires for top-level includes
+      # NOTE the SpineItemProcessor needs access to the document instance
       include_processor SpineItemProcessor.new @document
     end
-    master_doc = ::Asciidoctor.load_file source_file, options
+    spine_doc = ::Asciidoctor.load_file source_file, options
+    # restore attributes to those defined in the document header
+    spine_doc.restore_attributes
     # REVIEW reaching into converter to assign document id feels like a hack; should happen in Asciidoctor parser
-    master_doc.id = master_doc.converter.resolve_document_id master_doc
-    packager = Packager.new master_doc, (master_doc.references[:spine] || [master_doc]), to_dir, ebook_format
+    spine_doc.id = spine_doc.converter.resolve_document_id spine_doc
+    packager = Packager.new spine_doc, (spine_doc.references[:spine_items] || [spine_doc]), to_dir, ebook_format
     packager.package validate: validate, extract: extract
   end
 end
