@@ -11,6 +11,7 @@ module GepubBuilderMixin
   WordJoiner = Converter::WordJoiner
   FromHtmlSpecialCharsMap = Converter::FromHtmlSpecialCharsMap
   FromHtmlSpecialCharsRx = Converter::FromHtmlSpecialCharsRx
+  CsvDelimiterRx = /\s*,\s*/
   DefaultCoverImage = 'images/default-cover.png'
   InlineImageMacroRx = /^image:(.*?)\[(.*?)\]$/
 
@@ -240,6 +241,16 @@ body > svg {
     end
   end
 
+  def collect_keywords doc, spine
+    ([doc] + spine).map do |item|
+      if item.attr? 'keywords'
+        (item.attr 'keywords').split CsvDelimiterRx
+      else
+        []
+      end
+    end.flatten.uniq
+  end
+
   # Swap fonts in CSS based on the value of the document attribute 'scripts',
   # then return the list of fonts as well as the font CSS.
   def select_fonts filename, scripts = 'latin'
@@ -286,7 +297,6 @@ end
 class Packager
   KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
   EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
-  CsvDelimiterRx = /\s*,\s*/
   EpubExtensionRx = /\.epub$/
   Kf8ExtensionRx = /-kf8\.epub$/
 
@@ -307,7 +317,7 @@ class Packager
     usernames = spine.map {|item| item.attr 'username' }.compact.uniq
     # FIXME authors should be aggregated already on parent document
     authors = if doc.attr? 'authors'
-      (doc.attr 'authors').split(CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }).uniq
+      (doc.attr 'authors').split(GepubBuilderMixin::CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }).uniq
     else
       []
     end
@@ -375,10 +385,8 @@ class Packager
         description(doc.attr 'description')
       end
 
-      if doc.attr? 'keywords'
-        (doc.attr 'keywords').split(CsvDelimiterRx).each do |s|
-          subject s
-        end
+      (collect_keywords doc, spine).each do |s|
+        subject s
       end
 
       if doc.attr? 'source'
