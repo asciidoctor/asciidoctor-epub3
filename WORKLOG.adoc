@@ -8,10 +8,10 @@
 //^
 
 .Converter
-* CRITICAL: reset attributes after parse
+* CRITICAL: revisit the headshot image logic
 * CRITICAL: put e-book reader class on html instead of body
-* CRITICAL: dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
-* CRITICAL: try to pull username from author email field; pull image from gravatar
+* CRITICAL: we're dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
+* CRITICAL: try to pull username from author email field; pull avatar from gravatar
 * HIGH: cross references between chapters does not work (would it work if we used the smart cross reference syntax?)
 * HIGH: add full table of contents to nav.xhtml, but use hidden below first level (check if works in Kindle); respect toclevels
 * HIGH: if running on a single article, then the document id has a conflicting purpose
@@ -28,10 +28,10 @@
 //^
 
 .Packager
-* CRITICAL: use "uid" attribute in favor of document id if available
 * HIGH: add NOTICE.adoc to e-book archive
 * HIGH: rework GEPUB so closures work more like in Prawn...perhaps using a wrapper
 * HIGH: minimize CSS (and any other assets worth minimizing)
+* HIGH: add back cover if specified
 * MEDIUM: set modified date explicitly
 * MEDIUM: use function to build and manipulate image paths
 * support subtitle as separate from main title in package metadata
