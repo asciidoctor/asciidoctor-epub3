@@ -8,6 +8,7 @@
 //^
 
 .Converter
+* CRITICAL: conversion missing in epub3 backend for embedded (AsciiDoc table cell?)
 * CRITICAL: revisit the headshot image logic
 * CRITICAL: put e-book reader class on html instead of body
 * CRITICAL: we're dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
@@ -19,6 +20,7 @@
 * HIGH: move regexp to constants
 * HIGH: use more thorough image path resolution
 * HIGH: move navigation_document method to Packager
+* HIGH: put shy marks after dashes to allow wrapping to occur in text justification
 * MEDIUM: auto-space button in btn macro, or add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file
 * QUESTION: add word joiner before inline tags too?
@@ -42,6 +44,7 @@
 * recreate ellipses in M+ 1p to be on baseline
 
 .Stylesheet
+* CRITICAL: check style of level 5 and 6 headings (see Groovy docs)
 * CRITICAL: use CSS3 filter scheme that allows admonitions to appear correctly on Google Play Books
   - see if Google Play books supports JavaScript and epubReadingSystem (no, but adds its own class to body)
 * CRITICAL: use a following sibling selector for :first-line in abstract so it works when page is partitioned (e.g., in Google Play Books)
@@ -65,17 +68,15 @@
 * can we remove content wrapper in sidebar?
 * sidebar heading not right in readmill...maybe nothing to worry about?
 * manually style ordered list numbers
-* reduce vertical margins around basic lists
+* reduce vertical margins around basic lists (partially addressed via "brief" class)
 * use float trick to fix line spacing for primary title like with the subtitle
 * better handling of title without subtitle, particularly HTML and CSS
 * add pink theme: http://designplus.co/en/designplus
-* warn on unresolved attribute reference
 * customize id of <item> elements in epub manifest?
 //^
 
 .Asciidoctor
-* patch subtitle support into Asciidoctor
-  - support delimiters question mark, exclamation point, or dash for subtitle
+* warn on unresolved attribute reference (Asciidoctor core change)
 * patch sanitize of any section or block title into Asciidoctor
 * generate id for chapter <= make part of Asciidoctor parsing API
 * patch Asciidoctor to replace smart quotes w/ unicode chars instead of entities (glyph replacement mode)

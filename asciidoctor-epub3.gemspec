@@ -5,12 +5,12 @@ Gem::Specification.new do |s|
   s.name = 'asciidoctor-epub3'
   s.version = Asciidoctor::Epub3::VERSION
 
-  s.summary = 'Converts AsciiDoc documents to EPUB3 and KF8/MOBI e-book formats'
+  s.summary = 'Converts AsciiDoc documents to EPUB3 and KF8/MOBI (Kindle) e-book formats'
   s.description = <<-EOS
-An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/MOBI e-book archives.
+An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/MOBI (Kindle) e-book archives.
   EOS
 
-  s.author = 'OpenDevise Inc.'
+  s.authors = ['Dan Allen', 'Sarah White']
   s.email = 'dan@opendevise.io'
   s.homepage = 'https://github.com/asciidoctor/asciidoctor-epub3'
   s.license = 'MIT'
@@ -34,7 +34,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_development_dependency 'rake', '~> 10.0'
   #s.add_development_dependency 'rdoc', '~> 4.1.0'
 
-  s.add_runtime_dependency 'asciidoctor', ['>= 1.5.0.preview.7', '< 1.6.0']
+  s.add_runtime_dependency 'asciidoctor', ['>= 1.5.0.rc.1', '< 1.6.0']
   s.add_runtime_dependency 'gepub', '~> 0.6.9.2'
 
   # optional

@@ -313,7 +313,7 @@ class Packager
     fmt = @format
     dest = @dest_dir
 
-    images = spine.map {|item| (item.find_by :image) || [] }.flatten
+    images = spine.map {|item| (item.find_by context: :image) || [] }.flatten
     usernames = spine.map {|item| item.attr 'username' }.compact.uniq
     # FIXME authors should be aggregated already on parent document
     authors = if doc.attr? 'authors'

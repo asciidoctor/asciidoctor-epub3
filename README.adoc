@@ -1,5 +1,5 @@
 = Asciidoctor EPUB3: A _native_ EPUB3 converter for AsciiDoc
-OpenDevise Inc.
+Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 :project-name: Asciidoctor EPUB3
 :project-handle: asciidoctor-epub3
 :project-uri: https://github.com/opendevise/{project-handle}
@@ -11,15 +11,14 @@ OpenDevise Inc.
 :epub-uri: http://www.idpf.org/epub/30/spec/epub30-overview.html
 :epubcheck-uri: https://github.com/idpf/epubcheck
 ifdef::env-github[]
-:notice-uri: link:NOTICE.adoc
-:license-uri: link:LICENSE.adoc
-:worklog-uri: link:WORKLOG.adoc
+:base-uri: link:
 endif::[]
 ifndef::env-github[]
-:notice-uri: {project-repo-uri}/blob/master/NOTICE.adoc
-:license-uri: {project-repo-uri}/blob/master/LICENSE.adoc
-:worklog-uri: {project-repo-uri}/blob/master/WORKLOG.adoc
+:base-uri: {project-repo-uri}/blob/master/
 endif::[]
+:notice-uri: {base-uri}NOTICE.adoc
+:license-uri: {base-uri}LICENSE.adoc
+:worklog-uri: {base-uri}WORKLOG.adoc
 :imagesdir: data/samples/images
 :experimental:
 
@@ -42,7 +41,7 @@ The {project-name} project aims to produce EPUB3 documents that meet the followi
 
 [itemized,subject-stop=.]
 Fully Semantic::
-  Produce deeply semantic XHTML5 documents, including use of the recommended +epub:type+ attribute.
+  Produce deeply semantic XHTML5 documents, including use of the recommended `epub:type` attribute.
 Exceptional Readability::
   Readers should be drawn into the text so that they read and absorb it, not scared away from it.
   Maximize the readability of the text using carefully crafted styles, focusing on:
@@ -122,7 +121,7 @@ However, for the time being, the include directive will suit this purpose.
 
 All that's needed to use {project-name} is Ruby 1.9.3 or better and a few RubyGems, which we'll explain how to install in the next section.
 
-To check if you have Ruby available, use the +ruby+ command to query the version installed:
+To check if you have Ruby available, use the `ruby` command to query the version installed:
 
  $ ruby --version
 
@@ -143,9 +142,9 @@ You can retrieve {project-name} in one of two ways:
 . Clone the git repository
 . Download a zip archive of the repository
 
-==== Option 1: Fetch Using +git clone+
+==== Option 1: Fetch Using `git clone`
 
-If you want to clone the git repository, simply copy the {project-repo-uri}[GitHub repository URL] and pass it to the +git clone+ command:
+If you want to clone the git repository, simply copy the {project-repo-uri}[GitHub repository URL] and pass it to the `git clone` command:
 
  $ git clone https://github.com/opendevise/asciidoctor-epub3
 
@@ -165,15 +164,15 @@ We'll now leverage the project configuration to install the necessary dependenci
 The dependencies needed to use {project-name} are defined in the [file]_Gemfile_ at the root of the project.
 We can use Bundler to install the dependencies for us.
 
-To check if you have Bundler available, use the +bundle+ command to query the version installed:
+To check if you have Bundler available, use the `bundle` command to query the version installed:
 
  $ bundle --version
 
-If it's not installed, use the +gem+ command to install it.
+If it's not installed, use the `gem` command to install it.
 
  $ gem install bundle
 
-Then use the +bundle+ command to install the project dependencies:
+Then use the `bundle` command to install the project dependencies:
 
  $ bundle install
 
@@ -201,7 +200,7 @@ If you don't already have an AsciiDoc document, you can use the [file]_sample-bo
 .Master file named sample-book.adoc
 ```asciidoc
 = Asciidoctor EPUB3: Sample Book
-OpenDevise Inc.
+Author Name
 v1.0, 2014-04-15
 :doctype: book
 :producer: Asciidoctor
@@ -224,7 +223,7 @@ The metadata in the generated EPUB3 file is populated from attributes in the Asc
 The names of the attributes and the metadata elements to which they map are documented in this section.
 
 The term [term]_package metadata_ in Table 1 is in reference to the http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-metadata-elem[<metadata> element] in the EPUB3 package document (e.g., [file]_package.opf_).
-The +dc+ namespace prefix is in reference to the http://dublincore.org/documents/2004/12/20/dces[Dublin Core Metadata Element Set].
+The `dc` namespace prefix is in reference to the http://dublincore.org/documents/2004/12/20/dces[Dublin Core Metadata Element Set].
 
 .AsciiDoc attributes that control the EPUB3 metadata (i.e., package.opf)
 [cols="1m,3"]
@@ -244,7 +243,7 @@ The recommended practice is to identify the document by means of a string or num
 
 |revdate
 |Populates the publication date (`<dc:date>`) in the package metadata.
-The date should be specified in a parsable format, such as +2014-01-01+.
+The date should be specified in a parsable format, such as `2014-01-01`.
 
 |doctitle
 |Populates the title (`<dc:title>`) in the package metadata.
@@ -295,7 +294,7 @@ _Only applies to a chapter document._
 The master document is assumed to be a book and each chapter an article.
 |===
 
-When using the EPUB3 converter, the +ebook-format+ attribute resolves to the name of the e-book format being generated (epub3 or kf8) and the corresponding attribute +ebook-format-<name>+ is defined, where +<name>+ is +epub3+ or +kf8+.
+When using the EPUB3 converter, the `ebook-format` attribute resolves to the name of the e-book format being generated (epub3 or kf8) and the corresponding attribute `ebook-format-<name>` is defined, where `<name>` is `epub3` or `kf8`.
 You can use these attributes in a preprocessor directive if you only want to show certain content to readers using a particular device.
 For instance, if you want to display a message to readers on Kindle, you can use:
 
@@ -307,14 +306,14 @@ With that out of the way, it's time to convert the AsciiDoc document directly to
 
 == Performing the Conversion
 
-You can convert AsciiDoc documents to EPUB3 and KF8/MOBI from the commandline using the +asciidoctor-epub3+ script provided with the {project-name} project.
+You can convert AsciiDoc documents to EPUB3 and KF8/MOBI from the commandline using the `asciidoctor-epub3` script provided with the {project-name} project.
 
 === Convert AsciiDoc to EPUB3
 
-Converting an AsciiDoc document to EPUB3 is as simple as passing your document to the +asciidoctor-epub3+ command.
-This command should be available on your PATH if you installed the +asciidoctor-epub3+ gem.
+Converting an AsciiDoc document to EPUB3 is as simple as passing your document to the `asciidoctor-epub3` command.
+This command should be available on your PATH if you installed the `asciidoctor-epub3` gem.
 Otherwise, you can find the command in the [path]_bin_ folder of the project.
-We also recommend specifying an output directory using the +-D+ option flag.
+We also recommend specifying an output directory using the `-D` option flag.
 
  $ asciidoctor-epub3 -D output data/samples/sample-book.adoc
 
@@ -338,10 +337,10 @@ image::screenshots/sidebar.png[]
 .An example of a table
 image::screenshots/table.png[]
 
-NOTE: The +asciidoctor-epub3+ command is a temporary solution for invoking the {project-name} converter.
-We plan to remove this script once we have completed proper integration with the +asciidoctor+ command.
+NOTE: The `asciidoctor-epub3` command is a temporary solution for invoking the {project-name} converter.
+We plan to remove this script once we have completed proper integration with the `asciidoctor` command.
 
-TIP: As another example, point +asciidoctor-epub3+ at the https://github.com/opendevise/github-guides-asciidoc[GitHub Guides] that we've ported to AsciiDoc, then compare the output to the real https://guides.github.com[GitHub Guides].
+TIP: As another example, point `asciidoctor-epub3` at the https://github.com/opendevise/github-guides-asciidoc[GitHub Guides] that we've ported to AsciiDoc, then compare the output to the real https://guides.github.com[GitHub Guides].
 
 === Validate the EPUB3 Archive
 
@@ -376,7 +375,7 @@ The IDPF also supports {epubcheck-uri}[EpubCheck].
 EpubCheck parses and validates the file against the EPUB schema.
 ****
 
-If you want to browse the contents of the EPUB3 file that is generated, or preview the XHTML files in a regular web browser, add the +--extract+ flag to the +asciidoctor-epub3+ command.
+If you want to browse the contents of the EPUB3 file that is generated, or preview the XHTML files in a regular web browser, add the `--extract` flag to the `asciidoctor-epub3` command.
 The EPUB3 file will be extracted to a directory adjacent to the generated file, but without the file extension.
 
  $ asciidoctor-epub3 -D output --extract data/samples/sample-book.adoc
@@ -385,14 +384,14 @@ In this example, the contents of the EPUB3 will be extracted to the [path]_outpu
 
 === Convert AsciiDoc to KF8/MOBI
 
-Creating a KF8/MOBI archive directly from an AsciiDoc document is done with the same generation script (+asciidoctor-epub3+).
-You just need to specify the format (+-f+) as +kf8+.
+Creating a KF8/MOBI archive directly from an AsciiDoc document is done with the same generation script (`asciidoctor-epub3`).
+You just need to specify the format (`-f`) as `kf8`.
 
  $ asciidoctor-epub3 -D output -f kf8 data/samples/sample-book.adoc
 
 When the script completes, you'll see the file [file]_sample-book.mobi_ appear in the [path]_output_ directory.
  
-KindleGen does mandatory validation so you don't need to run the +validate+ command after converting to KF8/MOBI.
+KindleGen does mandatory validation so you don't need to run the `validate` command after converting to KF8/MOBI.
 
 .What is KF8?
 ****
@@ -466,7 +465,7 @@ mimetype
 
 == Working with Images
 
-Images that your AsciiDoc document references should be saved in the directory defined in the +imagesdir+ attribute, which defaults to the directory of the document.
+Images that your AsciiDoc document references should be saved in the directory defined in the `imagesdir` attribute, which defaults to the directory of the document.
 {project-name} will discover all local image references and insert the images into the EPUB3 archive at the same relative path.
 
 The sample book contains placeholder images for an author avatar and a book cover.
@@ -482,13 +481,13 @@ To ensure your cover displays correctly, you'll want to review the documentation
 WARNING: We've found that if the book cover is more than 1600px on any side, Aldiko will not render it and may even crash.
 
 Feel free to use the SVG of the sample cover in the [path]_data/images_ folder as a template for creating your own cover.
-Once your image is ready, you can replace the placeholder cover image by defining the +front-cover-image+ attribute in the header of the master document.
+Once your image is ready, you can replace the placeholder cover image by defining the `front-cover-image` attribute in the header of the master document.
 
 ----
 :front-cover-image: image:cover.png[width=1050,height=1600]
 ----
 
-The image is resolved relative to the directory specified in the +imagesdir+ attribute, which defaults to the document directory.
+The image is resolved relative to the directory specified in the `imagesdir` attribute, which defaults to the document directory.
 The image can be in any format, though we recommend using PNG or JPG as they are the most portable formats.
 
 IMPORTANT: You should always specify the dimensions of the cover image.
@@ -506,7 +505,7 @@ The theme maintains readability regardless of the e-book reader's background mod
 
 The theme's CSS files are located in the [path]_data/style_ directory.
 
-IMPORTANT: {project-name} only provides one theme, and, at this time, you can not replace it with a custom theme using the +stylesheet+ attribute.
+IMPORTANT: {project-name} only provides one theme, and, at this time, you can not replace it with a custom theme using the `stylesheet` attribute.
 
 === Fonts
 
@@ -527,7 +526,7 @@ Generally speaking, WebKit is a great engine that brings a lot of consistency an
 It also brings along the same set of bugs.
 
 One of the bugs in WebKit causes rich text to be justified incorrectly.
-In particular, when the value of the +text-align+ property is +justify+, WebKit drops the space between formatted text (bold, italic, hyperlink, etc) and non-formatted text, causing the words to be unevenly spaced across the line.
+In particular, when the value of the `text-align` property is `justify`, WebKit drops the space between formatted text (bold, italic, hyperlink, etc) and non-formatted text, causing the words to be unevenly spaced across the line.
 You can see an example of this problem in the screenshot below.
 
 .WebKit justifying rich text incorrectly
@@ -598,24 +597,24 @@ Google Books,gb-reader-container (div)
 While it's certainly possible to view the EPUB3 on your desktop/laptop, you'll probably want to test it where it's most likely going to be read--on a reading device such as a smartphone or a tablet.
 Assuming you have an Android device available, transferring the EPUB3 to the device is easy once you get a bit of setup out of the way.
 
-You transfer files from your computer to an Android phone over a USB connection using a command from the Android SDK Tools called +adb+.
+You transfer files from your computer to an Android phone over a USB connection using a command from the Android SDK Tools called `adb`.
 Follow these steps to get it setup:
 
 . Download the Android SDK Tools zip from the table labeled *SDK Tools Only* on the http://developer.android.com/sdk/index.html[Get the Android SDK] page
 . Extract the archive
-. Locate the path to the +adb+ command (Hint: Look in the platform-tools folder)
-. Set the environment variable named ADB to the path of the +adb+ command
+. Locate the path to the `adb` command (Hint: Look in the platform-tools folder)
+. Set the environment variable named ADB to the path of the `adb` command
 
  $ export ADB=~/apps/android-sdk/platform-tools/adb
 
-Now you can use the +adb-push-ebook+ script provided by {project-name} to push the EPUB3 and KF8/MOBI files to your Android device.
+Now you can use the `adb-push-ebook` script provided by {project-name} to push the EPUB3 and KF8/MOBI files to your Android device.
 
 .Publish both EPUB3 and KF8 files to Android device
  $ adb-push-ebook output/sample-book
 
 IMPORTANT: Don't include the file extension since the script will check for both the .epub and .mobi files.
 
-The +adb-push-ebook+ script copies the files to the following locations on the device:
+The `adb-push-ebook` script copies the files to the following locations on the device:
 
 ,===
 File type,Destination on Android device
@@ -661,14 +660,14 @@ To see all of the workarounds and why we chose certain style options, check out 
 [[_kindle_quirks]]
 .Kindle Quirks
 * overrules margins and line heights like a medieval tyrant
-* +font-family+ can't be set on +<body>+
-* requires +!important+ on text-decoration
-* +position: relative+ isn't permitted
-* strips (or unwraps) +<header>+ tags
-* +@page+ isn't supported
-* +page-break: avoid+ isn't supported
-* +max-width+ isn't supported
-* +widows+ are left in the cold
+* `font-family` can't be set on `<body>`
+* requires `!important` on text-decoration
+* `position: relative` isn't permitted
+* strips (or unwraps) `<header>` tags
+* `@page` isn't supported
+* `page-break: avoid` isn't supported
+* `max-width` isn't supported
+* `widows` are left in the cold
 * won't style footers without an explicit class
 
 ////
@@ -724,7 +723,7 @@ Feel free to use the {project-issues-uri}[issue tracker] or http://discuss.ascii
 
 == Authors
 
-{project-name} was written by https://github.com/mojavelinux[Dan Allen] and https://github.com/graphitefriction[Sarah White] of OpenDevise Inc. on behalf of the Asciidoctor Project.
+{project-name} was written by https://github.com/mojavelinux[Dan Allen] and https://github.com/graphitefriction[Sarah White] of OpenDevise on behalf of the Asciidoctor Project.
 
 == Copyright
 

@@ -1,7 +1,6 @@
 # encoding: UTF-8
 require_relative 'spine_item_processor'
 require_relative 'font_icon_map'
-require_relative 'asciidoctor_ext/abstract_block'
 
 module Asciidoctor
 module Epub3

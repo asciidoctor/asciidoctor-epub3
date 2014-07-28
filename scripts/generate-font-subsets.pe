@@ -27,7 +27,10 @@
 genflags = 0x08
 #genflags = 0x18
 copy_fonts = ["NotoSerif-Regular.ttf", "NotoSerif-Bold.ttf", "NotoSerif-Italic.ttf", "NotoSerif-BoldItalic.ttf", "mplus-1p-regular.ttf", "mplus-1p-bold.ttf", "mplus-1p-light.ttf"]
+#copy_fonts = ["NotoSerif-Regular.ttf", "NotoSerif-Bold.ttf", "NotoSerif-Italic.ttf", "NotoSerif-BoldItalic.ttf"]
+#copy_fonts = ["LiberationMono-Regular.ttf", "LiberationMono-Bold.ttf", "LiberationMono-Italic.ttf", "LiberationMono-BoldItalic.ttf"]
 #copy_fonts = ["NotoSerif-Regular.ttf"]
+#copy_fonts = []
 num_copy_fonts = SizeOf(copy_fonts)
 copy_scripts = ["latin", "latin-ext", "latin-cyrillic", "multilingual"]
 #copy_scripts = ["latin"]
@@ -100,6 +103,8 @@ while (fi < num_copy_fonts)
     endif
     # BOM
     SelectMore(0ufeff)
+    # No-break space
+    SelectMore(0u00a0)
     # Non-marking return (QUESTION do we really need this?)
     #SelectMore(0u000d)
     SelectInvert()
@@ -115,6 +120,16 @@ while (fi < num_copy_fonts)
       SetWidth(0)
       SelectNone()
     endif
+
+    # Generate line feed from no-break space (works around error "cmap format 14 is not supported" in ttfunk)
+    Select(0u00a0)
+    Copy()
+    SelectNone()
+    Select(0u000a)
+    Paste()
+    SetWidth(0)
+    SelectNone()
+
     new_filename = new_basename + "-" + script + ".ttf"
     new_filepath = output_dir + "/" + new_filename
     Print("Generating " + new_filename + "...")

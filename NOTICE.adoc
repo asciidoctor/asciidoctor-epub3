@@ -1,5 +1,4 @@
 = Asciidoctor EPUB3
-OpenDevise Inc.; Asciidoctor Project
 
 Copyright (C) 2014 OpenDevise Inc. and the Asciidoctor Project.
 
