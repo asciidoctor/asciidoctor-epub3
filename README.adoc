@@ -2,8 +2,8 @@
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 :project-name: Asciidoctor EPUB3
 :project-handle: asciidoctor-epub3
-:project-uri: https://github.com/opendevise/{project-handle}
-:project-repo-uri: https://github.com/opendevise/{project-handle}
+:project-uri: https://github.com/asciidoctor/{project-handle}
+:project-repo-uri: {project-uri}
 :project-issues-uri: {project-repo-uri}/issues
 :rvm-uri: http://rvm.io
 :asciidoctor-uri: http://asciidoctor.org
@@ -146,7 +146,7 @@ You can retrieve {project-name} in one of two ways:
 
 If you want to clone the git repository, simply copy the {project-repo-uri}[GitHub repository URL] and pass it to the `git clone` command:
 
- $ git clone https://github.com/opendevise/asciidoctor-epub3
+ $ git clone https://github.com/asciidoctor/asciidoctor-epub3
 
 Next, change to the project directory:
 
