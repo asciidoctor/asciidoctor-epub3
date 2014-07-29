@@ -1,18 +1,25 @@
-#!/bin/sh
+#!/usr/bin/env ruby
 
-if [ -z $ADB ]; then
-  ADB=~/opt/android-sdk/platform-tools/adb
-fi
+ADB = ENV['ADB'] || 'adb'
 
-if [ -z $1 ]; then
-  DOCNAME=_output/sample-book
-else
-  DOCNAME=$1
-fi
+unless ::File.executable? ADB
+  warn %(adb-push-ebook: `adb` not found.\nPlease set the ADB environment variable or add `adb` to your PATH.)
+  exit 1
+end
 
-if [ -f $DOCNAME.epub ]; then
-  $ADB push $DOCNAME.epub /sdcard/
-fi
-if [ -f $DOCNAME.mobi ]; then
-  $ADB push $DOCNAME.mobi /sdcard/Android/data/com.amazon.kindle/files/
-fi
+require 'open3'
+require 'shellwords'
+
+docname = ARGV[0] || '_output/sample-book'
+
+targets = {
+  'epub' => '/sdcard/',
+  'mobi' => '/sdcard/Android/data/com.amazon.kindle/files/'
+}
+
+targets.each {|(ext, target)|
+  file = %(#{docname}.#{ext})
+  Open3.popen2e(Shellwords.join [ADB, 'push', file, target]) {|input, output, wait_thr|
+    output.each {|line| puts line }
+  } if File.file? file
+}
