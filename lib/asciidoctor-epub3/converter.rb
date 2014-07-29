@@ -84,18 +84,22 @@ class Converter
 
   def document node
     docid = node.id
-    doctitle = node.doctitle || (node.attr 'untitled-label')
-    doctitle_sanitized = ((node.doctitle sanitize: true) || (node.attr 'untitled-label')).gsub WordJoiner, ''
-
-    if doctitle.include? ': '
-      title, subtitle = doctitle.split ': ', 2
-      subtitle_formatted = subtitle.gsub(WordJoiner, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
+    if (doctitle = node.doctitle)
+      doctitle_sanitized = (node.doctitle sanitize: :sgml).gsub WordJoiner, ''
+      if doctitle.include? ': '
+        title, _, subtitle = doctitle.rpartition ': '
+      else
+        # HACK until we get proper handling of title-only in CSS
+        title = ''
+        subtitle = doctitle
+      end
     else
       # HACK until we get proper handling of title-only in CSS
       title = ''
-      subtitle = doctitle
-      subtitle_formatted = (subtitle.split ' ').map {|w| %(<b>#{w}</b>) } * ' '
+      subtitle = node.attr 'untitled-label'
     end
+    subtitle_formatted = subtitle.gsub(WordJoiner, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
+
     title_upper = title.upcase
     # FIXME make this uppercase routine more intelligent, less fragile
     subtitle_formatted_upper = subtitle_formatted.upcase
