@@ -347,7 +347,7 @@ TIP: As another example, point `asciidoctor-epub3` at the https://github.com/ope
 Next, let's validate the EPUB3 archive to ensure it built correctly.
 
 .EPUB3 with validation
- $ asciidoctor-epub3 -D output --validate data/samples/sample-book.adoc
+ $ asciidoctor-epub3 -D output -a ebook-validate data/samples/sample-book.adoc
 
 .Validation success
 ----
@@ -375,19 +375,19 @@ The IDPF also supports {epubcheck-uri}[EpubCheck].
 EpubCheck parses and validates the file against the EPUB schema.
 ****
 
-If you want to browse the contents of the EPUB3 file that is generated, or preview the XHTML files in a regular web browser, add the `--extract` flag to the `asciidoctor-epub3` command.
+If you want to browse the contents of the EPUB3 file that is generated, or preview the XHTML files in a regular web browser, add the `-a ebook-extract` flag to the `asciidoctor-epub3` command.
 The EPUB3 file will be extracted to a directory adjacent to the generated file, but without the file extension.
 
- $ asciidoctor-epub3 -D output --extract data/samples/sample-book.adoc
+ $ asciidoctor-epub3 -D output -a ebook-extract data/samples/sample-book.adoc
 
 In this example, the contents of the EPUB3 will be extracted to the [path]_output/sample-book_ directory.
 
 === Convert AsciiDoc to KF8/MOBI
 
 Creating a KF8/MOBI archive directly from an AsciiDoc document is done with the same generation script (`asciidoctor-epub3`).
-You just need to specify the format (`-f`) as `kf8`.
+You just need to specify the format (`-a ebook-format`) as `kf8`.
 
- $ asciidoctor-epub3 -D output -f kf8 data/samples/sample-book.adoc
+ $ asciidoctor-epub3 -D output -a ebook-format=kf8 data/samples/sample-book.adoc
 
 When the script completes, you'll see the file [file]_sample-book.mobi_ appear in the [path]_output_ directory.
  
@@ -411,13 +411,13 @@ That's why we refer to the format in this project as KF8/MOBI.
 *-D, --destination-dir* ::
   Writes files to specified directory (defaults to the current directory)
 
-*--extract* ::
+*-a ebook-extract* ::
   Extracts the EPUB3 to a folder in the destination directory after the file is generated
 
-*-f, --format* ::
+*-a ebook-format=<format>* ::
   Specifies the e-book format to generate (epub3 or kf8, default: epub3)
 
-*--validate* ::
+*-a ebook-validate* ::
   Runs Epubcheck 3.0.1 to validate output file against the EPUB3 specification
 
 *-v, --version* ::
