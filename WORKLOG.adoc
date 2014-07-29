@@ -77,6 +77,7 @@
 
 .CLI
 * augment Asciidoctor::Cli::Options with --validate and --extract options, pass on as attributes
+//^
 
 .Asciidoctor
 * warn on unresolved attribute reference (Asciidoctor core change)
