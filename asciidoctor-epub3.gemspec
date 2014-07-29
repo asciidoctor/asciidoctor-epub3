@@ -23,7 +23,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
     s.files = Dir['**/*']
   end
 
-  s.executables = %w(asciidoctor-epub3)
+  s.executables = %w(asciidoctor-epub3 adb-push-ebook)
   s.test_files = s.files.grep(/^(?:test|spec|feature)\/.*$/)
   s.require_paths = %w(lib)
 
@@ -34,11 +34,12 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_development_dependency 'rake', '~> 10.0'
   #s.add_development_dependency 'rdoc', '~> 4.1.0'
 
-  s.add_runtime_dependency 'asciidoctor', ['>= 1.5.0.rc.1', '< 1.6.0']
+  s.add_runtime_dependency 'asciidoctor', ['>= 1.5.0.rc.2', '< 1.6.0']
   s.add_runtime_dependency 'gepub', '~> 0.6.9.2'
+  s.add_runtime_dependency 'thread_safe', '~> 0.3.4'
 
   # optional
   #s.add_runtime_dependency 'kindlegen', '~> 2.9.0'
   #s.add_runtime_dependency 'epubcheck', '~> 3.0.1'
-  #s.add_runtime_dependency 'thread_safe', '~> 0.3.1'
+  #s.add_runtime_dependency 'pygments.rb', '0.5.4'
 end
