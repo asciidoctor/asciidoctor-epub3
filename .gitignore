@@ -1,3 +1,5 @@
+/.ruby-gemset
+/.ruby-version
 /_*/
 /Gemfile.lock
 /README.html
