@@ -4,13 +4,49 @@ require_relative 'font_icon_map'
 
 module Asciidoctor
 module Epub3
+#WordJoiner = [8288].pack 'U*'
+WordJoiner = [65279].pack 'U*'
+
+# Public: The main converter for the epub3 backend that handles packaging the
+# EPUB3 or KF8 publication file.
 class Converter
   include ::Asciidoctor::Converter
   include ::Asciidoctor::Writer
+
   register_for 'epub3'
+
+  def initialize backend, opts
+    super
+    basebackend 'html'
+    outfilesuffix '.epub' # dummy outfilesuffix since it may be .mobi
+    htmlsyntax 'xml'
+    @validate = false
+    @extract = false
+  end
+
+  def convert spine_doc, name = nil
+    @validate = true if spine_doc.attr? 'ebook-validate'
+    @extract = true if spine_doc.attr? 'ebook-extract'
+    Packager.new spine_doc, (spine_doc.references[:spine_items] || [spine_doc]), spine_doc.attributes['ebook-format'].to_sym
+  end
+
+  # FIXME we have to package in write because we don't have access to target before this point
+  def write packager, target
+    # NOTE we use dirname of target since filename is calculated automatically
+    packager.package validate: @validate, extract: @extract, to_dir: (::File.dirname target)
+    nil
+  end
+end
+
+# Public: The converter for the epub3 backend that converts the individual
+# content documents in an EPUB3 publication.
+class ContentConverter
+  include ::Asciidoctor::Converter
+
+  register_for 'epub3-xhtml5'
+
+  WordJoiner = Epub3::WordJoiner
   EOL = "\n"
-  #WordJoiner = [8288].pack 'U*'
-  WordJoiner = [65279].pack 'U*'
   NoBreakSpace = '&#xa0;'
   ThinNoBreakSpace = '&#x202f;'
   RightAngleQuote = '&#x203a;'
@@ -753,20 +789,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
     end
   end
 
-  # TODO generating this id should be part of Asciidoctor API
-  def resolve_document_id node
-    unless (doc_id = node.id)
-      doc_id = if node.header?
-        node.doctitle(sanitize: true).gsub(WordJoiner, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
-      elsif (first_section = node.first_section)
-        first_section.id
-      else
-        %(document-#{node.object_id})
-      end
-    end
-    doc_id
-  end
-
   def xml_sanitize value, target = :attribute
     sanitized = (value.include? '<') ? value.gsub(XmlElementRx, '').tr_s(' ', ' ').strip : value
     if target == :plain && (sanitized.include? ';')
@@ -788,64 +810,49 @@ document.addEventListener('DOMContentLoaded', function(event) {
     end
     nil
   end
+end
 
-  def write output, target
-    #if @nav
-    #  target = ::File.join ::File.dirname(target), 'nav.xhtml'
-    #end
-    ::File.open target, 'w' do |fd|
-      fd.write output
+class DocumentIdGenerator
+  class << self
+    def generate_id doc
+      unless (id = doc.id)
+        id = if doc.header?
+          doc.doctitle(sanitize: :sgml).gsub(WordJoiner, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
+        elsif (first_section = doc.first_section)
+          first_section.id
+        else
+          %(document-#{doc.object_id})
+        end
+      end
+      id
     end
   end
+end
 
-  def self.convert_file source_file, options = {}
-    require_relative 'packager' unless defined? Packager
-    # QUESTION should we force the doctype to book?
-    options = options.merge(backend: :epub3, header_footer: true)
-    ebook_format = if (format = options.delete :ebook_format)
-      (format = format.to_sym) == :mobi ? :kf8 : format
+require_relative 'packager'
+
+Extensions.register do
+  if (document = @document).backend == 'epub3'
+    document.attributes['spine'] = ''
+    document.set_attribute 'listing-caption', 'Listing'
+    if !(defined? ::AsciidoctorJ) && (::Gem::try_activate 'pygments.rb')
+      if document.set_attribute 'source-highlighter', 'pygments'
+        document.set_attribute 'pygments-css', 'style'
+        document.set_attribute 'pygments-style', 'bw'
+      end
+    end
+    case document.attributes['ebook-format']
+    when 'epub3', 'kf8'
+      # all good
+    when 'mobi'
+      document.attributes['ebook-format'] = 'kf8'
     else
-      :epub3
+      document.attributes['ebook-format'] = 'epub3'
     end
-    validate = options.delete :validate
-    extract = options.delete :extract
-    # TODO if to_dir not given, make and use tmp directory
-    to_dir = ::File.expand_path(options.delete(:to_dir) || ::Dir.pwd)
-    # TODO handle case that attributes is not a string
-    options[:attributes] = %(spine ebook-format=#{ebook_format} ebook-format-#{ebook_format} #{options[:attributes]})
-    # FIXME honor existing registry
-    options[:extensions_registry] = ::Asciidoctor::Extensions.build_registry :epub3 do
-      # NOTE register directly on spine document so it only fires for top-level includes
-      # NOTE the SpineItemProcessor needs access to the document instance
-      include_processor SpineItemProcessor.new @document
-    end
-    spine_doc = ::Asciidoctor.load_file source_file, options
-    # restore attributes to those defined in the document header
-    spine_doc.restore_attributes
-    # REVIEW reaching into converter to assign document id feels like a hack; should happen in Asciidoctor parser
-    spine_doc.id = spine_doc.converter.resolve_document_id spine_doc
-    packager = Packager.new spine_doc, (spine_doc.references[:spine_items] || [spine_doc]), to_dir, ebook_format
-    packager.package validate: validate, extract: extract
+    # Only fire SpineItemProcessor for top-level include directives
+    include_processor SpineItemProcessor.new(document)
+    treeprocessor { process {|doc| doc.id = DocumentIdGenerator.generate_id doc } }
   end
 end
 end
 end
-
-# FIXME: this include processor to replace tabs with spaces does not honor partial includes!
-=begin
-Asciidoctor::Extensions.register {
-  doc = @document
-  include_processor do
-    process do |reader, target, attributes|
-      source = File.read File.join(doc.base_dir, target)
-      # TODO substitute tabs more carefully
-      reader.push_include source.gsub("\t", '    '), target, target, 1, attributes
-      reader
-    end
-
-    def handles? target
-      target.start_with? 'code/'
-    end
-  end
-}
-=end

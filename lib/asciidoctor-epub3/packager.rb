@@ -8,9 +8,9 @@ module Epub3
 module GepubBuilderMixin
   DATA_DIR = ::File.expand_path(::File.join ::File.dirname(__FILE__), '..', '..', 'data')
   SAMPLES_DIR = ::File.join DATA_DIR, 'samples'
-  WordJoiner = Converter::WordJoiner
-  FromHtmlSpecialCharsMap = Converter::FromHtmlSpecialCharsMap
-  FromHtmlSpecialCharsRx = Converter::FromHtmlSpecialCharsRx
+  WordJoiner = Epub3::WordJoiner
+  FromHtmlSpecialCharsMap = ContentConverter::FromHtmlSpecialCharsMap
+  FromHtmlSpecialCharsRx = ContentConverter::FromHtmlSpecialCharsRx
   CsvDelimiterRx = /\s*,\s*/
   DefaultCoverImage = 'images/default-cover.png'
   InlineImageMacroRx = /^image:(.*?)\[(.*?)\]$/
@@ -225,7 +225,8 @@ body > svg {
     resources(workdir: (doc.attr 'docdir')) do
       builder.add_images_from_front_matter
       # QUESTION should we move navigation_document to the Packager class? seems to make sense
-      nav 'nav.xhtml' => (builder.postprocess_xhtml doc.converter.navigation_document(doc, spine), format)
+      #nav 'nav.xhtml' => (builder.postprocess_xhtml doc.converter.navigation_document(doc, spine), format)
+      nav 'nav.xhtml' => (builder.postprocess_xhtml ::Asciidoctor::Converter::Factory.default.create('epub3-xhtml5').navigation_document(doc, spine), format)
       ordered do
         builder.add_cover_page doc, self, @book unless format == :kf8
         builder.add_front_matter_page doc, self, builder, format
@@ -300,10 +301,9 @@ class Packager
   EpubExtensionRx = /\.epub$/
   Kf8ExtensionRx = /-kf8\.epub$/
 
-  def initialize spine_doc, spine, dest_dir, format = :epub3, options = {}
+  def initialize spine_doc, spine, format = :epub3, options = {}
     @document = spine_doc
     @spine = spine || []
-    @dest_dir = dest_dir
     @format = format
   end
 
@@ -311,7 +311,7 @@ class Packager
     doc = @document
     spine = @spine
     fmt = @format
-    dest = @dest_dir
+    dest = @dest_dir = options[:to_dir] || (File.expand_path ::Dir.pwd)
 
     images = spine.map {|item| (item.find_by context: :image) || [] }.flatten
     usernames = spine.map {|item| item.attr 'username' }.compact.uniq
@@ -445,7 +445,7 @@ class Packager
       kindlegen_cmd = ::Kindlegen.command
     end
     mobi_file = ::File.basename(epub_file).sub Kf8ExtensionRx, '.mobi'
-    ::Open3.popen2e(Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
+    ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line }
     }
     puts %(Wrote MOBI to #{::File.join ::File.dirname(epub_file), mobi_file})
@@ -457,7 +457,7 @@ class Packager
       epubcheck_cmd = ::Gem.bin_path 'epubcheck', 'epubcheck' 
     end
     # NOTE epubcheck gem doesn't support epubcheck command options; enable -quiet once supported
-    ::Open3.popen2e(Shellwords.join [epubcheck_cmd, epub_file]) {|input, output, wait_thr|
+    ::Open3.popen2e(::Shellwords.join [epubcheck_cmd, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line }
     }
   end

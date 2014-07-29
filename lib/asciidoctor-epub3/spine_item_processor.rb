@@ -1,9 +1,6 @@
-require 'asciidoctor'
-require 'asciidoctor/extensions'
-
 module Asciidoctor
 module Epub3
-class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
+class SpineItemProcessor < Extensions::IncludeProcessor
   def initialize document
     @document = document
   end
@@ -21,7 +18,7 @@ class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
     # parse header to get author information
     spine_item_doc_meta = ::Asciidoctor.load_file include_file,
         safe: spine_doc.safe,
-        backend: :epub3,
+        backend: 'epub3-xhtml5',
         doctype: :article,
         parse_header_only: true 
 
@@ -38,7 +35,7 @@ class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
 
     # REVIEW reaching into converter to resolve document id feels like a hack; should happen in Asciidoctor parser
     # also, strange that "id" doesn't work here
-    inherited_attributes['css-signature'] = spine_item_doc_meta.converter.resolve_document_id spine_item_doc_meta
+    inherited_attributes['css-signature'] = DocumentIdGenerator.generate_id spine_item_doc_meta
     inherited_attributes['docreldir'] = ::File.dirname target
 
     # NOTE can't assign spine document as parent since there's too many assumptions in the Asciidoctor processor
@@ -47,7 +44,7 @@ class SpineItemProcessor < ::Asciidoctor::Extensions::IncludeProcessor
         #base_dir: spine_doc.base_dir,
         # NOTE won't write to correct directory if safe mode is :secure
         safe: spine_doc.safe,
-        backend: :epub3,
+        backend: 'epub3-xhtml5',
         doctype: :article,
         header_footer: true,
         attributes: inherited_attributes

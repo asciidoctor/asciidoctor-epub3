@@ -1,51 +1,16 @@
 #!/usr/bin/env ruby
 
-to_file = true
-to_dir = nil
-format = nil
-validate = false
-extract = false
-args = ARGV.dup
-while (args.first || '').start_with? '-'
-  case (opt = args.shift)
-  #when '-o'
-  #  to_file = args.shift
-  when '-D', '--destination-dir'
-    to_dir = args.shift
-  when '-f', '--format'
-    format = args.shift
-  when '--validate'
-    validate = true
-  when '-x', '--extract'
-    extract = true
-  when '-h', '--help'
-    puts %(Usage: #{File.basename __FILE__} [OPTION]... SOURCE_FILE
+require 'asciidoctor'
+require 'asciidoctor/cli'
+require 'asciidoctor-epub3'
 
-Convert an AsciiDoc document to EPUB3 or MOBI/KF8.)
-    exit 0
-  when '-v', '--version'
-    require_relative '../lib/asciidoctor-epub3/version'
-    puts %(Asciidoctor EPUB3 #{Asciidoctor::Epub3::VERSION})
-    exit 0
-  else
-    warn %(Ignoring unknown option #{opt})
-  end
+options = Asciidoctor::Cli::Options.new backend: 'epub3'
+# FIXME This is a really bizarre API. Please make me simpler.
+if (options.parse! ARGV) == 0
+  exit 0
+else
+  invoker = Asciidoctor::Cli::Invoker.new options
+  GC.start
+  invoker.invoke!
+  exit invoker.code
 end
-
-unless (source_file = args.shift)
-  warn 'Please specify a source document to convert.'
-  exit 1
-end
-
-unless File.file? source_file
-  warn %(Source file does not exist, is a directory or is not readable: #{source_file})
-  exit 1
-end
-
-require_relative '../lib/asciidoctor-epub3'
-
-pygments_attributes = (Gem::try_activate 'pygments.rb') ? ' source-highlighter=pygments pygments-css=style pygments-style=bw' : nil
-
-Asciidoctor::Epub3::Converter.convert_file source_file,
-    ebook_format: format, safe: :safe, to_dir: to_dir, to_file: to_file, validate: validate, extract: extract,
-    attributes: %(listing-caption=Listing#{pygments_attributes})
