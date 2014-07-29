@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 
-require 'asciidoctor'
+require File.join File.dirname(__FILE__), '../lib/asciidoctor-epub3'
 require 'asciidoctor/cli'
-require 'asciidoctor-epub3'
 
 options = Asciidoctor::Cli::Options.new backend: 'epub3'
 # FIXME This is a really bizarre API. Please make me simpler.
