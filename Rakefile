@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('lib/asciidoctor-epub3/version', File.dirname(__FILE__))
+require File.expand_path '../lib/asciidoctor-epub3/version', __FILE__
 
 require 'rake/clean'
 
