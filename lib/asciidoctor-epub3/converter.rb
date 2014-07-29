@@ -841,7 +841,7 @@ Extensions.register do
         document.set_attribute 'pygments-style', 'bw'
       end
     end
-    case document.attributes['ebook-format']
+    case (ebook_format = document.attributes['ebook-format'])
     when 'epub3', 'kf8'
       # all good
     when 'mobi'
@@ -849,6 +849,7 @@ Extensions.register do
     else
       document.attributes['ebook-format'] = 'epub3'
     end
+    document.attributes[%(ebook-format-#{ebook_format})] = ''
     # Only fire SpineItemProcessor for top-level include directives
     include_processor SpineItemProcessor.new(document)
     treeprocessor { process {|doc| doc.id = DocumentIdGenerator.generate_id doc } }
