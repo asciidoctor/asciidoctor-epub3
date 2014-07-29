@@ -75,6 +75,9 @@
 * customize id of <item> elements in epub manifest?
 //^
 
+.CLI
+* augment Asciidoctor::Cli::Options with --validate and --extract options, pass on as attributes
+
 .Asciidoctor
 * warn on unresolved attribute reference (Asciidoctor core change)
 * patch sanitize of any section or block title into Asciidoctor
