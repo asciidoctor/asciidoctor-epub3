@@ -94,7 +94,7 @@ class ContentConverter
 
   # TODO aggregate authors of spine document into authors attribute(s) on main document
   def navigation_document node, spine
-    doctitle_sanitized = ((node.doctitle sanitize: true) || (node.attr 'untitled-label')).gsub WordJoiner, ''
+    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoiner, ''
     lines = [%(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = (node.attr 'lang', 'en')}" lang="#{lang}">
 <head>
@@ -109,7 +109,7 @@ class ContentConverter
 <h2>#{node.attr 'toc-title'}</h2>
 <ol>)]
     spine.each do |item|
-      lines << %(<li><a href="#{item.id || (item.attr 'docname')}.xhtml">#{((item.doctitle sanitize: true) || (item.attr 'untitled-label')).gsub WordJoiner, ''}</a></li>)
+      lines << %(<li><a href="#{item.id || (item.attr 'docname')}.xhtml">#{(item.doctitle sanitize: true, use_fallback: true).gsub WordJoiner, ''}</a></li>)
     end
     lines << %(</ol>
 </nav>
@@ -120,23 +120,19 @@ class ContentConverter
 
   def document node
     docid = node.id
-    if (doctitle = node.doctitle)
-      doctitle_sanitized = (node.doctitle sanitize: :sgml).gsub WordJoiner, ''
-      if doctitle.include? ': '
-        title, _, subtitle = doctitle.rpartition ': '
-      else
-        # HACK until we get proper handling of title-only in CSS
-        title = ''
-        subtitle = doctitle
-      end
+
+    if (doctitle = node.doctitle partition: true, sanitize: true, use_fallback: true).subtitle?
+      title = doctitle.main
+      title_upper = title.upcase
+      subtitle = doctitle.subtitle
     else
       # HACK until we get proper handling of title-only in CSS
-      title = ''
-      subtitle = node.attr 'untitled-label'
+      title = title_upper = ''
+      subtitle = doctitle.combined
     end
-    subtitle_formatted = subtitle.gsub(WordJoiner, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
 
-    title_upper = title.upcase
+    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoiner, ''
+    subtitle_formatted = subtitle.gsub(WordJoiner, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
     # FIXME make this uppercase routine more intelligent, less fragile
     subtitle_formatted_upper = subtitle_formatted.upcase
         .gsub(UppercaseTagRx) { %(<#{$1}#{$2.downcase}>) }
@@ -817,7 +813,7 @@ class DocumentIdGenerator
     def generate_id doc
       unless (id = doc.id)
         id = if doc.header?
-          doc.doctitle(sanitize: :sgml).gsub(WordJoiner, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
+          doc.doctitle(sanitize: true).gsub(WordJoiner, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
         elsif (first_section = doc.first_section)
           first_section.id
         else
