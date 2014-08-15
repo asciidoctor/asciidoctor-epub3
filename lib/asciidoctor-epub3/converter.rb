@@ -4,8 +4,9 @@ require_relative 'font_icon_map'
 
 module Asciidoctor
 module Epub3
-#WordJoiner = [8288].pack 'U*'
+# tried 8288, but it didn't work in older readers
 WordJoiner = [65279].pack 'U*'
+WordJoinerRx = RUBY_ENGINE_JRUBY ? /uFEFF/ : WordJoiner
 
 # Public: The main converter for the epub3 backend that handles packaging the
 # EPUB3 or KF8 publication file.
@@ -94,7 +95,7 @@ class ContentConverter
 
   # TODO aggregate authors of spine document into authors attribute(s) on main document
   def navigation_document node, spine
-    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoiner, ''
+    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoinerRx, ''
     lines = [%(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = (node.attr 'lang', 'en')}" lang="#{lang}">
 <head>
@@ -109,7 +110,7 @@ class ContentConverter
 <h2>#{node.attr 'toc-title'}</h2>
 <ol>)]
     spine.each do |item|
-      lines << %(<li><a href="#{item.id || (item.attr 'docname')}.xhtml">#{(item.doctitle sanitize: true, use_fallback: true).gsub WordJoiner, ''}</a></li>)
+      lines << %(<li><a href="#{item.id || (item.attr 'docname')}.xhtml">#{(item.doctitle sanitize: true, use_fallback: true).gsub WordJoinerRx, ''}</a></li>)
     end
     lines << %(</ol>
 </nav>
@@ -131,8 +132,8 @@ class ContentConverter
       subtitle = doctitle.combined
     end
 
-    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoiner, ''
-    subtitle_formatted = subtitle.gsub(WordJoiner, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
+    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoinerRx, ''
+    subtitle_formatted = subtitle.gsub(WordJoinerRx, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
     # FIXME make this uppercase routine more intelligent, less fragile
     subtitle_formatted_upper = subtitle_formatted.upcase
         .gsub(UppercaseTagRx) { %(<#{$1}#{$2.downcase}>) }
@@ -790,7 +791,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     if target == :plain && (sanitized.include? ';')
       sanitized = sanitized.gsub(CharEntityRx) { [$1.to_i].pack('U*') }.gsub(FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap)
     elsif target == :attribute
-      sanitized = sanitized.gsub(WordJoiner, '').gsub('"', '&quot;')
+      sanitized = sanitized.gsub(WordJoinerRx, '').gsub('"', '&quot;')
     end
     sanitized
   end
@@ -813,7 +814,7 @@ class DocumentIdGenerator
     def generate_id doc
       unless (id = doc.id)
         id = if doc.header?
-          doc.doctitle(sanitize: true).gsub(WordJoiner, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
+          doc.doctitle(sanitize: true).gsub(WordJoinerRx, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
         elsif (first_section = doc.first_section)
           first_section.id
         else

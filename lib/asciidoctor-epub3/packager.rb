@@ -8,7 +8,7 @@ module Epub3
 module GepubBuilderMixin
   DATA_DIR = ::File.expand_path(::File.join ::File.dirname(__FILE__), '..', '..', 'data')
   SAMPLES_DIR = ::File.join DATA_DIR, 'samples'
-  WordJoiner = Epub3::WordJoiner
+  WordJoinerRx = Epub3::WordJoinerRx
   FromHtmlSpecialCharsMap = ContentConverter::FromHtmlSpecialCharsMap
   FromHtmlSpecialCharsRx = ContentConverter::FromHtmlSpecialCharsRx
   CsvDelimiterRx = /\s*,\s*/
@@ -27,7 +27,7 @@ module GepubBuilderMixin
     when :plain
       doc.doctitle(sanitize: true).gsub(FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap)
     end
-    title.gsub WordJoiner, ''
+    title.gsub WordJoinerRx, ''
   end
 
   def add_theme_assets doc
