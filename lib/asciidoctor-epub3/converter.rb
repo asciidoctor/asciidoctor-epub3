@@ -6,7 +6,7 @@ module Asciidoctor
 module Epub3
 # tried 8288, but it didn't work in older readers
 WordJoiner = [65279].pack 'U*'
-WordJoinerRx = RUBY_ENGINE_JRUBY ? /uFEFF/ : WordJoiner
+WordJoinerRx = RUBY_ENGINE_JRUBY ? /\uFEFF/ : WordJoiner
 
 # Public: The main converter for the epub3 backend that handles packaging the
 # EPUB3 or KF8 publication file.
