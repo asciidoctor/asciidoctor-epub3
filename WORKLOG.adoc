@@ -5,6 +5,7 @@
 * create a video to demonstrate Google Play Books read aloud reading complete sentences in books generated with Asciidoctor EPUB3
 
 .Gem
+* Add step in `rake release` to set version back to *.dev
 //^
 
 .Converter
