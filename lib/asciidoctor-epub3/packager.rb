@@ -34,24 +34,34 @@ module GepubBuilderMixin
     builder = self
     format = @format
     workdir = if doc.attr? 'epub3-stylesdir'
-      ::File.join doc.attr('docdir'), doc.attr('epub3-stylesdir')
+      stylesdir = doc.attr 'epub3-stylesdir'
+      # FIXME make this work for Windows paths!!
+      if stylesdir.start_with? '/'
+        stylesdir
+      else
+        docdir = doc.attr 'docdir', '.'
+        docdir = '.' if docdir.empty?
+        ::File.join docdir, stylesdir
+      end
     else
       ::File.join DATA_DIR, 'styles'
     end
 
     # TODO improve design/UX of custom theme functionality, including custom fonts
-    resources workdir: workdir do
-      file 'styles/epub3.css' => (builder.postprocess_css_file 'epub3.css', format)
-      file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'epub3-css3-only.css', format)
+    resources do
+      file 'styles/epub3.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
+      file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
     end
 
-    resources workdir: DATA_DIR do
+    resources do
       #file 'styles/epub3.css' => (builder.postprocess_css_file 'styles/epub3.css', format)
       #file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'styles/epub3-css3-only.css', format)
-      font_list, font_css = builder.select_fonts 'styles/epub3-fonts.css', (doc.attr 'scripts', 'latin')
+      font_files, font_css = builder.select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
       file 'styles/epub3-fonts.css' => font_css
       with_media_type 'application/x-font-ttf' do
-        files(*font_list)
+        font_files.each do |font_file|
+          file font_file => ::File.join(DATA_DIR, font_file)
+        end
       end
     end
   end
@@ -64,14 +74,15 @@ module GepubBuilderMixin
       if front_cover_image =~ InlineImageMacroRx
         front_cover_image = %(#{imagesdir}#{$1})
       end
-      workdir = doc.attr 'docdir'
+      workdir = doc.attr 'docdir', '.'
+      workdir = '.' if workdir.empty?
     else
       front_cover_image = DefaultCoverImage
       workdir = DATA_DIR
     end
 
-    resources workdir: workdir do
-      cover_image %(#{imagesdir}jacket/cover#{::File.extname front_cover_image}) => front_cover_image
+    resources do
+      cover_image %(#{imagesdir}jacket/cover#{::File.extname front_cover_image}) => ::File.join(workdir, front_cover_image)
     end
   end
 
@@ -151,7 +162,9 @@ body > svg {
     docimagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
 
-    resources(workdir: (doc.attr 'docdir')) do
+    workdir = doc.attr 'docdir', '.'
+    workdir = '.' if workdir.empty?
+    resources workdir: workdir do
       images.each do |image|
         imagesdir = (image.document.attr 'imagesdir', '.').chomp '/'
         imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
@@ -172,29 +185,29 @@ body > svg {
     imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
 
-    resources workdir: DATA_DIR do
-      file %(#{imagesdir}avatars/default.jpg) => %(images/default-avatar.jpg)
-      file %(#{imagesdir}headshots/default.jpg) => %(images/default-headshot.jpg)
+    resources do
+      file %(#{imagesdir}avatars/default.jpg) => ::File.join(DATA_DIR, 'images/default-avatar.jpg')
+      file %(#{imagesdir}headshots/default.jpg) => ::File.join(DATA_DIR, 'images/default-headshot.jpg')
     end
 
-    resources(workdir: (doc.attr 'docdir')) do
+    workdir = doc.attr 'docdir', '.'
+    workdir = '.' if workdir.empty?
+    resources do
       usernames.each do |username|
-        if ::File.readable?(avatar = %(#{imagesdir}avatars/#{username}.jpg))
-          file avatar
+        avatar = %(#{imagesdir}avatars/#{username}.jpg)
+        if ::File.readable?(resolved_avatar = ::File.join(workdir, avatar))
+          file avatar => resolved_avatar
         else
           warn %(Avatar #{avatar} not found or readable. Falling back to default avatar for #{username}.)
-          ::Dir.chdir DATA_DIR do
-            file avatar => %(images/default-avatar.jpg)
-          end
+          file avatar => ::File.join(DATA_DIR, 'images/default-avatar.jpg')
         end
 
-        if ::File.readable? (headshot = %(#{imagesdir}headshots/#{username}.jpg))
-          file headshot
-        else
+        headshot = %(#{imagesdir}headshots/#{username}.jpg)
+        if ::File.readable?(resolved_headshot = ::File.join(workdir, headshot))
+          file headshot => resolved_headshot
+        elsif doc.attr? 'builder', 'editions'
           warn %(Headshot #{headshot} not found or readable. Falling back to default headshot for #{username}.)
-          ::Dir.chdir DATA_DIR do
-            file headshot => %(images/default-headshot.jpg)
-          end
+          file headshot => ::File.join(DATA_DIR, 'images/default-headshot.jpg')
         end
       end
 =begin
@@ -222,7 +235,9 @@ body > svg {
     builder = self
     spine = @spine
     format = @format
-    resources(workdir: (doc.attr 'docdir')) do
+    workdir = doc.attr 'docdir', '.'
+    workdir = '.' if workdir.empty?
+    resources workdir: workdir do
       builder.add_images_from_front_matter
       # QUESTION should we move navigation_document to the Packager class? seems to make sense
       #nav 'nav.xhtml' => (builder.postprocess_xhtml doc.converter.navigation_document(doc, spine), format)
