@@ -4,6 +4,8 @@
 #
 # $ ./generate-font-subsets.pe <target directory>
 #
+# By default, the target directory is "generated".
+#
 # NOTE: Ignore "GID out of range" warnings; fontforge has to kick the tires a bit to flush out these dead references
 #
 # Use with Noto Serif fonts from https://code.google.com/p/noto/source/browse/#svn%2Ftrunk%2Ffonts%2Findividual%2Funhinted
@@ -161,6 +163,8 @@ while (fi < num_code_fonts)
   SelectMore(0u0020,0u007e)
   # No-break space
   SelectMore(0u00a0)
+  # Box drawing symbols for unix `tree` output
+  SelectMore(0u2500,0u257f)
   if (new_basename == "mplus1mn-regular")
     # Enclosed numbers (1-20)
     SelectMore(0u2460,0u2473)
