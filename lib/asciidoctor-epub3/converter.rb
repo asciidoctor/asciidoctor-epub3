@@ -844,7 +844,7 @@ Extensions.register do
     when 'mobi'
       document.attributes['ebook-format'] = 'kf8'
     else
-      document.attributes['ebook-format'] = 'epub3'
+      ebook_format = document.attributes['ebook-format'] = 'epub3'
     end
     document.attributes[%(ebook-format-#{ebook_format})] = ''
     # Only fire SpineItemProcessor for top-level include directives
