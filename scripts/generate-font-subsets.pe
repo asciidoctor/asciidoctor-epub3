@@ -77,8 +77,9 @@ while (fi < num_copy_fonts)
     SelectMore(0u25a0,0u25ff)
     # Greek (frequently used for math and bullets)
     SelectMore(0u0370,0u03ff)
-    # Additional Currency Symbols (QUESTION: do we need all of them in basic latin?)
-    SelectMore(0u20a0,0u20d0)
+    # Additional Currency Symbols (QUESTION: do we need all of them in basic latin? Euro Sign is 0u20ac)
+    #SelectMore(0u20a0,0u20d0)
+    SelectMore(0u20ac)
     if (script == "latin-ext" || script == "latin-cyrillic" || script == "multilingual")
       # Latin Extended-A, Latin Extended-B
       SelectMore(0u0100,0u024f)
@@ -124,6 +125,7 @@ while (fi < num_copy_fonts)
     endif
 
     # Generate line feed from no-break space (works around error "cmap format 14 is not supported" in ttfunk)
+    # FIXME another option here is to select all the characters referenced by the cmap format 14 table
     Select(0u00a0)
     Copy()
     SelectNone()
