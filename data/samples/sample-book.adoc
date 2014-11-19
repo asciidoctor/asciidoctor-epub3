@@ -6,6 +6,7 @@ v1.0, 2014-04-15
 :keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
 :copyright: CC-BY-SA 3.0
 :imagesdir: images
+//:front-cover-image: image:front-cover.jpg[Front Cover,1050,1600]
 
 ifeval::["{scripts}" == "multilingual"]
 include::i18n.adoc[]
