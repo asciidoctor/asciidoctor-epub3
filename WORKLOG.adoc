@@ -9,6 +9,7 @@
 //^
 
 .Converter
+* CRITICAL: if document doesn't have doctitle, Untitled shows in epub2 TOC
 * CRITICAL: conversion missing in epub3 backend for embedded (AsciiDoc table cell?)
 * CRITICAL: revisit the headshot image logic
 * CRITICAL: put e-book reader class on html instead of body
@@ -24,6 +25,7 @@
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
 * MEDIUM: auto-space button in btn macro, or add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file
+* MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
 * QUESTION: add word joiner before inline tags too?
 * packager doesn't resolve include files in subdirectory totally correctly
 * implement checklists
@@ -37,6 +39,7 @@
 * HIGH: add back cover if specified
 * MEDIUM: set modified date explicitly
 * MEDIUM: use function to build and manipulate image paths
+* MEDIUM: issue warning if front-cover-image doesn't match proper syntax
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
 
@@ -45,6 +48,7 @@
 * recreate ellipses in M+ 1p to be on baseline
 
 .Stylesheet
+* CRITICAL: padding around code in formal listing blocks
 * CRITICAL: check style of level 5 and 6 headings (see Groovy docs)
 * CRITICAL: use CSS3 filter scheme that allows admonitions to appear correctly on Google Play Books
   - see if Google Play books supports JavaScript and epubReadingSystem (no, but adds its own class to body)
@@ -55,6 +59,7 @@
 * HIGH: review the table border color
 * HIGH: style example block
 * HIGH: allow theme to be customized using stylesheet attribute
+* MEDIUM: headshot has too much top margin when at top of page (not below section title)
 * MEDIUM: add landmarks nav list to nav.xhtml
 * support both jpg and png avatars
 * add docinfo support
