@@ -86,7 +86,6 @@
 //^
 
 .Asciidoctor
-* warn on unresolved attribute reference (Asciidoctor core change)
 * patch sanitize of any section or block title into Asciidoctor
 * generate id for chapter <= make part of Asciidoctor parsing API
 * patch Asciidoctor to replace smart quotes w/ unicode chars instead of entities (glyph replacement mode)
