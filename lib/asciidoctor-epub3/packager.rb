@@ -426,7 +426,7 @@ class Packager
 
     epub_file = ::File.expand_path %(#{doc.attr 'docname'}#{fmt == :kf8 ? '-kf8' : nil}.epub), dest
     builder.generate_epub epub_file
-    puts %(Wrote #{fmt.upcase} to #{epub_file})
+    puts %(Wrote #{fmt.upcase} to #{epub_file}) if $VERBOSE
     if options[:extract]
       extract_dir = epub_file.sub EpubExtensionRx, ''
       ::FileUtils.remove_dir extract_dir if ::File.directory? extract_dir
@@ -442,7 +442,7 @@ class Packager
           end
         end
       end
-      puts %(Extracted #{fmt.upcase} to #{extract_dir})
+      puts %(Extracted #{fmt.upcase} to #{extract_dir}) if $VERBOSE
     end
 
     if fmt == :kf8
@@ -463,7 +463,7 @@ class Packager
     ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line }
     }
-    puts %(Wrote MOBI to #{::File.join ::File.dirname(epub_file), mobi_file})
+    puts %(Wrote MOBI to #{::File.join ::File.dirname(epub_file), mobi_file}) if $VERBOSE
   end
 
   def validate_epub epub_file
