@@ -27,7 +27,7 @@
 # FIXME: need to generate cjk font
 
 genflags = 0x08
-#genflags = 0x18
+#genflags = 0x10 + 0x08
 copy_fonts = ["NotoSerif-Regular.ttf", "NotoSerif-Bold.ttf", "NotoSerif-Italic.ttf", "NotoSerif-BoldItalic.ttf", "mplus-1p-regular.ttf", "mplus-1p-bold.ttf", "mplus-1p-light.ttf"]
 #copy_fonts = ["NotoSerif-Regular.ttf", "NotoSerif-Bold.ttf", "NotoSerif-Italic.ttf", "NotoSerif-BoldItalic.ttf"]
 #copy_fonts = ["LiberationMono-Regular.ttf", "LiberationMono-Bold.ttf", "LiberationMono-Italic.ttf", "LiberationMono-BoldItalic.ttf"]
@@ -40,6 +40,8 @@ num_copy_scripts = SizeOf(copy_scripts)
 code_fonts = ["mplus-1mn-light.ttf", "mplus-1mn-regular.ttf", "mplus-1mn-medium.ttf", "mplus-1mn-bold.ttf"]
 #code_fonts = []
 num_code_fonts = SizeOf(code_fonts)
+code_script = "ascii"
+#code_script = "multilingual"
 if ($argc == 2)
   output_dir = $argv[1]
 else
@@ -155,26 +157,28 @@ while (fi < num_code_fonts)
   new_basename = code_fonts[fi]:r
   # remove hyphen from mplus-1
   new_basename = "mplus1" + StrJoin(StrSplit(new_basename, "mplus-1"), "")
-  new_suffix = "-ascii.ttf"
+  new_suffix = "-" + code_script + ".ttf"
   Open(code_fonts[fi])
   SelectAll()
   # NOTE: M+ fonts don't have hinting, so technically this is redundant
   ClearInstrs()
   SelectNone()
-  # Basic Latin (e.g., Code)
-  SelectMore(0u0020,0u007e)
-  # No-break space
-  SelectMore(0u00a0)
-  # Box drawing symbols for unix `tree` output
-  SelectMore(0u2500,0u257f)
-  if (new_basename == "mplus1mn-regular")
-    # Enclosed numbers (1-20)
-    SelectMore(0u2460,0u2473)
-    new_suffix = "-ascii-conums.ttf"
+  if (code_script == "ascii")
+    # Basic Latin (e.g., Code)
+    SelectMore(0u0020,0u007e)
+    # No-break space
+    SelectMore(0u00a0)
+    # Box drawing symbols for unix `tree` output
+    SelectMore(0u2500,0u257f)
+    if (new_basename == "mplus1mn-regular")
+      # Enclosed numbers (1-20)
+      SelectMore(0u2460,0u2473)
+      new_suffix = "-ascii-conums.ttf"
+    endif
+    SelectInvert()
+    Clear()
+    SelectNone()
   endif
-  SelectInvert()
-  Clear()
-  SelectNone()
   SetFontNames(new_basename, "M+ 1mn")
   # repurpose light as italic
   if (new_basename == "mplus1mn-light")
