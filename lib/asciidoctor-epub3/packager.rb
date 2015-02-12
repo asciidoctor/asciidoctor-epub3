@@ -452,7 +452,6 @@ class Packager
     end
   end
 
-  # QUESTION how to enable the -c2 flag? (enables ~3-5% compression)
   def distill_epub_to_mobi epub_file
     kindlegen_cmd = KINDLEGEN
     unless ::File.executable? kindlegen_cmd
@@ -460,7 +459,7 @@ class Packager
       kindlegen_cmd = ::Kindlegen.command
     end
     mobi_file = ::File.basename(epub_file).sub Kf8ExtensionRx, '.mobi'
-    ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
+    ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-c2', '-o', mobi_file, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line }
     }
     puts %(Wrote MOBI to #{::File.join ::File.dirname(epub_file), mobi_file}) if $VERBOSE
