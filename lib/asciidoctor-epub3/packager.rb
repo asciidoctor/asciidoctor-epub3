@@ -314,7 +314,6 @@ class Packager
   KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
   EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
   EpubExtensionRx = /\.epub$/
-  Kf8ExtensionRx = /-kf8\.epub$/
 
   def initialize spine_doc, spine, format = :epub3, options = {}
     @document = spine_doc
@@ -447,20 +446,20 @@ class Packager
     end
 
     if fmt == :kf8
-      distill_epub_to_mobi epub_file
+      distill_epub_to_mobi epub_file, target
     elsif options[:validate]
       validate_epub epub_file
     end
   end
 
   # QUESTION how to enable the -c2 flag? (enables ~3-5% compression)
-  def distill_epub_to_mobi epub_file
+  def distill_epub_to_mobi epub_file, target
     kindlegen_cmd = KINDLEGEN
     unless ::File.executable? kindlegen_cmd
       require 'kindlegen' unless defined? ::Kindlegen
       kindlegen_cmd = ::Kindlegen.command
     end
-    mobi_file = ::File.basename(epub_file).sub Kf8ExtensionRx, '.mobi'
+    mobi_file = ::File.basename(target).sub EpubExtensionRx, '.mobi'
     ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line }
     }
