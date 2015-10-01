@@ -326,8 +326,8 @@ class Packager
     doc = @document
     spine = @spine
     fmt = @format
-    dest = File.dirname(options[:target])
     target = options[:target]
+    dest = File.dirname target
 
     images = spine.map {|item| (item.find_by context: :image) || [] }.flatten
     usernames = spine.map {|item| item.attr 'username' }.compact.uniq
@@ -425,7 +425,7 @@ class Packager
 
     ::FileUtils.mkdir_p dest unless ::File.directory? dest
 
-    epub_file = ( fmt == :kf8 ? File.expand_path("#{File.basename(target, '.*')}-kdf8.epub", dest) : target )
+    epub_file = fmt == :kf8 ? %(#{::Asciidoctor::Helpers.rootname target}-kf8.epub) : target
     builder.generate_epub epub_file
     puts %(Wrote #{fmt.upcase} to #{epub_file}) if $VERBOSE
     if options[:extract]
@@ -447,20 +447,20 @@ class Packager
     end
 
     if fmt == :kf8
-      distill_epub_to_mobi epub_file, target
+      distill_epub_to_mobi epub_file
     elsif options[:validate]
       validate_epub epub_file
     end
   end
 
   # QUESTION how to enable the -c2 flag? (enables ~3-5% compression)
-  def distill_epub_to_mobi epub_file, target
+  def distill_epub_to_mobi epub_file
     kindlegen_cmd = KINDLEGEN
     unless ::File.executable? kindlegen_cmd
       require 'kindlegen' unless defined? ::Kindlegen
       kindlegen_cmd = ::Kindlegen.command
     end
-    mobi_file = ::File.basename(target)
+    mobi_file = ::File.basename(epub_file).sub Kf8ExtensionRx, '.mobi'
     ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line }
     }
