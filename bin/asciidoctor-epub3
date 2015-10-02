@@ -1,12 +1,27 @@
 #!/usr/bin/env ruby
 
-require File.join File.dirname(__FILE__), '../lib/asciidoctor-epub3'
+require_relative '../lib/asciidoctor-epub3'
 require 'asciidoctor/cli'
 
 options = Asciidoctor::Cli::Options.new backend: 'epub3'
-# FIXME This is a really bizarre API. Please make me simpler.
-if (options.parse! ARGV) == 0
+
+# FIXME provide an API in Asciidoctor for sub-components to print version information
+unless ARGV != ['-v'] && (ARGV & ['-V', '--version']).empty?
+  require_relative '../lib/asciidoctor-epub3/version'
+  $stdout.write %(Asciidoctor EPUB3 #{Asciidoctor::Epub3::VERSION} using )
+  # NOTE the print_version method was added in Asciidoctor 1.5.2
+  if options.respond_to? :print_version
+    options.print_version
+  else
+    puts %(Asciidoctor #{::Asciidoctor::VERSION} [http://asciidoctor.org])
+  end
   exit 0
+end
+
+# FIXME This is a really bizarre API. Please make me simpler.
+case (result = options.parse! ARGV)
+when Integer
+  exit result
 else
   invoker = Asciidoctor::Cli::Invoker.new options
   GC.start
