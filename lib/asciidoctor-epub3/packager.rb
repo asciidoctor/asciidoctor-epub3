@@ -461,7 +461,7 @@ class Packager
     end
     mobi_file = ::File.basename(epub_file).sub Kf8ExtensionRx, '.mobi'
     ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
-      output.each {|line| puts line }
+      output.each {|line| puts line } unless $VERBOSE.nil?
     }
     puts %(Wrote MOBI to #{::File.join ::File.dirname(epub_file), mobi_file}) if $VERBOSE
   end
@@ -473,7 +473,7 @@ class Packager
     end
     # NOTE epubcheck gem doesn't support epubcheck command options; enable -quiet once supported
     ::Open3.popen2e(::Shellwords.join [epubcheck_cmd, epub_file]) {|input, output, wait_thr|
-      output.each {|line| puts line }
+      output.each {|line| puts line } unless $VERBOSE.nil?
     }
   end
 end
