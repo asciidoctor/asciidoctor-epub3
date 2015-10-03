@@ -33,8 +33,7 @@ class Converter
 
   # FIXME we have to package in write because we don't have access to target before this point
   def write packager, target
-    # NOTE we use dirname of target since filename is calculated automatically
-    packager.package validate: @validate, extract: @extract, to_dir: (::File.dirname target)
+    packager.package validate: @validate, extract: @extract, target: target
     nil
   end
 end

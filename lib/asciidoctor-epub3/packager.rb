@@ -313,8 +313,7 @@ end
 class Packager
   KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
   EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
-  EpubExtensionRx = /\.epub$/
-  Kf8ExtensionRx = /-kf8\.epub$/
+  EpubExtensionRx = /\.epub$/i
 
   def initialize spine_doc, spine, format = :epub3, options = {}
     @document = spine_doc
@@ -326,7 +325,8 @@ class Packager
     doc = @document
     spine = @spine
     fmt = @format
-    dest = @dest_dir = options[:to_dir] || (File.expand_path ::Dir.pwd)
+    target = options[:target]
+    dest = File.dirname target
 
     images = spine.map {|item| (item.find_by context: :image) || [] }.flatten
     usernames = spine.map {|item| item.attr 'username' }.compact.uniq
@@ -424,7 +424,7 @@ class Packager
 
     ::FileUtils.mkdir_p dest unless ::File.directory? dest
 
-    epub_file = ::File.expand_path %(#{doc.attr 'docname'}#{fmt == :kf8 ? '-kf8' : nil}.epub), dest
+    epub_file = fmt == :kf8 ? %(#{::Asciidoctor::Helpers.rootname target}-kf8.epub) : target
     builder.generate_epub epub_file
     puts %(Wrote #{fmt.upcase} to #{epub_file}) if $VERBOSE
     if options[:extract]
@@ -446,20 +446,20 @@ class Packager
     end
 
     if fmt == :kf8
-      distill_epub_to_mobi epub_file
+      distill_epub_to_mobi epub_file, target
     elsif options[:validate]
       validate_epub epub_file
     end
   end
 
   # QUESTION how to enable the -c2 flag? (enables ~3-5% compression)
-  def distill_epub_to_mobi epub_file
+  def distill_epub_to_mobi epub_file, target
     kindlegen_cmd = KINDLEGEN
     unless ::File.executable? kindlegen_cmd
       require 'kindlegen' unless defined? ::Kindlegen
       kindlegen_cmd = ::Kindlegen.command
     end
-    mobi_file = ::File.basename(epub_file).sub Kf8ExtensionRx, '.mobi'
+    mobi_file = ::File.basename(target.sub EpubExtensionRx, '.mobi')
     ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line } unless $VERBOSE.nil?
     }
