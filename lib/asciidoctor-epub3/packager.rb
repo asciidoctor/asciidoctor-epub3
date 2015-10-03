@@ -313,7 +313,7 @@ end
 class Packager
   KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
   EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
-  EpubExtensionRx = /\.epub$/
+  EpubExtensionRx = /\.epub$/i
 
   def initialize spine_doc, spine, format = :epub3, options = {}
     @document = spine_doc
@@ -459,7 +459,7 @@ class Packager
       require 'kindlegen' unless defined? ::Kindlegen
       kindlegen_cmd = ::Kindlegen.command
     end
-    mobi_file = ::File.basename(target).sub EpubExtensionRx, '.mobi'
+    mobi_file = ::File.basename(target.sub EpubExtensionRx, '.mobi')
     ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-o', mobi_file, epub_file]) {|input, output, wait_thr|
       output.each {|line| puts line }
     }
