@@ -314,6 +314,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
 </div>)
   end
 
+  def floating_title node
+    tag_name = %(h#{node.level + 1})
+    id_attribute = node.id ? %( id="#{node.id}") : nil
+    %(<#{tag_name}#{id_attribute} class="#{'discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
+  end
+
   def listing node
     figure_classes = ['listing']
     figure_classes << 'coalesce' if node.option? 'unbreakable'
