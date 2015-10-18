@@ -16,7 +16,7 @@ module GepubBuilderMixin
   InlineImageMacroRx = /^image:(.*?)\[(.*?)\]$/
 
   def sanitized_doctitle doc, target = :plain
-    return (doc.attr 'untitled-label') unless doc.header?
+    return (doc.attr 'untitled-label') if doc.doctitle.nil?
     title = case target
     when :attribute_cdata
       doc.doctitle(sanitize: true).gsub('"', '&quot;')
