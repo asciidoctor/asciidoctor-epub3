@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   def floating_title node
     tag_name = %(h#{node.level + 1})
     id_attribute = node.id ? %( id="#{node.id}") : nil
-    %(<#{tag_name}#{id_attribute} class="#{'discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
+    %(<#{tag_name}#{id_attribute} class="#{['discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
   end
 
   def listing node
