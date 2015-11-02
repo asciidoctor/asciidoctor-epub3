@@ -1,5 +1,6 @@
 = Asciidoctor EPUB3: A _native_ EPUB3 converter for AsciiDoc
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
+v1.5.0.alpha.5, 2015-11-01
 :project-name: Asciidoctor EPUB3
 :project-handle: asciidoctor-epub3
 :project-uri: https://github.com/asciidoctor/{project-handle}
@@ -188,7 +189,7 @@ The build will report that it built the Gem into the [path]_pkg_ directory.
 
 Finally, install the Gem.
 
- $ gem install pkg/asciidoctor-epub3-1.0.0.dev.gem
+ $ gem install pkg/asciidoctor-epub3-1.5.0.dev.gem
 
 You're now ready to use {project-name}!
 Let's get an AsciiDoc document ready to convert to EPUB3.
