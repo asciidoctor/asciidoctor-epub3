@@ -727,7 +727,7 @@ Feel free to use the {project-issues-uri}[issue tracker] or http://discuss.ascii
 
 == Copyright
 
-Copyright (C) 2014 OpenDevise Inc. and the Asciidoctor Project.
+Copyright (C) 2014-2015 OpenDevise Inc. and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
 For the full text of the license, see the {license-uri}[LICENSE.adoc] file.
