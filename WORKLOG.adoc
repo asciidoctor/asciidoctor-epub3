@@ -6,6 +6,7 @@
 
 .Gem
 * Add step in `rake release` to set version back to *.dev
+* Don't package sample documents (create separate folder in repo)
 //^
 
 .Converter
@@ -23,13 +24,16 @@
 * HIGH: use more thorough image path resolution
 * HIGH: move navigation_document method to Packager
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
+* HIGH: why can't id on chapter document be specified using +[#name]+ syntax? (it only seems to recognize +[[name]]+)
 * MEDIUM: auto-space button in btn macro, or add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file
 * MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
+* MEDIUM: source highlighting using Rouge (instead of Pygments)
 * QUESTION: add word joiner before inline tags too?
 * packager doesn't resolve include files in subdirectory totally correctly
 * implement checklists
 * quiet flag
+* upgrade to kindlegen 2.9.6 (only works for Ruby >= 2.0.0)
 //^
 
 .Packager
