@@ -1,6 +1,5 @@
 = Asciidoctor EPUB3: A _native_ EPUB3 converter for AsciiDoc
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
-v1.5.0.alpha.5, 2015-11-01
 :project-name: Asciidoctor EPUB3
 :project-handle: asciidoctor-epub3
 :project-uri: https://github.com/asciidoctor/{project-handle}
