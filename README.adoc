@@ -230,7 +230,7 @@ The `dc` namespace prefix is in reference to the http://dublincore.org/documents
 |===
 |Name |Description
 
-|id
+|uuid
 |Populates the *required* unique identifier (`<dc:identifier>`) in the package metadata.
 An id will be generated automatically from the doctitle if not specified.
 The recommended practice is to identify the document by means of a string or number conforming to a formal identification system. 
