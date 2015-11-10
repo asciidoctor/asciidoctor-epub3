@@ -468,6 +468,8 @@ mimetype
 Images that your AsciiDoc document references should be saved in the directory defined in the `imagesdir` attribute, which defaults to the directory of the document.
 {project-name} will discover all local image references and insert the images into the EPUB3 archive at the same relative path.
 
+WARNING: Currently including images only works correctly if you set `imagesdir` to the directory `images` like in the example shown above. This will be fixed in future versions.
+
 The sample book contains placeholder images for an author avatar and a book cover.
 
 // TODO explain the avatar and book cover images
