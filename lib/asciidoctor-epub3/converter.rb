@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     # patches conums to fix extra or missing leading space
     # TODO apply this patch upstream to Asciidoctor
     %(<figure class="#{figure_classes * ' '}">
-#{title_div}<pre class="#{pre_classes * ' '}"><code>#{node.content.gsub(/(?<! )<i class="conum"| +<i class="conum"/, ' <i class="conum"')}</code></pre>
+#{title_div}<pre class="#{pre_classes * ' '}"><code>#{(node.content || '').gsub(/(?<! )<i class="conum"| +<i class="conum"/, ' <i class="conum"')}</code></pre>
 </figure>)
   end
 
