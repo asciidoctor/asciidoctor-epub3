@@ -112,7 +112,23 @@ You can think of the master document as the spine of the book and the include di
 The target of each include directive in the master document is parsed and rendered as a separate AsciiDoc document, with certain options and attributes being passed down from the master to ensure consistent behavior.
 Each resulting XHTML document is then added to the EPUB3 archive as a chapter document and the master document becomes the navigation file (i.e, the table of contents).
 
-If the master document does not contain any include directives, then the converter treats the document as the sole chapter in the EPUB3 archive and automatically produces a navigation file that references it.
+Here's an example showing the structure of a spine document:
+
+----
+= Book Title
+Author Name
+:doctype: book
+:imagesdir: images
+//...and so on
+
+\include::chapter-one.adoc[]
+
+\include::chapter-two.adoc[]
+
+\include::chapter-three.adoc[]
+----
+
+If the master document does not contain any include directives, then the converter treats the document as the sole chapter in the EPUB3 archive and automatically produces a navigation file that references it. (Currently broken. See issue https://github.com/asciidoctor/asciidoctor-epub3/issues/47[#47]).
 
 Eventually, we envision introducing a dedicated block macro to represent a spine item so that we don't overload the meaning of the include directive.
 However, for the time being, the include directive will suit this purpose.
