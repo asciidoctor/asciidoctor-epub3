@@ -405,7 +405,7 @@ You just need to specify the format (`-a ebook-format`) as `kf8`.
 
  $ asciidoctor-epub3 -D output -a ebook-format=kf8 data/samples/sample-book.adoc
 
-When the script completes, you'll see the file [file]_sample-book.mobi_ appear in the [path]_output_ directory.
+When the script completes, you'll see the file [file]_sample-book.mobi_ as well as [file]_sample-book-kf8.epub_ (the precursor) appear in the [path]_output_ directory.
  
 KindleGen does mandatory validation so you don't need to run the `validate` command after converting to KF8/MOBI.
 
