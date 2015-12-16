@@ -41,6 +41,11 @@ body.gitden-reader a:link {
     margin: 0 !important;
   }*/
 
+  body p {
+    /* disable hyphenation since it causes Kindle for Mac to crash */
+    -webkit-hyphens: none;
+  }
+
   /* text-rendering is the only way to enable kerning in Kindle (and Calibre, though it seems to kern automatically) */
   /* personally, I think Kindle overdoes kerning, but we're running with it for now */
   h1, h2, h3, h4, h5, h6,
