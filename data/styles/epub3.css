@@ -29,7 +29,7 @@ body {
   /* don't use !important on margin as it breaks calibre */
   margin: 0;
   font-size: 100%;
-  /* NOTE putting optimizeLegibility on the body slow down rendering considerably */
+  /* NOTE putting optimizeLegibility on the body slows down rendering considerably */
   text-rendering: optimizeSpeed;
   /* -webkit-font-smoothing has no noticable effect and is controversial, so leaving it off */
 }
