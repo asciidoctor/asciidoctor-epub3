@@ -18,4 +18,4 @@ include::sample-content.adoc[]
 
 include::asciidoctor-js-introduction.adoc[]
 
-include::asciidoctor-js-extension.adoc[]
+include::asciidoctor-js-browser-extension.adoc[]

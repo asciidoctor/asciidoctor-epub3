@@ -18,7 +18,7 @@ The resulting JavaScript can be executed in any JavaScript runtime environment, 
 
 == Proving the concept
 
-When I first discovered Opal, I thought to myself, ``Sure, this could work.''
+When I first discovered Opal, I thought to myself, "`Sure, this could work.`"
 Little did I know that achieving this proof of concept was more than a small task.
 
 The effort involved filling gaps in Opal to support all the features of the Ruby standard library that Asciidoctor uses, as well as changes in Asciidoctor to make it compatible with constraints imposed by JavaScript (such as immutable strings).
@@ -43,7 +43,7 @@ As we learn to optimize Opal, the size of the generated files should become quit
 ====
 
 You need to load both files into your JavaScript environment to use Asciidoctor.
-For instance, in an HTML page, add these two +<script>+ tags (ideally at the bottom of the page):
+For instance, in an HTML page, add these two `<script>` tags (ideally at the bottom of the page):
 
 [source,html]
 ----

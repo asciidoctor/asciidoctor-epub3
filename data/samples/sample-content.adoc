@@ -16,7 +16,7 @@ In most cases, the title is displayed immediately above the content.
 If the content is a figure or image, the title is displayed below the content.
 
 A block title is defined on a line above the element.
-The line must begin with a dot (+.+) and be followed immediately by the title text with no spaces inbetween.
+The line must begin with a dot (`.`) and be followed immediately by the title text with no spaces inbetween.
 
 Here's an example of a list with a title:
 
@@ -107,7 +107,7 @@ Warning:: Used to inform the reader of potential risks.
 Caution:: Also used to inform the reader of potential risks, take your pick.
 
 When you want to call attention to a single paragraph, start the first line of the paragraph with the label you want to use.
-The label must be uppercase and followed by a colon (+:+).
+The label must be uppercase and followed by a colon (`:`).
 
 WARNING: Wolpertingers are known to nest in server racks.
 Enter at your own risk.
@@ -131,7 +131,7 @@ While werewolves are hardy community members, keep in mind the following dietary
 
 Quotes, prose excerpts and verses share the same syntax structure, including:
 
-* style attribute, either +quote+ or +verse+ 
+* style attribute, either `quote` or `verse`
 * name of who the content is attributed to
 * biblographical information of the book, speech, play, etc., where the content was drawn from
 * excerpt text
