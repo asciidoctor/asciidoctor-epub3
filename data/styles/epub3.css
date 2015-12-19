@@ -84,6 +84,7 @@ b.button {
   font-weight: normal;
   text-shadow: 1px 0 0 #B3B3B1;
   color: #191918;
+  white-space: nowrap;
 }
 
 b.button .label {
