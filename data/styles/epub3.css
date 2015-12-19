@@ -1292,3 +1292,17 @@ nav#toc ol {
 .icon {
   display: none;
 }
+
+/* NOTE mobi7 doesn't support custom fonts, so revert to generic ones */
+@media amzn-mobi {
+  body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,
+  table.table th, table.table td, div.verse .attribution {
+    font-family: serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: sans-serif;
+  }
+  code, kbd, pre, i.conum {
+    font-family: monospace;
+  }
+}
