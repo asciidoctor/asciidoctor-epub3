@@ -28,7 +28,7 @@ only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
 
   /*body.namo-epub-library > section.chapter {
     margin: 0 5pt;
-  }  */
+  }*/
 }
 
 body.gitden-reader a:link {
@@ -42,7 +42,7 @@ body.gitden-reader a:link {
   }*/
 
   body p {
-    /* disable hyphenation since it causes Kindle for Mac to crash */
+    /* hyphenation causes Kindle for Mac to crash, so explicitly disable it */
     -webkit-hyphens: none;
   }
 
