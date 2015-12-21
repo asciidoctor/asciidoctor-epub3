@@ -293,7 +293,8 @@ figcaption, caption {
 }
 
 code, kbd, pre {
-  font-family: "M+ 1mn", monospace;
+  /* !important must be set on monospace elements in Kindle to preserve font-family when reader changes body font */
+  font-family: "M+ 1mn", monospace !important;
   color: #191918;
 }
 
@@ -384,8 +385,8 @@ div.callout-list ol li {
 }
 
 i.conum {
-  font-family: "M+ 1mn", monospace;
-  /*text-rendering: geometricPrecision;*/
+  /* !important must be set on monospace elements in Kindle to preserve font-family when reader changes body font */
+  font-family: "M+ 1mn", monospace !important;
   color: #468C54;
   font-style: normal;
 }
