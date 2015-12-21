@@ -48,11 +48,14 @@ body.gitden-reader a:link {
 
   /* text-rendering is the only way to enable kerning in Kindle (and Calibre, though it seems to kern automatically) */
   /* personally, I think Kindle overdoes kerning, but we're running with it for now */
+  /* text-rendering: optimizeLegibility kills certain Kindle eInk devices */
+  /*
   h1, h2, h3, h4, h5, h6,
   body p, li, dd, blockquote > footer,
   th, td, figcaption, caption {
     text-rendering: optimizeLegibility;
   }
+  */
 
   /* hack line height of subtitle using floats on Kindle */
   h1.chapter-title .subtitle {
