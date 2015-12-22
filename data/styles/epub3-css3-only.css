@@ -35,7 +35,7 @@ body.gitden-reader a:link {
   color: #333332 !important;
 }
 
-@media amzn-kf8, amzn-mobi {
+@media amzn-kf8 {
   /* Kindle does its own margin management, so don't use an explicit margin */
   /*body {
     margin: 0 !important;
