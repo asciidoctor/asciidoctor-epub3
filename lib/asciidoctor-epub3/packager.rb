@@ -58,9 +58,20 @@ module GepubBuilderMixin
       #file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'styles/epub3-css3-only.css', format)
       font_files, font_css = builder.select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
       file 'styles/epub3-fonts.css' => font_css
-      with_media_type 'application/x-font-ttf' do
-        font_files.each do |font_file|
-          file font_file => ::File.join(DATA_DIR, font_file)
+      unless font_files.empty?
+        # NOTE metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
+        #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts'
+        builder.optional_file 'META-INF/com.apple.ibooks.display-options.xml' => '<?xml version="1.0" encoding="UTF-8"?>
+<display_options>
+<platform name="*">
+<option name="specified-fonts">true</option>
+</platform>
+</display_options>'.to_ios
+
+        with_media_type 'application/x-font-ttf' do
+          font_files.each do |font_file|
+            file font_file => ::File.join(DATA_DIR, font_file)
+          end
         end
       end
     end
