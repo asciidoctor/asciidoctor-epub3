@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             lines << %(<span class="principal">#{dd.text}</span>) if dd.text?
             lines << dd.content
           else
-            lines << dd.text
+            lines << %(<span class="principal">#{dd.text}</span>)
           end
           lines << '</dd>'
         end
