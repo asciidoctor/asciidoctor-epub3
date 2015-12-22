@@ -588,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     ol_class_attr = ol_classes.empty? ? nil : %( class="#{ol_classes * ' '}")
     id_attribute = node.id ? %( id="#{node.id}") : nil
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
-    lines << %(<h3>#{node.title}</h3>) if node.title?
+    lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
     lines << %(<ol#{ol_class_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : nil}>)
     node.items.each do |item|
       lines << %(<li>
@@ -616,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     ul_class_attr = ul_classes.empty? ? nil : %( class="#{ul_classes * ' '}")
     id_attribute = node.id ? %( id="#{node.id}") : nil
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
-    lines << %(<h3>#{node.title}</h3>) if node.title?
+    lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
     lines << %(<ul#{ul_class_attr}>)
     node.items.each do |item|
       lines << %(<li>
