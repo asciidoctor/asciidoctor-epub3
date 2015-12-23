@@ -35,24 +35,31 @@ body.gitden-reader a:link {
   color: #333332 !important;
 }
 
+body h1, body h2, body h3:not(.list-heading), body h4, body h5, body h6,
+h1 :not(code), h2 :not(code), h3:not(.list-heading) :not(code), h4 :not(code), h5 :not(code), h6 :not(code) {
+  /* !important required to override custom font setting in Kindle / Gitden / Namo */
+  /* Gitden requires the extra weight of a parent selector, bolds headings when custom font is specified */
+  /* Kindle and Gitden require the override for child elements of headings */
+  font-family: "M+ 1p", sans-serif !important;
+}
+
+/* QUESTION what about nested elements inside code? */
+body code, body kbd, body pre, pre :not(code) {
+  /* !important required to override custom font setting in Kindle / Gitden / Namo */
+  /* Gitden requires the extra weight of a parent selector */
+  /* Kindle and Gitden require the override for child elements of pre */
+  font-family: "M+ 1mn", monospace !important;
+}
+
 @media amzn-kf8 {
   /* Kindle does its own margin management, so don't use an explicit margin */
   /*body {
     margin: 0 !important;
   }*/
 
-  h1, h2, h3:not(.list-heading), h4, h5, h6 {
-    font-family: "M+ 1p", sans-serif !important; /* !important required to override custom font setting in Kindle */
-  }
-
   body p {
     /* hyphenation causes Kindle for Mac to crash, so explicitly disable it */
     -webkit-hyphens: none;
-  }
-
-  /* QUESTION what about nested elements inside code and kbd? */
-  code, kbd, pre, pre *, i.conum {
-    font-family: "M+ 1mn", monospace !important; /* !important required to override custom font setting in Kindle */
   }
 
   /* text-rendering is the only way to enable kerning in Kindle (and Calibre, though it seems to kern automatically) */
@@ -63,10 +70,6 @@ body.gitden-reader a:link {
   th, td, figcaption, caption {
     text-rendering: optimizeLegibility;
   }*/
-
-  h1.chapter-title *:not(code) {
-    font-family: "M+ 1p", sans-serif !important; /* !important with explicit font-family required to override custom font setting in Kindle */
-  }
 
   /* hack line height of subtitle using floats on Kindle */
   h1.chapter-title .subtitle {
@@ -100,7 +103,8 @@ body.gitden-reader a:link {
 /* Font-based icons */
 .icon {
   display: inline-block;
-  font-family: "FontAwesome" !important; /* !important required to override custom font setting in Kindle */
+  /* !important required to override custom font setting in Kindle (since .icon can appear inside a span) */
+  font-family: "FontAwesome" !important;
   font-style: normal !important;
   font-weight: normal !important;
   line-height: 1;
