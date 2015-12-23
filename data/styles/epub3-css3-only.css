@@ -38,8 +38,8 @@ body.gitden-reader a:link {
 body h1, body h2, body h3:not(.list-heading), body h4, body h5, body h6,
 h1 :not(code), h2 :not(code), h3:not(.list-heading) :not(code), h4 :not(code), h5 :not(code), h6 :not(code) {
   /* !important required to override custom font setting in Kindle / Gitden / Namo */
-  /* Gitden requires the extra weight of a parent selector, bolds headings when custom font is specified */
-  /* Kindle and Gitden require the override for child elements of headings */
+  /* Gitden requires the extra weight of a parent selector; it also makes headings bold when custom font is specified */
+  /* Kindle and Gitden require the override on heading child elements */
   font-family: "M+ 1p", sans-serif !important;
 }
 
@@ -47,7 +47,7 @@ h1 :not(code), h2 :not(code), h3:not(.list-heading) :not(code), h4 :not(code), h
 body code, body kbd, body pre, pre :not(code) {
   /* !important required to override custom font setting in Kindle / Gitden / Namo */
   /* Gitden requires the extra weight of a parent selector */
-  /* Kindle and Gitden require the override for child elements of pre */
+  /* Kindle and Gitden require the override on pre child elements */
   font-family: "M+ 1mn", monospace !important;
 }
 
