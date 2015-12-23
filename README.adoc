@@ -133,7 +133,7 @@ Author Name
 Here's an example showing the structure of a chapter document:
 
 ----
-[#chapter-one]
+[[chapter-one]]
 = Chapter One
 
 chapter content
