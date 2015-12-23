@@ -7,6 +7,7 @@
 .Gem
 * Add step in `rake release` to set version back to *.dev
 * Don't package sample documents (create separate folder in repo)
+
 //^
 
 .Converter
@@ -34,6 +35,7 @@
 * implement checklists
 * quiet flag
 * upgrade to kindlegen 2.9.6 (only works for Ruby >= 2.0.0)
+
 //^
 
 .Packager
@@ -83,16 +85,19 @@
 * better handling of title without subtitle, particularly HTML and CSS
 * add pink theme: http://designplus.co/en/designplus
 * customize id of <item> elements in epub manifest?
+
 //^
 
 .CLI
 * augment Asciidoctor::Cli::Options with --validate and --extract options, pass on as attributes
+
 //^
 
 .Asciidoctor
 * patch sanitize of any section or block title into Asciidoctor
 * generate id for chapter <= make part of Asciidoctor parsing API
 * patch Asciidoctor to replace smart quotes w/ unicode chars instead of entities (glyph replacement mode)
+
 //^
 
 == REVIEW
@@ -117,3 +122,11 @@
 * Control+Shift+u to type in a unicode sequent, then press enter to accept
 * Calibre gets confused when there are local fonts that closely match font in stylesheet, uses them over embedded styles (in particular M+ weights)
 * iBooks info: http://authoradventures.blogspot.com/2013/08/ibooks-tutorial-update-version-30.html
+* selector for all prose text (including symbols)
+
+ body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,
+ table.table th, table.table td, div.verse .attribution {}
+
+* selector for prose sentences / phrases
+
+ body p, li, dd, figcaption, caption, th, td, blockquote > footer {}
