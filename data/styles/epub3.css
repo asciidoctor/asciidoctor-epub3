@@ -200,7 +200,7 @@ td, th {
 
 body a:link {
   color: #333332;
-  /* hack for font color in iBooks */
+  /* hack for font color in iBooks and Gitden (though Gitden would accept color !important too) */
   -webkit-text-fill-color: #333332;
   /* Kindle requires the !important on text-decoration */
   /* In night mode, the only indicator of a link is the underline, so we need it or a background image */
