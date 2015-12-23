@@ -378,10 +378,10 @@ i.conum {
   font-style: normal;
 }
 
-pre i.conum {
-  /* don't let it affect line spacing; REVIEW may not need this! */
-  /*line-height: 1;*/
-}
+/* don't let conum affect line spacing; REVIEW may not need this! */
+/*pre i.conum {
+  line-height: 1;
+}*/
 
 div.callout-list li > i.conum {
   float: left;
@@ -914,6 +914,7 @@ figure.image img {
 }
 
 pre {
+  text-align: left; /* fix for Namo */
   margin-top: 1em; /* 0.85rem */
   /*margin-top: 1.176em;*/ /* 1rem */
   white-space: pre-wrap;
