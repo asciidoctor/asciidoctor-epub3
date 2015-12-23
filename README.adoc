@@ -614,14 +614,17 @@ This enhancement allows you to use styles targeted specifically at that reader.
 Below you can find the readers that are known to support this feature and the CSS class name that gets added to the body element.
 
 ,===
-Reader,body class name
+Reader,HTML Element,CSS Class Name
 
-Gitden,gitden-reader
-Namo PubTreeViewer,namo-epub-library
-Readium,epub-js-viewer
-iBooks,ibooks
-Google Books,gb-reader-container (div)
+Gitden,body,gitden-reader
+Namo PubTreeViewer,body,namo-epub-library
+Readium,body,epub-js-viewer
+iBooks,body,ibooks
+Adobe RMSDK >= 11,body,rmsdk
+Google Books,div,gb-reader-container
 ,===
+
+NOTE: Kobo does not support the epubReadingSystem JavaScript object, despite the fact that it does support JavaScript.
 
 == Pushing to Android
 
