@@ -31,11 +31,23 @@ only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
   }*/
 }
 
-body.gitden-reader a:link {
-  color: #333332 !important;
+body h1, body h2, body h3:not(.list-heading), body h4, body h5, body h6,
+h1 :not(code), h2 :not(code), h3:not(.list-heading) :not(code), h4 :not(code), h5 :not(code), h6 :not(code) {
+  /* !important required to override custom font setting in Kindle / Gitden / Namo */
+  /* Gitden requires the extra weight of a parent selector; it also makes headings bold when custom font is specified */
+  /* Kindle and Gitden require the override on heading child elements */
+  font-family: "M+ 1p", sans-serif !important;
 }
 
-@media amzn-kf8, amzn-mobi {
+/* QUESTION what about nested elements inside code? */
+body code, body kbd, body pre, pre :not(code) {
+  /* !important required to override custom font setting in Kindle / Gitden / Namo */
+  /* Gitden requires the extra weight of a parent selector */
+  /* Kindle and Gitden require the override on pre child elements */
+  font-family: "M+ 1mn", monospace !important;
+}
+
+@media amzn-kf8 {
   /* Kindle does its own margin management, so don't use an explicit margin */
   /*body {
     margin: 0 !important;
@@ -49,13 +61,11 @@ body.gitden-reader a:link {
   /* text-rendering is the only way to enable kerning in Kindle (and Calibre, though it seems to kern automatically) */
   /* personally, I think Kindle overdoes kerning, but we're running with it for now */
   /* text-rendering: optimizeLegibility kills certain Kindle eInk devices */
-  /*
-  h1, h2, h3, h4, h5, h6,
+  /*h1, h2, h3, h4, h5, h6,
   body p, li, dd, blockquote > footer,
   th, td, figcaption, caption {
     text-rendering: optimizeLegibility;
-  }
-  */
+  }*/
 
   /* hack line height of subtitle using floats on Kindle */
   h1.chapter-title .subtitle {
@@ -89,7 +99,8 @@ body.gitden-reader a:link {
 /* Font-based icons */
 .icon {
   display: inline-block;
-  font-family: "FontAwesome";
+  /* !important required to override custom font setting in Kindle (since .icon can appear inside a span) */
+  font-family: "FontAwesome" !important;
   font-style: normal !important;
   font-weight: normal !important;
   line-height: 1;

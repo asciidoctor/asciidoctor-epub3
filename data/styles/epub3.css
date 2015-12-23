@@ -200,7 +200,7 @@ td, th {
 
 body a:link {
   color: #333332;
-  /* hack for font color in iBooks */
+  /* hack for font color in iBooks and Gitden (though Gitden would accept color !important too) */
   -webkit-text-fill-color: #333332;
   /* Kindle requires the !important on text-decoration */
   /* In night mode, the only indicator of a link is the underline, so we need it or a background image */
@@ -240,19 +240,13 @@ code.literal {
 h1, h2, h3, h4, h5, h6 {
   font-family: "M+ 1p", sans-serif;
   font-weight: 400;
-  text-align: left;
-  color: #333332;
   letter-spacing: -0.01em;
-  /* disable hyphenation, such as in iBooks */
-  -webkit-hyphens: none;
-  /* force super-long words to break */
-  word-break: break-word;
-
-  /* NOTE: Kindle doesn't allow the line-height to be less than the font size (refer to heading font sizes) */
+  /* NOTE Kindle doesn't allow the line-height to be less than the font size (refer to heading font sizes) */
   line-height: 1.4; /* or 1.2125 */
+  text-align: left;
 
-  margin: 0;
-  padding: 0;
+  -webkit-hyphens: none; /* disable hyphenation, such as in iBooks */
+  word-break: break-word; /* force super-long words to break */
 
   /* avoiding page breaks does not seem to work in Kindle */
   -webkit-column-break-inside: avoid;
@@ -267,29 +261,25 @@ body p {
   margin: 1em 0 0 0;
   text-indent: 0;
 
-  font-family: "Noto Serif", serif;
-  color: #333332;
-  line-height: 1.6;
   text-align: justify;
-  /* Signal to iBooks that hypens are okay here */
-  -webkit-hyphens: auto;
+  -webkit-hyphens: auto; /* signal to iBooks that hypens are okay here */
 
   widows: 2;
   orphans: 2;
 }
 
+body p,
 ul, ol, li, dl, dt, dd, footer,
-div.verse .attribution, table.table th, table.table td {
+div.verse .attribution, table.table th, table.table td,
+figcaption, caption {
+  /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
+  /* NOTE iBooks honors Original font for prose text if declared in display-options.xml */
   font-family: "Noto Serif", serif;
   color: #333332;
 }
 
-li, dt, dd, footer {
+body p, li, dt, dd, footer {
   line-height: 1.6;
-}
-
-figcaption, caption {
-  font-family: "Noto Serif", serif;
 }
 
 code, kbd, pre {
@@ -302,12 +292,11 @@ h1, h2, h3, h4, h5, h6,
 body p, li, dd, blockquote > footer,
 th, td, figcaption, caption {
   /* forward-compatible CSS to enable kerning (if we want ligatures, add "liga" and "dlig") */
-  /* WebKits that doesn't recognize these properties don't kern well, hence why we don't just enable kerning via text-rendering */
-  /*text-rendering: optimizeLegibility;*/
+  /* WebKits that don't recognize these properties don't kern well, hence why we don't simply enable kerning via text-rendering */
   -webkit-font-feature-settings: "kern";
   font-feature-settings: "kern";
   font-kerning: normal;
-  /* NOTE: see Kindle hack in epub3-css3-only.css for additional kerning settings */
+  /* NOTE see Kindle hack in epub3-css3-only.css for additional kerning settings (disabled) */
 }
 
 p.last::after {
@@ -315,7 +304,7 @@ p.last::after {
   display: inline-block;
   font-family: "FontAwesome";
   font-size: 1em;
-  content: "\f121"; /* </> */
+  content: "\f121"; /* i.e., </> */
   margin-left: 0.25em;
 }
 
@@ -385,15 +374,14 @@ div.callout-list ol li {
 
 i.conum {
   font-family: "M+ 1mn", monospace;
-  /*text-rendering: geometricPrecision;*/
   color: #468C54;
   font-style: normal;
 }
 
-pre i.conum {
-  /* don't let it affect line spacing; REVIEW may not need this! */
-  /*line-height: 1;*/
-}
+/* don't let conum affect line spacing; REVIEW may not need this! */
+/*pre i.conum {
+  line-height: 1;
+}*/
 
 div.callout-list li > i.conum {
   float: left;
@@ -417,23 +405,19 @@ div.ordered-list div.description-list {
   margin-top: 0;
 }
 
-/*
-div.description-list div.itemized-list,
+/*div.description-list div.itemized-list,
 div.description-list div.ordered-list,
 div.description-list div.description-list {
-}
-*/
+}*/
 
-div.itemized-list > h3,
-div.ordered-list > h3,
-div.description-list > h3 {
+h3.list-heading {
   font-size: 1em;
   font-family: "Noto Serif", serif;
   font-weight: bold;
   line-height: 1.6;
-  color: #333332;
+  margin-top: 1em;
+  margin-bottom: -0.25em;
   letter-spacing: 0;
-  word-spacing: 0;
 }
 
 div.stack li strong.subject,
@@ -463,9 +447,6 @@ body:first-of-type ul ul ul {
 }
 
 ul > li::before {
-  /*
-  text-rendering: geometricPrecision;
-  */
   float: left;
   margin-left: -1em;
   margin-top: -0.05em;
@@ -547,35 +528,24 @@ ul.references > li > span.principal {
   text-align: left;
 }
 
-h1, h1 code,
-h2, h2 code {
-  color: #333332;
-}
-
 /* sized based on the major third modular scale (4:5, 16px, 24px) */
 h1, h2 {
+  color: #333332;
   font-size: 1.5em;
   word-spacing: -0.075em;
   margin-top: 1em; /* 1.5rem */
   margin-bottom: -0.3333em; /* -0.5rem, 0.5rem to content */
 }
 
-h3, h3 code {
-  color: #333332;
-}
-
 h3 {
+  color: #333332;
   font-size: 1.25em;
-  word-spacing: 0;
   margin-top: 0.84em; /* 1.05rem */
   margin-bottom: -0.5em; /* -0.625rem, 0.375rem to content */
 }
 
-h4, h4 code {
-  color: #4F4F4C;
-}
-
 h4 {
+  color: #4F4F4C;
   font-weight: 200;
 
   font-size: 1.1em;
@@ -589,11 +559,8 @@ h4 {
   margin-bottom: -0.625em; /* -0.75rem, 0.25rem to content */
 }
 
-h5, h5 code {
-  color: #666665;
-}
-
 h5 {
+  color: #666665;
   /*
   font-size: 1em;
   text-transform: uppercase;
@@ -606,6 +573,10 @@ h5 {
   text-transform: uppercase;
   margin-top: 1.11em; /* 1rem */
   margin-bottom: -0.972em; /* -0.875rem */
+}
+
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+  color: inherit;
 }
 
 h5 code {
@@ -943,6 +914,7 @@ figure.image img {
 }
 
 pre {
+  text-align: left; /* fix for Namo */
   margin-top: 1em; /* 0.85rem */
   /*margin-top: 1.176em;*/ /* 1rem */
   white-space: pre-wrap;
@@ -1291,4 +1263,18 @@ nav#toc ol {
 
 .icon {
   display: none;
+}
+
+/* NOTE mobi7 doesn't support custom fonts, so revert to generic ones */
+@media amzn-mobi {
+  body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,
+  table.table th, table.table td, div.verse .attribution {
+    font-family: serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: sans-serif;
+  }
+  code, kbd, pre, i.conum {
+    font-family: monospace;
+  }
 }

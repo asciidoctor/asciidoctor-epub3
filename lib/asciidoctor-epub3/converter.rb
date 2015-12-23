@@ -149,14 +149,21 @@ class ContentConverter
     content = node.content
 
     # NOTE must run after content is resolved
-    # NOTE pubtree requires icon CSS to be repeated inside <body> (or in a linked stylesheet); perhaps create dynamic CSS file?
-    icon_css = unless @icon_names.empty?
+    # NOTE pubtree requires icon CSS to be repeated inside <body> (or in a linked stylesheet); wrap in div to hide from Aldiko
+    # TODO perhaps create dynamic CSS file?
+    if @icon_names.empty?
+      icon_css_head = icon_css_scoped = nil
+    else
       icon_defs = @icon_names.map {|name|
         %(.i-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
       } * EOL
-      %(<style>
+      icon_css_head = %(<style>
 #{icon_defs}
 </style>
+)
+      icon_css_scoped = %(<div style="display: none" aria-hidden="true"><style scoped="scoped">
+#{icon_defs}
+</style></div>
 )
     end
 
@@ -168,7 +175,7 @@ class ContentConverter
 <title>#{doctitle_sanitized}</title>
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
 <link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
-#{icon_css}<script type="text/javascript">
+#{icon_css_head}<script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function(event) {
   var epubReader = navigator.epubReadingSystem;
   if (!epubReader) {
@@ -182,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 </head>
 <body>
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
-#{icon_css && (icon_css.sub '<style>', '<style scoped="scoped">')}<header>
+#{icon_css_scoped}<header>
 <div class="chapter-header">
 <p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>
 <h1 class="chapter-title">#{title_upper}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted_upper}</small>] : nil}</h1>
@@ -562,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             lines << %(<span class="principal">#{dd.text}</span>) if dd.text?
             lines << dd.content
           else
-            lines << dd.text
+            lines << %(<span class="principal">#{dd.text}</span>)
           end
           lines << '</dd>'
         end
@@ -581,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     ol_class_attr = ol_classes.empty? ? nil : %( class="#{ol_classes * ' '}")
     id_attribute = node.id ? %( id="#{node.id}") : nil
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
-    lines << %(<h3>#{node.title}</h3>) if node.title?
+    lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
     lines << %(<ol#{ol_class_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : nil}>)
     node.items.each do |item|
       lines << %(<li>
@@ -609,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     ul_class_attr = ul_classes.empty? ? nil : %( class="#{ul_classes * ' '}")
     id_attribute = node.id ? %( id="#{node.id}") : nil
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
-    lines << %(<h3>#{node.title}</h3>) if node.title?
+    lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
     lines << %(<ul#{ul_class_attr}>)
     node.items.each do |item|
       lines << %(<li>
