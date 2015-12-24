@@ -49,13 +49,19 @@ module GepubBuilderMixin
 
     # TODO improve design/UX of custom theme functionality, including custom fonts
     resources do
-      file 'styles/epub3.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
-      file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+      if format == :kf8
+        # NOTE add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
+        file 'styles/epub3.css' => '@import url("epub3-proxied.css");'.to_ios
+        file 'styles/epub3-css3-only.css' => '@import url("epub3-css3-only-proxied.css");'.to_ios
+        file 'styles/epub3-proxied.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
+        file 'styles/epub3-css3-only-proxied.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+      else
+        file 'styles/epub3.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
+        file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+      end
     end
 
     resources do
-      #file 'styles/epub3.css' => (builder.postprocess_css_file 'styles/epub3.css', format)
-      #file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'styles/epub3-css3-only.css', format)
       font_files, font_css = builder.select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
       file 'styles/epub3-fonts.css' => font_css
       unless font_files.empty?
