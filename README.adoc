@@ -94,7 +94,7 @@ See {worklog-uri}[WORKLOG.adoc].
 == Converter Workflow
 
 {project-name} takes a single, logical AsciiDoc document as input and converts it to an EPUB3 publication archive (often described as a “website in a box”).
-Using the EPUB3 publication as the “digital master”, {project-name} can then produce a KF8/MOBI, the file format required by Amazon Kindle.
+Using the EPUB3 publication as the “digital master”, {project-name} then produces a KF8/MOBI file, the format required by Amazon Kindle.
 The conversion to KF8/MOBI is performed by sending the EPUB3 through http://www.amazon.com/gp/feature.html?docId=1000765211[KindleGen].
 
 An EPUB3 archive is typically structured with the contents of each “chapter” in a separate XHTML file.
@@ -318,6 +318,9 @@ The recommended practice is to identify the referenced resource by means of a st
 |epub-properties
 |An optional override of the properties attribute for this document's item in the manifest.
 _Only applies to a chapter document._
+
+|epub3-stylesdir
+|The path to a directory that contains alternate epub3.css and epub3-css3-only.css files to customize the look and feel.
 
 |doctype
 |Effectively ignored.
