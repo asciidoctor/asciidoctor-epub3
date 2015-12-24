@@ -49,24 +49,30 @@ module GepubBuilderMixin
 
     # TODO improve design/UX of custom theme functionality, including custom fonts
     resources do
-      file 'styles/epub3.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
-      file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+      if format == :kf8
+        # NOTE add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
+        file 'styles/epub3.css' => '@import url("epub3-proxied.css");'.to_ios
+        file 'styles/epub3-css3-only.css' => '@import url("epub3-css3-only-proxied.css");'.to_ios
+        file 'styles/epub3-proxied.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
+        file 'styles/epub3-css3-only-proxied.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+      else
+        file 'styles/epub3.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
+        file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+      end
     end
 
     resources do
-      #file 'styles/epub3.css' => (builder.postprocess_css_file 'styles/epub3.css', format)
-      #file 'styles/epub3-css3-only.css' => (builder.postprocess_css_file 'styles/epub3-css3-only.css', format)
       font_files, font_css = builder.select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
       file 'styles/epub3-fonts.css' => font_css
       unless font_files.empty?
         # NOTE metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
-        #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts'
+        #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
         builder.optional_file 'META-INF/com.apple.ibooks.display-options.xml' => '<?xml version="1.0" encoding="UTF-8"?>
 <display_options>
 <platform name="*">
 <option name="specified-fonts">true</option>
 </platform>
-</display_options>'.to_ios
+</display_options>'.to_ios unless format == :kf8
 
         with_media_type 'application/x-font-ttf' do
           font_files.each do |font_file|
@@ -457,6 +463,7 @@ class Packager
     end
 
     if fmt == :kf8
+      # QUESTION shouldn't we validate this epub file too?
       distill_epub_to_mobi epub_file, target
     elsif options[:validate]
       validate_epub epub_file

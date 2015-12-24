@@ -133,7 +133,7 @@ Quotes, prose excerpts and verses share the same syntax structure, including:
 
 * style attribute, either `quote` or `verse`
 * name of who the content is attributed to
-* biblographical information of the book, speech, play, etc., where the content was drawn from
+* bibliographical information of the book, speech, play, etc., where the content was drawn from
 * excerpt text
 
 .Anatomy of a basic quote

@@ -596,7 +596,7 @@ We've covered all the scenarios!
 Hey WebKit, you've been Unicode punked!
 
 *UPDATE:* The zero-width no-break space was deprecated in favor of the word joiner.
-However, as we've discovered, font support for the word joiner is absymal, whereas the zero-width no-break space is supported everywhere we've checked.
+However, as we've discovered, font support for the word joiner is abysmal, whereas the zero-width no-break space is supported everywhere we've checked.
 Therefore, we've decided to go with the zero-width no-break space to avoid nasty rectangle outlines from font bombing your content.
 
 _By adding the +++<del>word joiner</del>+++ zero-width no-break space character immediately after any inline element, we can trick WebKit into justifying the text properly, as shown in the second screenshot above._

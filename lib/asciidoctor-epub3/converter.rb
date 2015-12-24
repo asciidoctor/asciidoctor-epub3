@@ -149,7 +149,6 @@ class ContentConverter
     content = node.content
 
     # NOTE must run after content is resolved
-    # NOTE pubtree requires icon CSS to be repeated inside <body> (or in a linked stylesheet); wrap in div to hide from Aldiko
     # TODO perhaps create dynamic CSS file?
     if @icon_names.empty?
       icon_css_head = icon_css_scoped = nil
@@ -161,7 +160,8 @@ class ContentConverter
 #{icon_defs}
 </style>
 )
-      icon_css_scoped = %(<div style="display: none" aria-hidden="true"><style scoped="scoped">
+      # NOTE Namo Pubtree requires icon CSS to be repeated inside <body> (or in a linked stylesheet); wrap in div to hide from Aldiko
+      icon_css_scoped = (node.attr? 'ebook-format', 'kf8') ? nil : %(<div style="display: none" aria-hidden="true"><style scoped="scoped">
 #{icon_defs}
 </style></div>
 )
