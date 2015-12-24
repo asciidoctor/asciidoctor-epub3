@@ -244,8 +244,8 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.4; /* or 1.2125 */
   text-align: left;
 
-  -webkit-hyphens: none; /* disable hyphenation, such as in iBooks */
-  word-break: break-word; /* force super-long words to break */
+  -webkit-hyphens: none; /* disable hyphenation where supported (e.g., iBooks) */
+  word-wrap: break-word; /* break in middle of long word if no other break opportunities are available */
 
   /* avoiding page breaks does not seem to work in Kindle */
   -webkit-column-break-inside: avoid;
