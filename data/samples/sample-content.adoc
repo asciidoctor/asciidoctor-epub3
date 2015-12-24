@@ -7,7 +7,7 @@ Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 :language: asciidoc
 
 [abstract]
-This sample guide describes the some Asciidoctor attributes, values, and layout options available for producing a customized and polished document.
+This sample guide describes several Asciidoctor attributes, values, and layout options available for producing a customized and polished document.
 
 == Block titles
 
