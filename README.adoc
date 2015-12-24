@@ -66,7 +66,7 @@ Of course, there's always room for improvement, so we'll continue to work with y
 * Direct AsciiDoc to EPUB3 conversion
 * Direct AsciiDoc to KF8/MOBI conversion
 * Highly-aesthetic and readable styles with optimized text legibility
-* Respects user font selection (if supported by the reader) without affecting headings, code or icons
+* Respects font settings (if supported by the reader) without altering headings, code or icons
 * EPUB3 metadata, manifest and spine (assembled by Gepub)
 * Document metadata (title, authors, subject, keywords, etc.)
 * Internal cross reference links (not yet between chapters)
