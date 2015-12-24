@@ -60,13 +60,13 @@ module GepubBuilderMixin
       file 'styles/epub3-fonts.css' => font_css
       unless font_files.empty?
         # NOTE metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
-        #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts'
+        #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
         builder.optional_file 'META-INF/com.apple.ibooks.display-options.xml' => '<?xml version="1.0" encoding="UTF-8"?>
 <display_options>
 <platform name="*">
 <option name="specified-fonts">true</option>
 </platform>
-</display_options>'.to_ios
+</display_options>'.to_ios unless format == :kf8
 
         with_media_type 'application/x-font-ttf' do
           font_files.each do |font_file|
@@ -457,6 +457,7 @@ class Packager
     end
 
     if fmt == :kf8
+      # QUESTION shouldn't we validate this epub file too?
       distill_epub_to_mobi epub_file, target
     elsif options[:validate]
       validate_epub epub_file
