@@ -709,6 +709,7 @@ To see all of the workarounds and why we chose certain style options, check out 
 * won't style footers without an explicit class
 * `-webkit-hyphens: auto` causes Kindle for Mac (and perhaps others) to crash
 * `text-rendering: optimizeLegibility` causes file to be rejected by KFP (and causes the text to disappear in some previewers)
+* Kindle Direct Publishing (KDP) strips out select font-related CSS rules (e.g., `font-family`) under certain conditions (for reasons that have proved nearly impossible to reverse engineer); the known workaround is to add a layer of indirection by using `@import` to hide the CSS files from the script
 
 === Send to Kindle
 
