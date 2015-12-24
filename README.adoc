@@ -619,7 +619,7 @@ Reader,HTML Element,CSS Class Name
 
 Gitden,body,gitden-reader
 Namo PubTreeViewer,body,namo-epub-library
-Readium,body,epub-js-viewer
+Readium,body,readium-js-viewer
 iBooks,body,ibooks
 Adobe RMSDK >= 11,body,rmsdk
 Google Books,div,gb-reader-container
