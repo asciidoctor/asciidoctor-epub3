@@ -703,6 +703,8 @@ To see all of the workarounds and why we chose certain style options, check out 
 * `max-width` isn't supported
 * `widows` are left in the cold
 * won't style footers without an explicit class
+* `-webkit-hyphens: auto` causes Kindle for Mac (and perhaps others) to crash
+* `text-rendering: optimizeLegibility` causes file to be rejected by KFP (and causes the text to disappear in some previewers)
 
 === Send to Kindle
 
