@@ -269,10 +269,10 @@ body p,
 ul, ol, li, dl, dt, dd, footer,
 div.verse .attribution, table.table th, table.table td,
 figcaption, caption {
+  color: #333332;
   /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
   /* NOTE iBooks honors Original font for prose text if declared in display-options.xml */
   font-family: "Noto Serif", serif;
-  color: #333332;
 }
 
 body p, li, dt, dd, footer {
@@ -371,8 +371,8 @@ div.callout-list ol li {
 }
 
 i.conum {
-  font-family: "M+ 1mn", monospace;
   color: #468C54;
+  font-family: "M+ 1mn", monospace;
   font-style: normal;
 }
 
@@ -955,6 +955,7 @@ div.verse {
   page-break-inside: avoid;
 }
 
+/* TODO we may want to reenable hyphens here, but not for kf8 */
 div.verse > pre {
   background-color: transparent;
   border: none;
@@ -1264,8 +1265,8 @@ nav#toc ol {
   display: none;
 }
 
-/* NOTE mobi7 doesn't support custom fonts, so revert to generic ones */
 @media amzn-mobi {
+  /* NOTE mobi7 doesn't support custom fonts, so revert to generic ones */
   body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,
   table.table th, table.table td, div.verse .attribution {
     font-family: serif;
