@@ -53,11 +53,6 @@ body code, body kbd, body pre, pre :not(code) {
     margin: 0 !important;
   }*/
 
-  body p {
-    /* hyphenation causes Kindle for Mac to crash, so explicitly disable it */
-    -webkit-hyphens: none;
-  }
-
   /* text-rendering is the only way to enable kerning in Kindle (and Calibre, though it seems to kern automatically) */
   /* personally, I think Kindle overdoes kerning, but we're running with it for now */
   /* text-rendering: optimizeLegibility kills certain Kindle eInk devices */

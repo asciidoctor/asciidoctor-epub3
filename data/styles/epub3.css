@@ -258,10 +258,8 @@ h1, h2, h3, h4, h5, h6 {
 /* We'll just use the stronger rule for all paragraph-related stuff to be sure */
 body p {
   margin: 1em 0 0 0;
-  text-indent: 0;
-
   text-align: justify;
-  -webkit-hyphens: auto; /* signal to iBooks that hypens are okay here */
+  text-indent: 0;
 
   widows: 2;
   orphans: 2;
