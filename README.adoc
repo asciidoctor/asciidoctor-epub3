@@ -704,6 +704,12 @@ To see all of the workarounds and why we chose certain style options, check out 
 * `widows` are left in the cold
 * won't style footers without an explicit class
 
+=== Send to Kindle
+
+The “Send to Kindle” feature, used for transferring a MOBI file to a Kindle device, is known to strip out all the font files.
+Therefore, if you use this feature, don't be surprised to see default fonts and missing font-based icons.
+We recommend that you transfer the file using other means, such as a USB cable or a sync service like Dropbox.
+
 ////
 head-stop (default '.')
 stack-head role (run-in is default)
