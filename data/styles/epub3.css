@@ -918,7 +918,8 @@ pre {
   margin-top: 1em; /* 0.85rem */
   /*margin-top: 1.176em;*/ /* 1rem */
   white-space: pre-wrap;
-  word-wrap: break-word;
+  /*word-break: break-all;*/ /* break at the end of the line, no matter what */
+  word-wrap: break-word; /* break in middle of long word if no other break opportunities are available */
   font-size: 0.85em;
   line-height: 1.4; /* matches what Kindle uses and can't go less */
   background-color: #F2F2F2;
