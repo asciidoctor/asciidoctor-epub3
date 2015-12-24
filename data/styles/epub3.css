@@ -282,8 +282,9 @@ body p, li, dt, dd, footer {
 }
 
 code, kbd, pre {
-  font-family: "M+ 1mn", monospace;
   color: #191918;
+  font-family: "M+ 1mn", monospace;
+  -webkit-hyphens: none; /* disable hyphenation where supported (e.g., iBooks) */
 }
 
 /* QUESTION should we kern preformatted text blocks? */
