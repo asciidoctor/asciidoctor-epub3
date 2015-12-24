@@ -31,6 +31,7 @@
 * MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
 * MEDIUM: source highlighting using Rouge (instead of Pygments)
 * QUESTION: add word joiner before inline tags too?
+* we could detect Calibre by looking for the window.calibre_utils object
 * packager doesn't resolve include files in subdirectory totally correctly
 * implement checklists
 * quiet flag
@@ -60,6 +61,8 @@
   - see if Google Play books supports JavaScript and epubReadingSystem (no, but adds its own class to body)
 * CRITICAL: use a following sibling selector for :first-line in abstract so it works when page is partitioned (e.g., in Google Play Books)
 * CRITICAL: add support for different numbering systems (lowergreek, etc)
+* HIGH: kindlegen no longer strips <header> elements, so we can drop our div wrapper hack
+* HIGH: don't set text color so light on monochrome devices (use media query to detect)
 * HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute (don't use word joiner in this case)
 * HIGH: image border option (or add drop shadow to screenshots in README)
 * HIGH: review the table border color
