@@ -580,18 +580,18 @@ Here's the HTML source of the first sentence from the screenshots:
 
 WebKit treats the space following an inline element as insignificant and thus fails to account for it when justifying the text.
 
-At first glance, you might think to add a normal space character before the closing tag of the inline element (e.g., `<a href="...">Fork </a>`).
+At first glance, you might think to add a normal space character before the closing tag of the inline element (e.g., `+<a href="...">Fork </a>+`).
 However, that would cause any underline beneath links to extend past the end of the word.
 
-At second glance, you might think to add a zero-width space character immediately following the element (e.g., `<a href="...">Fork</a>&#x200b;`).
+At second glance, you might think to add a zero-width space character immediately following the element (e.g., `+<a href="...">Fork</a>&#x200b;+`).
 However, that's problematic if the next character is a period or other punctuation because it introduces a wrap opportunity where there shouldn't be one.
 
-Reflecting on the problem of the zero-width space brings us to either the http://www.fileformat.info/info/unicode/char/FEFF/index.htm[zero-width no-break space] character (e.g., `<a href="...">Fork</a>&#xfeff`) or the http://www.fileformat.info/info/unicode/char/2060/index.htm[word joiner] character (e.g., `<a href="...">Fork</a>&#x2060;`).
+Reflecting on the problem of the zero-width space brings us to either the http://www.fileformat.info/info/unicode/char/FEFF/index.htm[zero-width no-break space] character (e.g., `+<a href="...">Fork</a>&#xfeff+`) or the http://www.fileformat.info/info/unicode/char/2060/index.htm[word joiner] character (e.g., `+<a href="...">Fork</a>&#x2060;+`).
 Like the zero-width space, these characters occupy no space.
 However, instead of introducing a wrap opportunity, they prevent one.
 
 But here's the clincher.
-If the character following a zero-width non-break space or a word joiner is a normal space (e.g., `<a href="...">Fork</a>&#xfeff; the`), then it behaves just like a regular space.
+If the character following a zero-width non-break space or a word joiner is a normal space (e.g., `+<a href="...">Fork</a>&#xfeff; the+`), then it behaves just like a regular space.
 We've covered all the scenarios!
 Hey WebKit, you've been Unicode punked!
 
