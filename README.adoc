@@ -81,8 +81,7 @@ Of course, there's always room for improvement, so we'll continue to work with y
 
 CAUTION: {project-name} is currently _alpha_ software.
 Use accordingly.
-Although the bulk of AsciiDoc content is rendered, there's still work needed to fill in gaps where rendering is incomplete or unstyled.
-Once it's battle tested, the project will be moved into the Asciidoctor organization on GitHub.
+Although the bulk of AsciiDoc content is converted, there's still work needed to fill in gaps where conversion is incomplete or unstyled.
 
 NOTE: {project-name} only produces variable layout (i.e., reflowable) EPUB3 documents since this layout is best suited for the types of documents typically written in AsciiDoc.
 We may explore the use of fixed layout documents in the future if the need arises.
@@ -149,78 +148,46 @@ However, for the time being, the include directive will suit this purpose.
 
 == Prerequisites
 
-All that's needed to use {project-name} is Ruby 1.9.3 or better and a few RubyGems, which we'll explain how to install in the next section.
+All that's needed to use {project-name} is Ruby (1.9.3 or above; 2.2.x recommended) and a few Ruby gems, which we'll explain how to install in the next section.
 
-To check if you have Ruby available, use the `ruby` command to query the version installed:
+To check if you have Ruby available, use the `ruby` command to query the installed version:
 
  $ ruby --version
 
-If you're using {rvm-uri}[RVM], we recommend creating a new gemset to work with {project-name}:
-
- $ rvm use @asciidoctor-epub3 --create
-
-We like RVM because it keeps the dependencies required by various projects isolated ;)
-
 == Getting Started
 
-{project-name} isn't yet published as a RubyGem itself, so you'll need to get the source code.
+You can get {project-name} by <<_install_the_published_gem,installing the published gem>> or <<_development,running the code from source>>.
 
-=== Retrieve the project
+=== Install the Published Gem
 
-You can retrieve {project-name} in one of two ways:
+{project-name} is published as a pre-release on RubyGems.org.
+You can install the published gem using the following command:
 
-. Clone the git repository
-. Download a zip archive of the repository
+ $ gem install asciidoctor-epub3 --pre
+ 
+If you want to syntax highlight source listings, you'll also want to install CodeRay or Pygments.
+Choose one (or more) of the following:
 
-==== Option 1: Fetch Using `git clone`
+.CodeRay
+ $ gem install coderay
 
-If you want to clone the git repository, simply copy the {project-repo-uri}[GitHub repository URL] and pass it to the `git clone` command:
+.Pygments
+ $ gem install pygments.rb
+ 
+You then activate syntax highlighting for a given document by adding the `source-highlighter` attribute to the document header (CodeRay shown):
 
- $ git clone https://github.com/asciidoctor/asciidoctor-epub3
+[source,asciidoc]
+----
+:source-highlighter: coderay 
+----
 
-Next, change to the project directory:
+NOTE: At the moment, Pygments is automatically used if it's available.
 
- $ cd asciidoctor-epub3
+Assuming all the required gems install properly, verify you can run the `asciidoctor-epub3` script:
 
-==== Option 2: Download the Archive
+ $ asciidoctor-epub3 -v
 
-If you want to download a zip archive, click on the btn:[icon:cloud-download[\] Download Zip] button on the right-hand side of the repository page on GitHub.
-Once the download finishes, extract the archive, open a console and change to that directory.
-
-We'll now leverage the project configuration to install the necessary dependencies.
-
-=== Install the Dependencies
-
-The dependencies needed to use {project-name} are defined in the [file]_Gemfile_ at the root of the project.
-We can use Bundler to install the dependencies for us.
-
-To check if you have Bundler available, use the `bundle` command to query the version installed:
-
- $ bundle --version
-
-If it's not installed, use the `gem` command to install it.
-
- $ gem install bundle
-
-Then use the `bundle` command to install the project dependencies:
-
- $ bundle install
-
-=== Build and Install the Gem
-
-Now that the dependencies are installed, you can build and install the Gem.
-
-Use the Rake build tool to build the Gem:
-
- $ rake build
-
-The build will report that it built the Gem into the [path]_pkg_ directory.
-
-Finally, install the Gem.
-
- $ gem install pkg/asciidoctor-epub3-1.5.0.dev.gem
-
-You're now ready to use {project-name}!
+If you see the version of {project-name} printed, you're ready to use {project-name}.
 Let's get an AsciiDoc document ready to convert to EPUB3.
 
 === Prepare an AsciiDoc Document
@@ -541,6 +508,7 @@ The theme maintains readability regardless of the e-book reader's background mod
 The theme's CSS files are located in the [path]_data/style_ directory.
 
 IMPORTANT: {project-name} only provides one theme, and, at this time, you can not replace it with a custom theme using the `stylesheet` attribute.
+However, you can use your own [path]_epub3.css_ and [path]_epub3-css3-only.css_ files by specifying the directory where they are located using the `epub3-stylesdir` attribute.
 
 === Fonts
 
@@ -554,14 +522,14 @@ Refer to the {notice-uri}[NOTICE.adoc] file for further information about the fo
 
 // TODO document command to generate the M+ 1p latin fonts
 
-=== The text justification hack
+=== Text Justification Hack
 
 Many of the EPUB3 readers use the http://webkit.org[WebKit browser engine] to render the content and apply the CSS formatting and styles.
 Generally speaking, WebKit is a great engine that brings a lot of consistency and power to the e-book reader landscape.
-It also brings along the same set of bugs.
+It also brings along the same set of bugs present in browsers that are based on it.
 
-One of the bugs in WebKit causes rich text to be justified incorrectly.
-In particular, when the value of the `text-align` property is `justify`, WebKit drops the space between formatted text (bold, italic, hyperlink, etc) and non-formatted text, causing the words to be unevenly spaced across the line.
+One particular bug in WebKit causes rich text to be justified incorrectly.
+Specifically, when the value of the `text-align` property is `justify`, WebKit drops the space between formatted text (bold, italic, hyperlink, etc) and non-formatted text, causing the words to be unevenly spaced across the line.
 You can see an example of this problem in the screenshot below.
 
 .WebKit justifying rich text incorrectly
@@ -767,6 +735,98 @@ In the spirit of free software, _everyone_ is encouraged to help improve this pr
 To contribute code, simply fork the project on GitHub, hack away and send a pull request with your proposed changes.
 
 Feel free to use the {project-issues-uri}[issue tracker] or http://discuss.asciidoctor.org[Asciidoctor mailing list] to provide feedback or suggestions in other ways.
+
+== Development
+
+To help develop Asciidoctor EPUB3, or to simply test drive the development version, you need to get the source from GitHub.
+Follow the instructions below to learn how to clone the source and run it from your local copy.
+
+=== Retrieve the Source Code
+
+You can retrieve {project-name} in one of two ways:
+
+. Clone the git repository
+. Download a zip archive of the repository
+
+==== Option 1: Fetch Using `git clone`
+
+If you want to clone the git repository, simply copy the {project-repo-uri}[GitHub repository URL] and pass it to the `git clone` command:
+
+ $ git clone https://github.com/asciidoctor/asciidoctor-epub3
+
+Next, change to the project directory:
+
+ $ cd asciidoctor-epub3
+
+==== Option 2: Download the Archive
+
+If you want to download a zip archive, click on the btn:[icon:cloud-download[\] Download Zip] button on the right-hand side of the repository page on GitHub.
+Once the download finishes, extract the archive, open a console and change to that directory.
+
+TIP: Instead of working out of the {project-handle} directory, you can simply add the absolute path of the [path]_bin_ directory to your `PATH` environment variable.
+
+We'll leverage the project configuration to install the necessary dependencies.
+
+=== Prepare RVM (optional step)
+
+If you're using {rvm-uri}[RVM], we recommend creating a new gemset to work with {project-name}:
+
+ $ rvm use 2.2@asciidoctor-epub3-dev --create
+
+We like RVM because it keeps the dependencies required by various projects isolated.
+
+=== Install the Dependencies
+
+The dependencies needed to use {project-name} are defined in the [file]_Gemfile_ at the root of the project.
+We can use Bundler to install the dependencies for us.
+
+To check if you have Bundler available, use the `bundle` command to query the version installed:
+
+ $ bundle --version
+
+If it's not installed, use the `gem` command to install it.
+
+ $ gem install bundle
+
+Then use the `bundle` command to install the project dependencies:
+
+ $ bundle
+
+NOTE: You need to call `bundle` from the project directory so that it can find the [file]_Gemfile_.
+
+=== Build and Install the Gem
+
+Now that the dependencies are installed, you can build and install the gem.
+
+Use the Rake build tool to build the gem:
+
+ $ rake build
+
+The build will report that it built the gem into the [path]_pkg_ directory.
+
+Finally, install the gem.
+
+ $ gem install pkg/asciidoctor-epub3-1.5.0.dev.gem
+
+Once the development version of the gem is installed, you can run {project-name} by invoking the `asciidoctor-epub3` script:
+
+ $ asciidoctor-epub3 -v
+
+If you see the version of {project-name} printed to your console, you're ready to use {project-name}!
+
+=== Shortcut: Run the Launch Script Directly
+
+Assuming all the required gems install properly, you can run the `asciidoctor-epub3` script directly out of the project folder using either:
+
+ $ bin/asciidoctor-epub3 -v
+
+or
+
+ $ bundle exec bin/asciidoctor-epub3 -v
+
+You're now ready to test drive the development version of {project-name}!
+
+Jump back to <<Getting Started>> to learn how to create an AsciiDoc document and convert it to EPUB3.
 
 == Authors
 
