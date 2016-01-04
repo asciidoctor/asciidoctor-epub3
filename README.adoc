@@ -800,15 +800,11 @@ NOTE: You need to call `bundle` from the project directory so that it can find t
 
 Now that the dependencies are installed, you can build and install the gem.
 
-Use the Rake build tool to build the gem:
+Use the Rake build tool to build and install the gem (into the current RVM gemset or into the system if not using RVM):
 
- $ rake build
+ $ rake install:local
 
-The build will report that it built the gem into the [path]_pkg_ directory.
-
-Finally, install the gem.
-
- $ gem install pkg/asciidoctor-epub3-1.5.0.dev.gem
+The build will report that it built the gem into the [path]_pkg_ directory and that it installed the gem.
 
 Once the development version of the gem is installed, you can run {project-name} by invoking the `asciidoctor-epub3` script:
 
