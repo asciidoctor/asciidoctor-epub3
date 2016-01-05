@@ -6,6 +6,7 @@
 
 .Gem
 * Add step in `rake release` to set version back to *.dev
+* enable NOKOGIRI_USE_SYSTEM_LIBRARIES=1 to speed up nokogiri install (in .travis.yml, bundler in general)
 * Don't package sample documents (create separate folder in repo)
 
 //^
