@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/asciidoctor-epub3'
+if File.exist?(asciidoctor_epub3 = (File.expand_path '../../lib/asciidoctor-epub3', __FILE__))
+  require asciidoctor_epub3
+else
+  require 'asciidoctor-epub3'
+end
 require 'asciidoctor/cli'
 
 options = Asciidoctor::Cli::Options.new backend: 'epub3'
