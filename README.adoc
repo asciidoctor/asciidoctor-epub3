@@ -108,7 +108,7 @@ Each chapter must start with a single-line, level-0 section.
 The section title becomes the chapter title (also used as the TOC entry) and the section ID determines the chapter file name inside the EPUB3 archive.
 In other words, you must be explicit.
 Asciidoctor EPUB3 will not try to guess.
-If your AsciiDoc document is not structured in this way, you'll need to change it to use the {project-name} converter properly.
+If your AsciiDoc document is not structured in this way, you'll need to change it to use the {project-name} converter successfully.
 
 You can think of the master document as the spine of the book and the include directives the individual items being bound together.
 The target of each include directive in the master document is parsed and rendered as a separate AsciiDoc document, with certain options and attributes being passed down from the master to ensure consistent behavior.
