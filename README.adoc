@@ -121,8 +121,8 @@ Here's an example showing the structure of a spine document:
 Author Name
 :doctype: book
 :imagesdir: images
-//...and so on
 \ifndef::ebook-format[:leveloffset: 1]
+//...and so on
 
 \include::chapter-one.adoc[]
 
@@ -143,10 +143,16 @@ chapter content
 CAUTION: Although an explicit ID over the chapter title is not required, it is recommended.
 See issue https://github.com/asciidoctor/asciidoctor-epub3/issues/46[#46] for details.
 
+If your chapter files start with a level-1 section instead of a level-2 section, you need to make the opposite adjustment in the header of the spine document:
+
+----
+\ifndef::ebook-format[:leveloffset: -1]
+----
+
 If the master document does not contain any include directives, then the converter treats the document as the sole chapter in the EPUB3 archive and automatically produces a navigation file that references it. (Currently broken. See issue https://github.com/asciidoctor/asciidoctor-epub3/issues/47[#47]).
 
-Eventually, we envision introducing a dedicated block macro to represent a spine item so that we don't overload the meaning of the include directive.
-However, for the time being, the include directive will suit this purpose.
+NOTE: Eventually, we envision introducing a dedicated block macro to represent a spine item so that we don't overload the meaning of the include directive.
+However, for the time being, the include directive fills this role.
 
 == Prerequisites
 
