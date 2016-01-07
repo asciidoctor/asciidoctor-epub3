@@ -131,6 +131,8 @@ Author Name
 \include::chapter-three.adoc[]
 ----
 
+IMPORTANT: The spine document cannot contain any content other than include directives.
+
 Here's an example showing the structure of a chapter document:
 
 ----
