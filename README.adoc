@@ -105,9 +105,9 @@ Asciidoctor takes a different approach.
 
 Asciidoctor relies on top-level include directives (i.e., include directives in the master document) to indicate where the chapter splits should occur.
 Each chapter must start with a single-line, level-0 section.
-The section title becomes the chapter title and TOC entry and the section id determines the chapter file name in the EPUB3 archive.
+The section title becomes the chapter title (also used as the TOC entry) and the section ID determines the chapter file name inside the EPUB3 archive.
 In other words, you must be explicit.
-Asciidoctor will not try to guess.
+Asciidoctor EPUB3 will not try to guess.
 If your AsciiDoc document is not structured in this way, you'll need to change it to use the {project-name} converter properly.
 
 You can think of the master document as the spine of the book and the include directives the individual items being bound together.
