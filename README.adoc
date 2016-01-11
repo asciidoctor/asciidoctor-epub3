@@ -173,7 +173,7 @@ You can get {project-name} by <<_install_the_published_gem,installing the publis
 {project-name} is published as a pre-release on RubyGems.org.
 You can install the published gem using the following command:
 
- $ gem install asciidoctor-epub3 --pre
+ $ NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install asciidoctor-epub3 --pre
  
 If you want to syntax highlight source listings, you'll also want to install CodeRay or Pygments.
 Choose one (or more) of the following:
@@ -796,7 +796,7 @@ To check if you have Bundler available, use the `bundle` command to query the ve
 
 If it's not installed, use the `gem` command to install it.
 
- $ gem install bundle
+ $ gem install bundler
 
 Then use the `bundle` command to install the project dependencies:
 
