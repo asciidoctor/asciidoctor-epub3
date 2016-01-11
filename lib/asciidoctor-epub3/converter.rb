@@ -685,6 +685,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
     when :xref
       refid = (node.attr 'refid') || target
       id_attr = unless @xrefs_used.include? refid
+        # QUESTION should we just drop id attribute in this case?
+        refid = refid.gsub '#', '--' if refid.include? '#'
         @xrefs_used << refid
         %( id="xref-#{refid}")
       end
