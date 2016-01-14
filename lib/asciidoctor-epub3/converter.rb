@@ -330,11 +330,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   def listing node
     figure_classes = ['listing']
     figure_classes << 'coalesce' if node.option? 'unbreakable'
-    pre_classes = if node.style == 'source'
-      ['source', %(language-#{node.attr 'language'})]
-    else
-      ['screen']
-    end
+    pre_classes = node.style == 'source' ? ['source', %(language-#{node.attr 'language'})] : ['screen']
     title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>
 ) : nil
     # patches conums to fix extra or missing leading space
@@ -359,11 +355,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
   def quote node
     footer_content = []
-    if attribution = (node.attr 'attribution')
+    if (attribution = node.attr 'attribution')
       footer_content << attribution  
     end
 
-    if citetitle = (node.attr 'citetitle')
+    if (citetitle = node.attr 'citetitle')
       citetitle_sanitized = xml_sanitize citetitle
       footer_content << %(<cite title="#{citetitle_sanitized}">#{citetitle}</cite>)
     end
@@ -386,11 +382,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
   def verse node
     footer_content = []
-    if attribution = (node.attr 'attribution')
+    if (attribution = node.attr 'attribution')
       footer_content << attribution  
     end
 
-    if citetitle = (node.attr 'citetitle')
+    if (citetitle = node.attr 'citetitle')
       citetitle_sanitized = xml_sanitize citetitle
       footer_content << %(<cite title="#{citetitle_sanitized}">#{citetitle}</cite>)
     end
@@ -793,11 +789,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   end
 
   def convert_content node
-    if node.content_model == :simple
-      %(<p>#{node.content}</p>)
-    else
-      node.content
-    end
+    node.content_model == :simple ? %(<p>#{node.content}</p>) : node.content
   end
 
   def xml_sanitize value, target = :attribute
