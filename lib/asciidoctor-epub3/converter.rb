@@ -219,6 +219,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
     lines * EOL
   end
 
+  # NOTE embedded is used for AsciiDoc table cell content
+  def embedded node
+    node.content
+  end
+
   def section node
     hlevel = node.level + 1
     epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : nil
@@ -470,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             else
               case cell.style
               when :asciidoc
-                cell_content = %(<div>#{cell.content}</div>)
+                cell_content = %(<div class="embed">#{cell.content}</div>)
               when :verse
                 cell_content = %(<div class="verse">#{cell.text}</div>)
               when :literal
