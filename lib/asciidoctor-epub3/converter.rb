@@ -254,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   end
 
   # QUESTION use convert_content?
+  # TODO keep div if a role or id is specified
   def open node
     node.content
   end
@@ -268,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     role = node.role
     # stack-head is the alternative to the default, inline-head (where inline means "run-in")
     head_stop = node.attr 'head-stop', (role && (node.has_role? 'stack-head') ? nil : '.')
+    # FIXME promote regexp to constant
     head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ /[[:punct:]]$/ ? head_stop : nil}</strong> ) : nil
     if role
       node.set_option 'hardbreaks' if node.has_role? 'signature'
