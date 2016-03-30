@@ -270,9 +270,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     head_stop = node.attr 'head-stop', (role && (node.has_role? 'stack-head') ? nil : '.')
     head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ /[[:punct:]]$/ ? head_stop : nil}</strong> ) : nil
     if role
-      if node.has_role? 'signature'
-        node.set_option 'hardbreaks'
-      end
+      node.set_option 'hardbreaks' if node.has_role? 'signature'
       %(<p class="#{role}">#{head}#{node.content}</p>)
     else
       %(<p>#{head}#{node.content}</p>)
