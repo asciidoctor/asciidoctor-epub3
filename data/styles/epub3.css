@@ -1137,13 +1137,18 @@ table.table thead th {
   border-bottom: 1px solid #80807F;
 }
 
-table.table td > p {
+table.table td > p,
+table.table div.embed > * {
   margin-top: 0;
+}
+
+table.table td > p {
   text-align: left;
 }
 
 /* REVIEW */
-table.table td > p + p {
+table.table td > p + p,
+table.table div.embed > * + * {
   margin-top: 1em;
 }
 
