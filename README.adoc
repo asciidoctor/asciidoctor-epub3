@@ -557,7 +557,7 @@ We call it the “word joiner hack”.
 Here's the HTML source of the first sentence from the screenshots:
 
 ```xml
-<strong><a href="...">Fork</a> the repository</srtong> <span>and clone it locally.</span>
+<strong><a href="...">Fork</a> the repository</strong> <span>and clone it locally.</span>
 ```
 
 WebKit treats the space following an inline element as insignificant and thus fails to account for it when justifying the text.
