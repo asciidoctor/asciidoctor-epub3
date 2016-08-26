@@ -445,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     end
     table_class_attr = %( class="#{table_classes * ' '}")
     table_styles = []
-    unless node.option? 'autowidth'
+    unless (node.option? 'autowidth') && !(node.attr? 'width', nil, false)
       table_styles << %(width: #{node.attr 'tablepcwidth'}%;)
     end
     table_style_attr = table_styles.size > 0 ? %( style="#{table_styles * ' '}") : nil
