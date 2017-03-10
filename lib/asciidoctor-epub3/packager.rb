@@ -198,7 +198,6 @@ body > svg {
   end
 
   def add_profile_images doc, usernames
-    spine = @spine
     imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
 
@@ -228,7 +227,7 @@ body > svg {
         end
       end
 =begin
-      spine.each do |item|
+      @spine.each do |item|
         username = (item.attr 'username') || 'default'
         avatar_target = %(#{imagesdir}avatars/#{username}.jpg)
         if ::File.readable?(avatar = %(#{item.attr 'docname'}/avatar.jpg))

@@ -728,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   end
 
   def inline_image node
-    if (type = node.type) == 'icon'
+    if node.type == 'icon'
       @icon_names << (icon_name = node.target)
       i_classes = ['icon', %(i-#{icon_name})]
       i_classes << %(icon-#{node.attr 'size'}) if node.attr? 'size'
