@@ -37,9 +37,4 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_runtime_dependency 'asciidoctor', '~> 1.5.0'
   s.add_runtime_dependency 'gepub', '~> 0.6.9.2'
   s.add_runtime_dependency 'thread_safe', '~> 0.3.5'
-
-  # optional
-  #s.add_runtime_dependency 'kindlegen', '~> 2.9.4'
-  #s.add_runtime_dependency 'epubcheck', '~> 3.0.1'
-  #s.add_runtime_dependency 'pygments.rb', '0.6.3'
 end
