@@ -192,6 +192,9 @@ You then activate syntax highlighting for a given document by adding the `source
 ----
 
 NOTE: At the moment, Pygments is automatically used if it's available.
+If a style is not specified, the black and white theme (i.e., bw) is used.
+This default is used so that the syntax highlighting is legibile regardless of which reading mode the reader selects (white, black, sepia, etc).
+To override this default, you must pass a valid Pygments style name to the `pygments-style` attribute when invoking the `asciidoctor-epub3` script (e.g., `-a pygments-style=pastie`).
 
 Assuming all the required gems install properly, verify you can run the `asciidoctor-epub3` script:
 
