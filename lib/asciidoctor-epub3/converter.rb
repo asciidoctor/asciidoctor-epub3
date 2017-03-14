@@ -686,10 +686,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
     when :xref
       refid = (node.attr 'refid') || target
       id_attr = unless @xrefs_used.include? refid
-        # QUESTION should we just drop id attribute in this case?
-        refid = refid.gsub '#', '--' if refid.include? '#'
         @xrefs_used << refid
-        %( id="xref-#{refid}")
+        # QUESTION should we just drop id attribute for inter-document xrefs?
+        %( id="xref-#{(refid.include? '#') ? (refid.sub '#', '--') : refid}")
       end
       # FIXME seems like text should be prepared already
       # FIXME would be nice to know what type the target is (e.g., bibref)
