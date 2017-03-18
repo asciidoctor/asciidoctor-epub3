@@ -344,7 +344,8 @@ class Packager
     target = options[:target]
     dest = File.dirname target
 
-    images = spine.map {|item| (item.find_by context: :image) || [] }.flatten
+    images = spine.map {|item| item.find_by context: :image }.compact.flatten
+        .uniq {|img| %(#{(img.document.attr 'imagesdir', '.').chomp '/'}/#{img.attr 'target'}) }
     usernames = spine.map {|item| item.attr 'username' }.compact.uniq
     # FIXME authors should be aggregated already on parent document
     authors = if doc.attr? 'authors'
