@@ -53,10 +53,11 @@ class SpineItemProcessor < Extensions::IncludeProcessor
     # restore attributes to those defined in the document header
     spine_item_doc.restore_attributes
 
-    (spine_doc.references[:spine_items] ||= []) << spine_item_doc
+    spine_item_doc.references[:spine_items] = ((spine_doc.references[:spine_items] ||= []) << spine_item_doc)
     # NOTE if there are attribute assignments between the include directives,
     # then this ordered list is not continguous, so bailing on the idea
     #reader.replace_line %(. link:#{::File.basename(spine_item_doc.attr 'outfile')}[#{spine_item_doc.doctitle}])
+    nil
   end
 
   # handles? should get the attributes on include directive as the second argument

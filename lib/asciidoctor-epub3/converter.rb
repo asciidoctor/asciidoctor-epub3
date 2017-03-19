@@ -80,7 +80,7 @@ class ContentConverter
     basebackend 'html'
     outfilesuffix '.xhtml'
     htmlsyntax 'xml'
-    @xrefs_used = ::Set.new
+    @xrefs_seen = ::Set.new
     @icon_names = []
   end
 
@@ -692,15 +692,34 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     target = node.target
     case node.type
     when :xref
-      refid = (node.attr 'refid') || target
-      id_attr = unless @xrefs_used.include? refid
-        @xrefs_used << refid
-        # QUESTION should we just drop id attribute for inter-document xrefs?
-        %( id="xref-#{(refid.include? '#') ? (refid.sub '#', '--') : refid}")
-      end
-      # FIXME seems like text should be prepared already
       # FIXME would be nice to know what type the target is (e.g., bibref)
-      text = node.text || (node.document.references[:ids][refid] || %([#{refid}]))
+      refid = (node.attr 'refid') || target
+      if (path = node.attr 'path')
+        # reconfigure reference to a spine item root (e.g., chapter-id#)
+        refid = %(#{refid}##{refid}) unless node.attr 'fragment'
+      end
+      id_attr = unless @xrefs_seen.include? refid
+        @xrefs_seen << refid
+        # QUESTION should we just drop the id attribute for inter-document xrefs?
+        %( id="xref-#{path ? (refid.sub '#', '--') : refid}")
+      end
+      unless (text = node.text)
+        if path
+          xdoc_id, xdoc_refid = refid.split '#', 2
+          xdoc = node.document.references[:spine_items].find {|doc| xdoc_id == (doc.id || (doc.attr 'docname')) }
+          if xdoc
+            unless (text = (xdoc_id == xdoc_refid ? xdoc.doctitle : xdoc.references[:ids][xdoc_refid]))
+              warn %(asciidoctor: WARNING: cannot resolve reference to #{xdoc_refid} in document #{xdoc_id})
+              text = %([#{refid}])
+            end
+          else
+            warn %(asciidoctor: WARNING: cannot resolve reference to #{xdoc_refid} in unknown document #{xdoc_id})
+            text = %([#{refid}])
+          end
+        else
+          text = node.document.references[:ids][refid] || %([#{refid}])
+        end
+      end
       %(<a#{id_attr} href="#{target}" class="xref">#{text}</a>#{WordJoiner})
     when :ref
       %(<a id="#{target}"></a>)
