@@ -254,9 +254,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
   end
 
   # QUESTION use convert_content?
-  # TODO keep div if a role or id is specified
   def open node
-    node.content
+    role = node.role ? %(class="#{[node.role].compact * ' '}") : nil
+    id = node.id ? %(id="#{node.id}") : nil
+    %(<div #{id} #{role}>
+#{node.content}
+</div>)
   end
 
   def abstract node
