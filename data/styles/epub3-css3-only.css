@@ -79,7 +79,7 @@ body code, body kbd, body pre, pre :not(code) {
   h1.chapter-title .subtitle > b:last-child {
     padding-right: 0;
   }
-  
+
   h1.chapter-title .subtitle::after {
     display: table;
     content: ' ';
@@ -104,13 +104,13 @@ body code, body kbd, body pre, pre :not(code) {
 .icon-1_5x {
   padding: 0 0.25em;
   -webkit-transform: scale(1.5, 1.5);
-  transform: scale(1.5, 1.5); 
+  transform: scale(1.5, 1.5);
 }
 
 .icon-2x {
   padding: 0 0.5em;
   -webkit-transform: scale(2, 2);
-  transform: scale(2, 2); 
+  transform: scale(2, 2);
 }
 
 .icon-small {

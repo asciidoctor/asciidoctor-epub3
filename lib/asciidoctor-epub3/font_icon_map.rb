@@ -1,6 +1,6 @@
 module Asciidoctor
 module Epub3
-  # Map of Font Awesome icon names to unicode characters 
+  # Map of Font Awesome icon names to unicode characters
   FontIconMap = {
     glass: '\f000',
     music: '\f001',

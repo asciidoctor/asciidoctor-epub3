@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   def quote node
     footer_content = []
     if (attribution = node.attr 'attribution')
-      footer_content << attribution  
+      footer_content << attribution
     end
 
     if (citetitle = node.attr 'citetitle')
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   def verse node
     footer_content = []
     if (attribution = node.attr 'attribution')
-      footer_content << attribution  
+      footer_content << attribution
     end
 
     if (citetitle = node.attr 'citetitle')
@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         lines << '<li>'
         if dd
           # NOTE: must wrap remaining text in a span to help webkit justify the text properly
-          lines << %(<span class="principal">#{subject_element}#{dd.text? ? %[ <span class="supporting">#{dd.text}</span>] : nil}</span>) 
+          lines << %(<span class="principal">#{subject_element}#{dd.text? ? %[ <span class="supporting">#{dd.text}</span>] : nil}</span>)
           lines << dd.content if dd.blocks?
         else
           lines << %(<span class="principal">#{subject_element}</span>)

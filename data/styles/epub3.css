@@ -1063,7 +1063,7 @@ aside[class~="tip"] > div[class~="content"] {
 
 aside.caution::before {
   content: "\f0c2"; /* fa-cloud */
-  color: #666665; /* 102,102,101 */ 
+  color: #666665; /* 102,102,101 */
 }
 
 aside[class~="caution"] > div[class~="content"] {
@@ -1172,7 +1172,7 @@ table.table-framed-sides {
 
 table.table-grid th,
 table.table-grid td {
-  border-width: 0 1px 1px 0; 
+  border-width: 0 1px 1px 0;
   border-style: solid;
   border-color: #80807F;
 }
@@ -1188,14 +1188,14 @@ table.table-grid tbody tr:last-child > td {
 
 table.table-grid-rows tbody th,
 table.table-grid-rows tbody td {
-  border-width: 1px 0 0 0; 
+  border-width: 1px 0 0 0;
   border-style: solid;
   border-color: #80807F;
 }
 
 table.table-grid-cols th,
 table.table-grid-cols td {
-  border-width: 0 1px 0 0; 
+  border-width: 0 1px 0 0;
   border-style: solid;
   border-color: #80807F;
 }

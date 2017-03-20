@@ -21,7 +21,7 @@ class SpineItemProcessor < Extensions::IncludeProcessor
         safe: spine_doc.safe,
         backend: 'epub3-xhtml5',
         doctype: :article,
-        parse_header_only: true 
+        parse_header_only: true
 
     # blank out author information if present in sub-document
     # FIXME this is a huge hack...we need a cleaner way to do this; perhaps an API method that retrieves all the author attribute names

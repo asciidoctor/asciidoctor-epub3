@@ -429,7 +429,7 @@ class Packager
         rights(doc.attr 'copyright')
       end
 
-      #add_metadata 'ibooks:specified-fonts', true 
+      #add_metadata 'ibooks:specified-fonts', true
 
       add_theme_assets doc
       add_cover_image doc
@@ -487,7 +487,7 @@ class Packager
   def validate_epub epub_file
     epubcheck_cmd = EPUBCHECK
     unless ::File.executable? epubcheck_cmd
-      epubcheck_cmd = ::Gem.bin_path 'epubcheck', 'epubcheck' 
+      epubcheck_cmd = ::Gem.bin_path 'epubcheck', 'epubcheck'
     end
     # NOTE epubcheck gem doesn't support epubcheck command options; enable -quiet once supported
     ::Open3.popen2e(::Shellwords.join [epubcheck_cmd, epub_file]) {|input, output, wait_thr|
