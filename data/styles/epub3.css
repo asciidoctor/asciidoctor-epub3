@@ -985,28 +985,28 @@ aside[class~="admonition"] {
 }
 
 aside.note {
-  border-left-color: #B3B3B1;
-  background-color: #E1E1E1; /* 25% opacity of border */
+  border-left-color: #FFC14F;
+  background-color: #FFF0D4; /* 25% opacity of border */
 }
 
 aside.tip {
-  border-left-color: #57AD68;
-  background-color: #D4EAD9; /* 25% opacity of border */
+  border-left-color: #40403E;
+  background-color: #D0D0CF; /* 25% opacity of border */
 }
 
 aside.caution {
-  border-left-color: #666665;
-  background-color: #D8D8D8; /* 25% opacity of border */
+  border-left-color: #7F7F7D;
+  background-color: #DFDFDF; /* 25% opacity of border */
 }
 
 aside.warning {
   border-left-color: #C83737;
-  background-color: #F1CCCC; /* 25% opacity of border */
+  background-color: #F1CECE; /* 25% opacity of border */
 }
 
 aside.important {
-  border-left-color: #FFC14F;
-  background-color: #FFEFD2; /* 25% opacity of border */
+  border-left-color: #F2642A;
+  background-color: #FCD9CA; /* 25% opacity of border */
 }
 
 aside.admonition::before {
@@ -1018,7 +1018,7 @@ aside.admonition::before {
   text-align: center;
   margin-bottom: -0.25em;
   margin-left: -0.5em;
-  text-shadow: 0px 1px 2px rgba(102, 102, 101, 0.3);
+  text-shadow: 0px 1px 1px rgba(102, 102, 101, 0.15);
 }
 
 aside.admonition > div.content {
@@ -1039,41 +1039,38 @@ aside[class~="admonition"] > div[class~="content"] {
 }
 
 aside.note::before {
-  /*content: "\f0f4";*/ /* fa-coffee */
   content: "\f040"; /* fa-pencil */
-  color: #B3B3B1; /* 179,179,177 */
+  color: #FFC14F;
 }
 
 aside[class~="note"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #B3B3B1 45%, #B3B3B1 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #B3B3B1 45%, #B3B3B1 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
 }
 
 aside.tip::before {
-  /*content: "\f069";*/ /* fa-asterisk */
-  /*content: "\f0d6";*/ /* fa-money */
-  content: "\f15a"; /* fa-bitcoin */
-  color: #57AD68; /* 87,173,104 */
+  content: "\f0eb"; /* fa-lightbulb-o */
+  color: #40403E;
 }
 
 aside[class~="tip"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #57AD68 45%, #57AD68 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #57AD68 45%, #57AD68 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%);
 }
 
 aside.caution::before {
   content: "\f0c2"; /* fa-cloud */
-  color: #666665; /* 102,102,101 */
+  color: #7F7F7D;
 }
 
 aside[class~="caution"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #666665 45%, #666665 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #666665 45%, #666665 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%);
 }
 
 aside.warning::before {
   content: "\f0e7"; /* fa-bolt */
-  color: #C83737; /* 200,55,55 */
+  color: #C83737;
 }
 
 aside[class~="warning"] > div[class~="content"] {
@@ -1083,12 +1080,12 @@ aside[class~="warning"] > div[class~="content"] {
 
 aside.important::before {
   content: "\f12a"; /* fa-exclamation */
-  color: #FFC14F; /* 255,193,79 */
+  color: #F2642A;
 }
 
 aside[class~="important"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%);
 }
 
 aside.admonition > h2 {
