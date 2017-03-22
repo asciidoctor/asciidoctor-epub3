@@ -213,6 +213,7 @@ If you don't already have an AsciiDoc document, you can use the [file]_sample-bo
 Author Name
 v1.0, 2014-04-15
 :doctype: book
+:creator: {author}
 :producer: Asciidoctor
 :keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
 :copyright: CC-BY-SA 3.0
@@ -273,7 +274,7 @@ The avatar image should be located at the path _$${imagesdir}/avatars/{username}
 
 |creator
 |Populates the creator (`<dc:creator>`) in the package metadata.
-If the creator is not specified, the value of the producer attribute is used.
+*If the creator is not specified, Asciidoctor is added as the creator with the role "mfr" (an abbreviation for manufacturer).*
 
 |description
 |Populates the description (`<dc:description>`) in the package metadata.
