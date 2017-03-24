@@ -308,7 +308,7 @@ _Only applies to a chapter document._
 The master document is assumed to be a book and each chapter an article.
 
 |publication-type
-|Used to control which special components get included in the generated HTML.
+|Used to control the inclusion of special content in the generated HTML.
 If set to a value other than book, the byline information (author and avatar) is included below the chapter header.
 Suggested values include: book (default), anthology, magazine, journal, article.
 |===
