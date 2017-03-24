@@ -691,6 +691,7 @@ To see all of the workarounds and why we chose certain style options, check out 
 * strips (or unwraps) `<header>` tags
 * `@page` isn't supported
 * `page-break: avoid` isn't supported
+* `page-break-*` cannot be applied using a compound or nested CSS selector; must be a simple ID or class
 * `max-width` isn't supported
 * `widows` are left in the cold
 * won't style footers without an explicit class
