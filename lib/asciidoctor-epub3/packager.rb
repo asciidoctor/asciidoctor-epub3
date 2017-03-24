@@ -157,17 +157,15 @@ body > svg {
   end
 
   def add_images_from_front_matter
-    if ::File.exist? 'front-matter.html'
-      ::File.read('front-matter.html').scan(/<img src="(.+?)"/) do
-        resources do
-          file $1
-        end
+    ::File.read('front-matter.html').scan(/<img src="(.+?)"/) do
+      resources do
+        file $1
       end
-    end
+    end if ::File.file? 'front-matter.html'
   end
 
   def add_front_matter_page doc, spine_builder, builder, format
-    if ::File.exist? 'front-matter.html'
+    if ::File.file? 'front-matter.html'
       spine_builder.file 'front-matter.html' => (builder.postprocess_xhtml_file 'front-matter.html', format)
       (spine_builder.instance_variable_get :@last_defined_item).properties << 'svg'
     end
