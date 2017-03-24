@@ -138,12 +138,17 @@ class ContentConverter
         .gsub(UppercaseTagRx) { %(<#{$1}#{$2.downcase}>) }
         .gsub(NamedEntityRx) { %(&#{$1.downcase};) }
 
-    author = node.attr 'author'
-    username = node.attr 'username', 'default'
-    # FIXME needs to resolve to the imagesdir of the spine document, not this document
-    #imagesdir = (node.attr 'imagesdir', '.').chomp '/'
-    #imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
-    imagesdir = 'images/'
+    if (node.attr 'publication-type', 'book') == 'book'
+      byline = nil
+    else
+      author = node.attr 'author'
+      username = node.attr 'username', 'default'
+      # FIXME needs to resolve to the imagesdir of the spine document, not this document
+      #imagesdir = (node.attr 'imagesdir', '.').chomp '/'
+      #imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
+      imagesdir = 'images/'
+      byline = %(<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>#{EOL})
+    end
 
     mark_last_paragraph node
     content = node.content
@@ -191,8 +196,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
 #{icon_css_scoped}<header>
 <div class="chapter-header">
-<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>
-<h1 class="chapter-title">#{title_upper}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted_upper}</small>] : nil}</h1>
+#{byline}<h1 class="chapter-title">#{title_upper}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted_upper}</small>] : nil}</h1>
 </div>
 </header>
 #{content})]

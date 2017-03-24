@@ -306,6 +306,11 @@ _Only applies to a chapter document._
 |doctype
 |Effectively ignored.
 The master document is assumed to be a book and each chapter an article.
+
+|publication-type
+|Used to control which special components get included in the generated HTML.
+If set to a value other than book, the byline information (author and avatar) is included below the chapter header.
+Suggested values include: book (default), anthology, magazine, journal, article.
 |===
 
 When using the EPUB3 converter, the `ebook-format` attribute resolves to the name of the e-book format being generated (epub3 or kf8) and the corresponding attribute `ebook-format-<name>` is defined, where `<name>` is `epub3` or `kf8`.
