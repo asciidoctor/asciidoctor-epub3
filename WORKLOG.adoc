@@ -2,6 +2,20 @@
 
 == TODO
 
+* add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
+* remove text justification hack (#92)
+* why can't we navigate to first chapter on Kindle from TOC?
+* add nav entry for cover if format != :kf8 ?
+* cleanup this sanitize XML stuff; move to Asciidoctor::Helpers?
+* allow role to be applied to chapter (which means the role must be on the document)
+* make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
+* switch to epubcheck-ruby
+ ** epubcheck-ruby 4.0.2
+ ** supports options such as -q
+ ** add -w option by default (perhaps allow additional options to be passed via the ebook-validate attribute)
+* store spine as map in references?
+* part vs chapter? a difference?
+
 * create a video to demonstrate Google Play Books read aloud reading complete sentences in books generated with Asciidoctor EPUB3
 
 .Gem
@@ -26,7 +40,8 @@
 * HIGH: use more thorough image path resolution
 * HIGH: move navigation_document method to Packager
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
-* HIGH: why can't id on chapter document be specified using +[#name]+ syntax? (it only seems to recognize +[[name]]+)
+* MEDIUM: add landmarks nav list to nav.xhtml; see https://github.com/IDPF/epub3-samples/blob/master/31/moby-dick-mo-xhtml/EPUB/toc.xhtml
+* MEDIUM: Kindle links to cover page when clicking on first chapter instead of first chapter page
 * MEDIUM: auto-space button in btn macro, or add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file
 * MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
@@ -41,13 +56,17 @@
 //^
 
 .Packager
+* HIGH: retain file name of original chapter file (otherwise, it can break interdoc xrefs)
 * HIGH: add NOTICE.adoc to e-book archive
 * HIGH: rework GEPUB so closures work more like in Prawn...perhaps using a wrapper
 * HIGH: minimize CSS (and any other assets worth minimizing)
 * HIGH: add back cover if specified
+* MEDIUM: add JavaScript to nav.xhtml to add class for epubReadingSystem to body
+* MEDIUM: rename OEBPS folder to EPUB
 * MEDIUM: set modified date explicitly
 * MEDIUM: use function to build and manipulate image paths
 * MEDIUM: issue warning if front-cover-image doesn't match proper syntax
+* MEDIUM: option to add nav.xhtml to navigation flow?
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
 
@@ -70,7 +89,6 @@
 * HIGH: style example block
 * HIGH: allow theme to be customized using stylesheet attribute
 * MEDIUM: headshot has too much top margin when at top of page (not below section title)
-* MEDIUM: add landmarks nav list to nav.xhtml
 * support both jpg and png avatars
 * add docinfo support
 * add navigation links in meta, e.g.,
