@@ -181,14 +181,12 @@ class ContentConverter
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
 <link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
 #{icon_css_head}<script type="text/javascript">
-document.addEventListener('DOMContentLoaded', function(event) {
-  var epubReader = navigator.epubReadingSystem;
-  if (!epubReader) {
-    if (window.parent == window || !(epubReader = window.parent.navigator.epubReadingSystem)) {
-      return;
-    }
+document.addEventListener('DOMContentLoaded', function(event, reader) {
+  if (!(reader = navigator.epubReadingSystem)) {
+    if (navigator.userAgent.indexOf(' calibre/') >= 0) reader = { name: 'calibre-desktop' };
+    else if (window.parent == window || !(reader = window.parent.navigator.epubReadingSystem)) return;
   }
-  document.body.setAttribute('class', epubReader.name.toLowerCase().replace(/ /g, '-'));
+  document.body.setAttribute('class', reader.name.toLowerCase().replace(/ /g, '-'));
 });
 </script>
 </head>
