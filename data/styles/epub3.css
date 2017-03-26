@@ -25,7 +25,7 @@ html {
 body {
   padding: 0 !important;
   /* add margin to ~ match Kindle's narrow setting */
-  /* don't use !important on margin as it breaks calibre */
+  /* don't use !important on margin as it interferes with reader overrides (Calibre and Kindle) */
   margin: 0;
   font-size: 100%;
   /* NOTE putting optimizeLegibility on the body slows down rendering considerably */
@@ -38,10 +38,10 @@ html body {
   background-color: #FFFFFF;
 }
 
-/* sets minimum margin permitted */
-/* @page not supported by Kindle or Gitden */
+/* @page only applies to EPUB2 readers; not supported by EPUB3 readers such as Kindle and Gitden */
 @page {
-  /* push the top & bottom margins down in Aldiko to emulate Kindle (Kindle uses ~ 10% of screen by default )*/
+  /* sets minimum margin permitted */
+  /* pushes the top & bottom margins down in Aldiko to emulate Kindle (Kindle uses ~ 10% of screen by default )*/
   margin: 1cm;
 }
 

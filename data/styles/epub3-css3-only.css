@@ -1,3 +1,16 @@
+/* @page is for EPUB2 only */
+@page {
+  margin: 0;
+}
+
+body.calibre-desktop {
+  padding: 1.25vw 0 !important;
+}
+
+body.calibre-desktop > section {
+  margin: 0 1.75vw;
+}
+
 /* Gitden & Namo default to 16px font-size; bump it to 20px (125%) */
 body.gitden-reader,
 body.namo-epub-library {
