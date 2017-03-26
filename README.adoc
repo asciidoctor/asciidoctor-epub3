@@ -151,7 +151,8 @@ If your chapter files start with a level-1 section instead of a level-2 section,
 \ifndef::ebook-format[:leveloffset: -1]
 ----
 
-If the master document does not contain any include directives, then the converter treats the document as the sole chapter in the EPUB3 archive and automatically produces a navigation file that references it. (Currently broken. See issue https://github.com/asciidoctor/asciidoctor-epub3/issues/47[#47]).
+If the master document does not contain any include directives, then the converter treats the document as the sole chapter in the EPUB3 archive and automatically produces a navigation file that references it.
+(Currently broken. See issue https://github.com/asciidoctor/asciidoctor-epub3/issues/47[#47]).
 
 NOTE: Eventually, we envision introducing a dedicated block macro to represent a spine item so that we don't overload the meaning of the include directive.
 However, for the time being, the include directive fills this role.
@@ -250,7 +251,8 @@ The recommended practice is to identify the document by means of a string or num
 |Populates the content language / locale (`<dc:language>`) in the package metadata.
 
 |scripts
-|Controls the font subsets that are selected based on the specified scripts (e.g., alphabets). (values: *latin*, latin-ext, latin-cyrillic or multilingual)
+|Controls the font subsets that are selected based on the specified scripts (e.g., alphabets).
+(values: *latin*, latin-ext, latin-cyrillic or multilingual)
 
 |revdate
 |Populates the publication date (`<dc:date>`) in the package metadata.
@@ -266,8 +268,7 @@ The authors in each chapter document are aggregated together with the authors in
 
 |username
 |Used to resolve an avatar for the author that is displayed in the header of a chapter.
-The avatar image should be located at the path _+{imagesdir}/avatars/{username}.jpg+_, where
-`{username}` is the value of this attribute.
+The avatar image should be located at the path _\{imagesdir}/avatars/\{username}.jpg_, where `\{username}` is the value of this attribute.
 
 |producer
 |Populates the publisher (`<dc:publisher>`) in the package metadata.
@@ -487,7 +488,8 @@ mimetype
 Images that your AsciiDoc document references should be saved in the directory defined in the `imagesdir` attribute, which defaults to the directory of the document.
 {project-name} will discover all local image references and insert the images into the EPUB3 archive at the same relative path.
 
-WARNING: Currently including images only works correctly if you set `imagesdir` to the directory `images` like in the example shown above. This will be fixed in future versions.
+WARNING: Currently including images only works correctly if you set `imagesdir` to the directory `images` like in the example shown above.
+This will be fixed in future versions.
 
 The sample book contains placeholder images for an author avatar and a book cover.
 
