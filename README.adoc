@@ -286,7 +286,7 @@ The keywords should be represented as comma-separated values (CSV).
 |front-cover-image
 |Populates the front cover image and the image on the cover page (EPUB3 only) in the package metadata.
 The image is also added to the e-book archive.
-May be specified as a path or inline image macro.
+The value may be specified as a path or inline image macro.
 Using the inline image macro is preferred as it allows the height and width to be specified.
 
 |copyright
@@ -505,11 +505,14 @@ Feel free to use the SVG of the sample cover in the [path]_data/images_ folder a
 Once your image is ready, you can replace the placeholder cover image by defining the `front-cover-image` attribute in the header of the master document.
 
 ----
-:front-cover-image: image:cover.png[width=1050,height=1600]
+:front-cover-image: image:cover.png[Front Cover,1050,1600]
 ----
 
 The image is resolved relative to the directory specified in the `imagesdir` attribute, which defaults to the document directory.
 The image can be in any format, though we recommend using PNG or JPG as they are the most portable formats.
+
+WARNING: Currently including images only works correctly if you set `imagesdir` to the directory `images` like in the example shown above.
+This will be fixed in future versions.
 
 IMPORTANT: You should always specify the dimensions of the cover image.
 This ensures the viewer will preserve the aspect ratio if it needs to be scaled to fit the screen.
