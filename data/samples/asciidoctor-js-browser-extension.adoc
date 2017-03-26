@@ -1,4 +1,4 @@
-[[asciidoctor-js-browser-extension]]
+[#asciidoctor-js-browser-extension]
 = Asciidoctor.js browser extension: _Preview_ AsciiDoc in your browser
 Guillaume Grossetie <https://github.com/mogztter>
 2013-09-18

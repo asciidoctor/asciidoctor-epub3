@@ -136,7 +136,7 @@ IMPORTANT: The spine document cannot contain any content other than include dire
 Here's an example showing the structure of a chapter document:
 
 ----
-[[chapter-one]]
+[#chapter-one]
 = Chapter One
 
 chapter content
@@ -687,7 +687,7 @@ To see all of the workarounds and why we chose certain style options, check out 
 
 // TODO add http://www.namo.com/site/namo/menu/5074.do[Namo PubTreeViewer] (iOS, Android & Windows) and http://www.kobo.com/apps[Kobo] (iOS, Android, OSX & Windows)
 
-[[_kindle_quirks]]
+[#_kindle_quirks]
 .Kindle Quirks
 * overrules margins and line heights like a medieval tyrant
 * `font-family` can't be set on `<body>`

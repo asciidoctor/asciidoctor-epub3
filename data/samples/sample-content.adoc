@@ -1,4 +1,4 @@
-[[sample-content]]
+[#sample-content]
 = Asciidoctor Playground: Sample Content
 Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 :username: graphitefriction
@@ -42,7 +42,7 @@ Here's an example of a quote block with metadata:
 [source]
 ----
 .Gettysburg Address <1>
-[[gettysburg]] <2>
+[#gettysburg] <2>
 [quote, Abraham Lincoln, Soldiers' National Cemetery Dedication] <3> <4> <5>
 ____
 Four score and seven years ago our fathers brought forth
