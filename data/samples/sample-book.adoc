@@ -5,6 +5,8 @@ v1.0, 2014-04-15
 :producer: Asciidoctor
 :keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
 :copyright: CC-BY-SA 3.0
+// NOTE anthology adds support for an author per chapter; use book for a single author
+:publication-type: anthology
 :imagesdir: images
 //:front-cover-image: image:front-cover.jpg[Front Cover,1050,1600]
 
