@@ -862,8 +862,9 @@ Extensions.register do
     when 'epub3', 'kf8'
       # all good
     when 'mobi'
-      document.attributes['ebook-format'] = 'kf8'
+      ebook_format = document.attributes['ebook-format'] = 'kf8'
     else
+      # QUESTION should we display a warning?
       ebook_format = document.attributes['ebook-format'] = 'epub3'
     end
     document.attributes[%(ebook-format-#{ebook_format})] = ''
