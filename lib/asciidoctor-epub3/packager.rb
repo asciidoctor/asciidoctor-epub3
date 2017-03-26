@@ -149,7 +149,7 @@ body > svg {
 <image width="#{w}" height="#{h}" xlink:href="#{img_path}"/>
 </svg></body>
 </html>).to_ios
-    # GitDen expects a cover.xhtml, so add it to the spine
+    # Gitden expects a cover.xhtml, so add it to the spine
     spine_builder.file 'cover.xhtml' => content
     spine_builder.id 'cover'
     # clearly a deficiency of gepub that it does not match the id correctly

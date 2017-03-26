@@ -39,7 +39,7 @@ html body {
 }
 
 /* sets minimum margin permitted */
-/* @page not supported by Kindle or GitDen */
+/* @page not supported by Kindle or Gitden */
 @page {
   /* push the top & bottom margins down in Aldiko to emulate Kindle (Kindle uses ~ 10% of screen by default )*/
   margin: 1cm;
