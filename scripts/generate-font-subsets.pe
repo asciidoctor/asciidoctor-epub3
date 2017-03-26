@@ -22,6 +22,7 @@
 # * 0x90 - Neither OpenType or Apple
 # * 0x800 - Generate old-style 'kern' table
 # * 0x08 - exclude TrueType instructions
+# * 0x04 - exclude PS glyph names; short format only (PDF readers use these names to guess characters when copying text)
 #
 # QUESTION: do we need to apply RoundToInt() after ClearInstrs()?
 # FIXME: need to generate cjk font
@@ -124,6 +125,14 @@ while (fi < num_copy_fonts)
       Paste()
       SetWidth(0)
       SelectNone()
+    # Generate no-break hyphen from hyphen (for Noto Serif fonts)
+    #else
+    #  Select(0u002d)
+    #  Copy()
+    #  SelectNone()
+    #  Select(0u2011)
+    #  Paste()
+    #  SelectNone()
     endif
 
     # Generate line feed from no-break space (works around error "cmap format 14 is not supported" in ttfunk)

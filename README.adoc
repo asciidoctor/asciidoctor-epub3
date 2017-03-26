@@ -706,9 +706,16 @@ To see all of the workarounds and why we chose certain style options, check out 
 
 === Send to Kindle
 
-The “Send to Kindle” feature, used for transferring a MOBI file to a Kindle device, is known to strip out all the font files.
-Therefore, if you use this feature, don't be surprised to see default fonts and missing font-based icons.
-We recommend that you transfer the file using other means, such as a USB cable or a sync service like Dropbox.
+WARNING: Don't use it!
+
+The “Send to Kindle” feature, a convenient tool for transferring a MOBI file to a Kindle device, is utterly broken.
+It's known to strip out all the font files and break the encoding of the document.
+
+If you use this feature, don't be surprised if you see default fonts, missing font-based icons, and other font and style errors.
+We *strongy* recommend that you transfer the file to your device using other means, such as a USB cable or sync service like Dropbox.
+
+It's also important to know that “Send to Kindle” is not indicative of the experience your reader will have when shopping in the Kindle store.
+If you use Kindle Direct Publishing (KDP) to publish your book, the integrity of your book will be preserved (to the degree that Amazon allows).
 
 ////
 head-stop (default '.')
