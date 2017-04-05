@@ -31,7 +31,7 @@ endif::[]
 :uri-rvm: https://rvm.io
 :uri-asciidoctor: http://asciidoctor.org
 :uri-idpf: http://www.idpf.org/
-:uri-epub: http://www.idpf.org/epub/30/spec/epub30-overview.html
+:uri-epub: http://www.idpf.org/epub/31/spec/epub-spec.html
 :uri-epubcheck: https://github.com/idpf/epubcheck
 
 {project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 and KF8/MOBI e-book formats.
@@ -399,7 +399,7 @@ If the EPUB3 archive contains any errors, they will be output in your terminal.
 .EPUB Standard & Validator
 ****
 The electronic publication (EPUB) standard is developed by the {uri-idpf}[International Digital Publishing Forum (IDPF)].
-{uri-epub}[EPUB 3.0], released in October 2011, is the latest version of this standard.
+{uri-epub}[EPUB 3.1], released in January 2017, is the latest version of this standard.
 
 An EPUB3 archive contains:
 
