@@ -1,26 +1,38 @@
 = Asciidoctor EPUB3: A _native_ EPUB3 converter for AsciiDoc
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
-:project-name: Asciidoctor EPUB3
-:project-handle: asciidoctor-epub3
-:project-uri: https://github.com/asciidoctor/{project-handle}
-:project-repo-uri: {project-uri}
-:project-issues-uri: {project-repo-uri}/issues
-:rvm-uri: http://rvm.io
-:asciidoctor-uri: http://asciidoctor.org
-:idpf-uri: http://www.idpf.org/
-:epub-uri: http://www.idpf.org/epub/30/spec/epub30-overview.html
-:epubcheck-uri: https://github.com/idpf/epubcheck
+// Settings:
+:experimental:
+:idprefix:
+:idseparator: -
+:imagesdir: data/samples/images
+ifdef::env-github,env-browser[]
+:toc: preamble
+:toclevels: 1
+endif::[]
 ifdef::env-github[]
-:base-uri: link:
+:!toc-title:
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
 endif::[]
 ifndef::env-github[]
-:base-uri: {project-repo-uri}/blob/master/
+:icons: font
 endif::[]
-:notice-uri: {base-uri}NOTICE.adoc
-:license-uri: {base-uri}LICENSE.adoc
-:worklog-uri: {base-uri}WORKLOG.adoc
-:imagesdir: data/samples/images
-:experimental:
+// Aliases:
+:project-name: Asciidoctor EPUB3
+:project-handle: asciidoctor-epub3
+// URIs:
+:uri-project: https://github.com/asciidoctor/{project-handle}
+:uri-repo: {uri-project}
+:uri-issues: {uri-repo}/issues
+:uri-discuss: http://discuss.asciidoctor.org
+:uri-rvm: https://rvm.io
+:uri-asciidoctor: http://asciidoctor.org
+:uri-idpf: http://www.idpf.org/
+:uri-epub: http://www.idpf.org/epub/30/spec/epub30-overview.html
+:uri-epubcheck: https://github.com/idpf/epubcheck
 
 {project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 and KF8/MOBI e-book formats.
 
@@ -88,7 +100,7 @@ We may explore the use of fixed layout documents in the future if the need arise
 
 === Planned Features and Work In Progress
 
-See {worklog-uri}[WORKLOG.adoc].
+See <<WORKLOG#,WORKLOG.adoc>>.
 
 == Converter Workflow
 
@@ -116,6 +128,7 @@ Each resulting XHTML document is then added to the EPUB3 archive as a chapter do
 
 Here's an example showing the structure of a spine document:
 
+[source,asciidoc]
 ----
 = Book Title
 Author Name
@@ -135,6 +148,7 @@ IMPORTANT: The spine document cannot contain any content other than include dire
 
 Here's an example showing the structure of a chapter document:
 
+[source,asciidoc]
 ----
 [#chapter-one]
 = Chapter One
@@ -143,16 +157,17 @@ chapter content
 ----
 
 CAUTION: Although an explicit ID over the chapter title is not required, it is recommended.
-See issue https://github.com/asciidoctor/asciidoctor-epub3/issues/46[#46] for details.
+See issue {uri-issues}/46[#46] for details.
 
 If your chapter files start with a level-1 section instead of a level-2 section, you need to make the opposite adjustment in the header of the spine document:
 
+[source,asciidoc]
 ----
 \ifndef::ebook-format[:leveloffset: -1]
 ----
 
 If the master document does not contain any include directives, then the converter treats the document as the sole chapter in the EPUB3 archive and automatically produces a navigation file that references it.
-(Currently broken. See issue https://github.com/asciidoctor/asciidoctor-epub3/issues/47[#47]).
+(Currently broken. See issue {uri-issues}/47[#47]).
 
 NOTE: Eventually, we envision introducing a dedicated block macro to represent a spine item so that we don't overload the meaning of the include directive.
 However, for the time being, the include directive fills this role.
@@ -167,7 +182,7 @@ To check if you have Ruby available, use the `ruby` command to query the install
 
 == Getting Started
 
-You can get {project-name} by <<_install_the_published_gem,installing the published gem>> or <<_development,running the code from source>>.
+You can get {project-name} by <<Install the Published Gem,installing the published gem>> or <<Development,running the code from source>>.
 
 === Install the Published Gem
 
@@ -318,6 +333,7 @@ When using the EPUB3 converter, the `ebook-format` attribute resolves to the nam
 You can use these attributes in a preprocessor directive if you only want to show certain content to readers using a particular device.
 For instance, if you want to display a message to readers on Kindle, you can use:
 
+[source,asciidoc]
 ----
 \ifdef::ebook-format-kf8[Hello Kindle reader!]
 ----
@@ -370,19 +386,20 @@ Next, let's validate the EPUB3 archive to ensure it built correctly.
  $ asciidoctor-epub3 -D output -a ebook-validate data/samples/sample-book.adoc
 
 .Validation success
-----
+[.output]
+....
 Epubcheck Version 3.0.1
 
 Validating against EPUB version 3.0
 No errors or warnings detected.
-----
+....
 
 If the EPUB3 archive contains any errors, they will be output in your terminal.
 
 .EPUB Standard & Validator
 ****
-The electronic publication (EPUB) standard is developed by the {idpf-uri}[International Digital Publishing Forum (IDPF)].
-{epub-uri}[EPUB 3.0], released in October 2011, is the latest version of this standard.
+The electronic publication (EPUB) standard is developed by the {uri-idpf}[International Digital Publishing Forum (IDPF)].
+{uri-epub}[EPUB 3.0], released in October 2011, is the latest version of this standard.
 
 An EPUB3 archive contains:
 
@@ -391,7 +408,7 @@ An EPUB3 archive contains:
 * one or more content documents
 * assets (images, fonts, stylesheets, etc.)
 
-The IDPF also supports {epubcheck-uri}[EpubCheck].
+The IDPF also supports {uri-epubcheck}[EpubCheck].
 EpubCheck parses and validates the file against the EPUB schema.
 ****
 
@@ -506,6 +523,7 @@ WARNING: We've found that if the book cover is more than 1600px on any side, Ald
 Feel free to use the SVG of the sample cover in the [path]_data/images_ folder as a template for creating your own cover.
 Once your image is ready, you can replace the placeholder cover image by defining the `front-cover-image` attribute in the header of the master document.
 
+[source,asciidoc]
 ----
 :front-cover-image: image:cover.png[Front Cover,1050,1600]
 ----
@@ -542,7 +560,7 @@ The theme's fonts are located in the [path]_data/fonts_ directory.
 The M+ Outline fonts are used for titles, headings, literal (monospace) text, and annotation numbers.
 The body text uses Noto Serif.
 Admonition icons and the end-of-chapter mark are from the Font Awesome icon font.
-Refer to the {notice-uri}[NOTICE.adoc] file for further information about the fonts.
+Refer to the <<NOTICE#,NOTICE>> file for further information about the fonts.
 
 // TODO document command to generate the M+ 1p latin fonts
 
@@ -677,17 +695,17 @@ With publisher's styles active, you'll still be able to adjust the relative size
 When the book is viewed in EPUB2 readers and Kindle apps/devices which have reached their end-of-life (EOL), the e-book relies on the strong semantics of the HTML and some fallback styles to render properly.
 EPUB2 readers, such as Aldiko, don't understand CSS3 styles and therefore miss out on some of subtleties in the formatting.
 
-As mentioned in the <<_about_the_theme,theme section>>, the stylesheet attempts to provide as consistent a reading experience as possible in the common EPUB3 readers, despite the different CSS implementation rules and limitations unique to each e-book application.
+As mentioned in the <<About the Theme,theme section>>, the stylesheet attempts to provide as consistent a reading experience as possible in the common EPUB3 readers, despite the different CSS implementation rules and limitations unique to each e-book application.
 Most of these obstacles were addressed using media queries or explicit classes.
 Some we haven't conquered.
 Yet.
 
-The <<_kindle_quirks,Kindle quirks list>> shows you just a few of the constraints we encountered.
+The <<kindle-quirks,Kindle quirks list>> shows you just a few of the constraints we encountered.
 To see all of the workarounds and why we chose certain style options, check out the code and comments in the [file]_epub3.css_ and [file]_epub3-css-only.css_ files.
 
 // TODO add http://www.namo.com/site/namo/menu/5074.do[Namo PubTreeViewer] (iOS, Android & Windows) and http://www.kobo.com/apps[Kobo] (iOS, Android, OSX & Windows)
 
-[#_kindle_quirks]
+[#kindle-quirks]
 .Kindle Quirks
 * overrules margins and line heights like a medieval tyrant
 * `font-family` can't be set on `<body>`
@@ -766,7 +784,7 @@ In the spirit of free software, _everyone_ is encouraged to help improve this pr
 
 To contribute code, simply fork the project on GitHub, hack away and send a pull request with your proposed changes.
 
-Feel free to use the {project-issues-uri}[issue tracker] or http://discuss.asciidoctor.org[Asciidoctor mailing list] to provide feedback or suggestions in other ways.
+Feel free to use the {uri-issues}[issue tracker] or {uri-discuss}[Asciidoctor mailing list] to provide feedback or suggestions in other ways.
 
 == Development
 
@@ -782,13 +800,15 @@ You can retrieve {project-name} in one of two ways:
 
 ==== Option 1: Fetch Using `git clone`
 
-If you want to clone the git repository, simply copy the {project-repo-uri}[GitHub repository URL] and pass it to the `git clone` command:
+If you want to clone the git repository, simply copy the {uri-repo}[GitHub repository URL] and pass it to the `git clone` command:
 
- $ git clone https://github.com/asciidoctor/asciidoctor-epub3
+[subs=attributes+]
+ $ git clone {uri-repo}
 
 Next, change to the project directory:
 
- $ cd asciidoctor-epub3
+[subs=attributes+]
+ $ cd {project-handle}
 
 ==== Option 2: Download the Archive
 
@@ -801,7 +821,7 @@ We'll leverage the project configuration to install the necessary dependencies.
 
 === Prepare RVM (optional step)
 
-If you're using {rvm-uri}[RVM], we recommend creating a new gemset to work with {project-name}:
+If you're using {uri-rvm}[RVM], we recommend creating a new gemset to work with {project-name}:
 
  $ rvm use 2.2@asciidoctor-epub3-dev --create
 
@@ -862,11 +882,11 @@ Jump back to <<Getting Started>> to learn how to create an AsciiDoc document and
 
 == Copyright
 
-Copyright (C) 2014-2016 OpenDevise Inc. and the Asciidoctor Project.
+Copyright (C) 2014-2017 OpenDevise Inc. and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
-For the full text of the license, see the {license-uri}[LICENSE.adoc] file.
-Refer to the {notice-uri}[NOTICE.adoc] file for information about third-party Open Source software in use.
+For the full text of the license, see the <<LICENSE#,LICENSE>> file.
+Refer to the <<NOTICE#,NOTICE>> file for information about third-party Open Source software in use.
 
 ////
 == Additional Points of Note
