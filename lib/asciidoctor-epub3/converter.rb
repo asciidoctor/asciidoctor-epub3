@@ -708,7 +708,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           xdoc_id, xdoc_refid = refid.split '#', 2
           xdoc = node.document.references[:spine_items].find {|doc| xdoc_id == (doc.id || (doc.attr 'docname')) }
           if xdoc
-            unless (text = (xdoc_id == xdoc_refid ? xdoc.doctitle : xdoc.references[:ids][xdoc_refid]))
+            unless (text = xdoc.references[:ids][xdoc_refid])
               warn %(asciidoctor: WARNING: cannot resolve reference to #{xdoc_refid} in document #{xdoc_id})
               text = %([#{refid}])
             end
