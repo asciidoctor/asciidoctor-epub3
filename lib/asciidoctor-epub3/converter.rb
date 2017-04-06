@@ -887,7 +887,12 @@ Extensions.register do
     document.attributes[%(ebook-format-#{ebook_format})] = ''
     # Only fire SpineItemProcessor for top-level include directives
     include_processor SpineItemProcessor.new(document)
-    treeprocessor { process {|doc| doc.id = DocumentIdGenerator.generate_id doc } }
+    treeprocessor do
+      process do |doc|
+        doc.id = DocumentIdGenerator.generate_id doc
+        nil
+      end
+    end
   end
 end
 end
