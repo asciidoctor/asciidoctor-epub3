@@ -16,7 +16,8 @@ module GepubBuilderMixin
   InlineImageMacroRx = /^image:(.*?)\[(.*?)\]$/
 
   def sanitized_doctitle doc, target = :plain
-    return (doc.attr 'untitled-label') unless doc.header?
+    # NOTE checking only for doc.header? resulted in a toc.ncx with 'Untitled' chapters
+    return (doc.attr 'untitled-label') unless (doc.header? || doc.context == :document)
     title = case target
     when :attribute_cdata
       doc.doctitle(sanitize: true).gsub('"', '&quot;')
