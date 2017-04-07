@@ -8,26 +8,49 @@ module Epub3
 module GepubBuilderMixin
   DATA_DIR = ::File.expand_path(::File.join ::File.dirname(__FILE__), '..', '..', 'data')
   SAMPLES_DIR = ::File.join DATA_DIR, 'samples'
+  WordJoiner = Epub3::WordJoiner
   WordJoinerRx = Epub3::WordJoinerRx
+  CharEntityRx = ContentConverter::CharEntityRx
+  XmlElementRx = ContentConverter::XmlElementRx
   FromHtmlSpecialCharsMap = ContentConverter::FromHtmlSpecialCharsMap
   FromHtmlSpecialCharsRx = ContentConverter::FromHtmlSpecialCharsRx
   CsvDelimiterRx = /\s*,\s*/
   DefaultCoverImage = 'images/default-cover.png'
   InlineImageMacroRx = /^image:(.*?)\[(.*?)\]$/
 
-  def sanitized_doctitle doc, target = :plain
-    return (doc.attr 'untitled-label') unless doc.header?
-    title = case target
-    when :attribute_cdata
-      doc.doctitle(sanitize: true).gsub('"', '&quot;')
-    when :element_cdata
-      doc.doctitle sanitize: true
-    when :pcdata
-      doc.doctitle
-    when :plain
-      doc.doctitle(sanitize: true).gsub(FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap)
+  attr_reader :book, :format, :spine
+
+  # FIXME move to Asciidoctor::Helpers
+  def sanitize_doctitle_xml doc, content_spec
+    doctitle = doc.header? ? doc.doctitle : (doc.attr 'untitled-label')
+    sanitize_xml doctitle, content_spec
+  end
+
+  # FIXME move to Asciidoctor::Helpers
+  def sanitize_xml content, content_spec
+    if content_spec == :pcdata
+      content = content
+      content = (content.end_with? WordJoiner) ? content.chop : content
+    elsif content.include? '<'
+      if (content = content.gsub(XmlElementRx, '').tr_s(' ', ' ').strip).include? WordJoiner
+        content = content.gsub WordJoinerRx, ''
+      end
     end
-    title.gsub WordJoinerRx, ''
+
+    case content_spec
+    when :attribute_cdata
+      content = content.gsub('"', '&quot;') if content.include? '"'
+    when :cdata, :pcdata
+      # noop
+    when :plain_text
+      if content.include? ';'
+        content = content.gsub(CharEntityRx) { [$1.to_i].pack 'U*' } if content.include? '&#'
+        content = content.gsub(FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap)
+      end
+    else
+      raise ::ArgumentError, %(Unknown content spec: #{content_spec})
+    end
+    content
   end
 
   def add_theme_assets doc
@@ -81,6 +104,7 @@ module GepubBuilderMixin
         end
       end
     end
+    nil
   end
 
   def add_cover_image doc
@@ -91,8 +115,7 @@ module GepubBuilderMixin
       if front_cover_image =~ InlineImageMacroRx
         front_cover_image = %(#{imagesdir}#{$1})
       end
-      workdir = doc.attr 'docdir', '.'
-      workdir = '.' if workdir.empty?
+      workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
     else
       front_cover_image = DefaultCoverImage
       workdir = DATA_DIR
@@ -101,10 +124,11 @@ module GepubBuilderMixin
     resources do
       cover_image %(#{imagesdir}jacket/cover#{::File.extname front_cover_image}) => ::File.join(workdir, front_cover_image)
     end
+    nil
   end
 
   # NOTE must be called within the ordered block
-  def add_cover_page doc, spine_builder, book
+  def add_cover_page doc, spine_builder
     imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
 
@@ -124,7 +148,7 @@ module GepubBuilderMixin
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>#{sanitized_doctitle doc, :element_cdata}</title>
+<title>#{sanitize_doctitle_xml doc, :cdata}</title>
 <style type="text/css">
 @page {
   margin: 0;
@@ -151,9 +175,12 @@ body > svg {
 </html>).to_ios
     # Gitden expects a cover.xhtml, so add it to the spine
     spine_builder.file 'cover.xhtml' => content
+    assigned_id = (spine_builder.instance_variable_get :@last_defined_item).item.id
     spine_builder.id 'cover'
     # clearly a deficiency of gepub that it does not match the id correctly
-    book.spine.itemref_by_id['item_cover1'].idref = 'cover'
+    # FIXME can we move this hack elsewhere?
+    @book.spine.itemref_by_id[assigned_id].idref = 'cover'
+    nil
   end
 
   def add_images_from_front_matter
@@ -162,13 +189,15 @@ body > svg {
         file $1
       end
     end if ::File.file? 'front-matter.html'
+    nil
   end
 
-  def add_front_matter_page doc, spine_builder, builder, format
+  def add_front_matter_page doc, spine_builder
     if ::File.file? 'front-matter.html'
-      spine_builder.file 'front-matter.html' => (builder.postprocess_xhtml_file 'front-matter.html', format)
-      (spine_builder.instance_variable_get :@last_defined_item).properties << 'svg'
+      spine_builder.file 'front-matter.xhtml' => (postprocess_xhtml_file 'front-matter.html', @format)
+      spine_builder.add_property 'svg'
     end
+    nil
   end
 
   # FIXME don't add same image more than once
@@ -177,8 +206,7 @@ body > svg {
     docimagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
 
-    workdir = doc.attr 'docdir', '.'
-    workdir = '.' if workdir.empty?
+    workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
     resources workdir: workdir do
       images.each do |image|
         imagesdir = (image.document.attr 'imagesdir', '.').chomp '/'
@@ -193,6 +221,7 @@ body > svg {
         end
       end
     end
+    nil
   end
 
   def add_profile_images doc, usernames
@@ -204,8 +233,7 @@ body > svg {
       file %(#{imagesdir}headshots/default.jpg) => ::File.join(DATA_DIR, 'images/default-headshot.jpg')
     end
 
-    workdir = doc.attr 'docdir', '.'
-    workdir = '.' if workdir.empty?
+    workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
     resources do
       usernames.each do |username|
         avatar = %(#{imagesdir}avatars/#{username}.jpg)
@@ -243,32 +271,134 @@ body > svg {
       end
 =end
     end
+    nil
   end
 
   def add_content doc
-    builder = self
-    spine = @spine
-    format = @format
-    workdir = doc.attr 'docdir', '.'
-    workdir = '.' if workdir.empty?
+    builder, spine, format = self, @spine, @format
+    workdir = (doc.attr 'docdir').nil_or_empty? ? '.' : workdir
     resources workdir: workdir do
+      extend GepubResourceBuilderMixin
       builder.add_images_from_front_matter
-      # QUESTION should we move navigation_document to the Packager class? seems to make sense
-      #nav 'nav.xhtml' => (builder.postprocess_xhtml doc.converter.navigation_document(doc, spine), format)
-      nav 'nav.xhtml' => (builder.postprocess_xhtml ::Asciidoctor::Converter::Factory.default.create('epub3-xhtml5').navigation_document(doc, spine), format)
+      builder.add_nav_doc doc, self, spine, format
+      builder.add_ncx_doc doc, self, spine
       ordered do
-        builder.add_cover_page doc, self, @book unless format == :kf8
-        builder.add_front_matter_page doc, self, builder, format
+        builder.add_cover_page doc, self unless format == :kf8
+        builder.add_front_matter_page doc, self
         spine.each_with_index do |item, i|
-          content_path = %(#{item.id || (item.attr 'docname')}.xhtml)
-          file content_path => (builder.postprocess_xhtml item.convert, format)
-          # NOTE heading for ePub2 navigation file; toc.ncx requires headings to be plain text
-          heading builder.sanitized_doctitle(item)
-          @last_defined_item.properties << 'svg' if ((item.attr 'epub-properties') || []).include? 'svg'
+          file %(#{item.id || (item.attr 'docname')}.xhtml) => (builder.postprocess_xhtml item.convert, format)
+          add_property 'svg' if ((item.attr 'epub-properties') || []).include? 'svg'
+          # QUESTION reenable?
           #linear 'yes' if i == 0
         end
       end
     end
+    nil
+  end
+
+  def add_nav_doc doc, spine_builder, spine, format
+    spine_builder.nav 'nav.xhtml' => (postprocess_xhtml nav_doc(doc, spine), format)
+    spine_builder.id 'nav'
+    nil
+  end
+
+  # TODO aggregate authors of spine document into authors attribute(s) on main document
+  def nav_doc doc, spine
+    lines = [%(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = (doc.attr 'lang', 'en')}" lang="#{lang}">
+<head>
+<meta charset="UTF-8"/>
+<title>#{sanitize_doctitle_xml doc, :cdata}</title>
+<link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
+<link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
+</head>
+<body>
+<h1>#{sanitize_doctitle_xml doc, :pcdata}</h1>
+<nav epub:type="toc" id="toc">
+<h2>#{doc.attr 'toc-title'}</h2>)]
+    lines << (nav_level spine, [(doc.attr 'toclevels', 1).to_i, 0].max)
+    lines << %(</nav>
+</body>
+</html>)
+    lines * EOL
+  end
+
+  def nav_level items, depth, state = {}
+    lines = []
+    lines << '<ol>'
+    items.each do |item|
+      index = (state[:index] = (state.fetch :index, 0) + 1)
+      if item.context == :document
+        # NOTE we sanitize the chapter titles because we use formatting to control layout
+        item_label = sanitize_doctitle_xml item, :cdata
+        item_href = (state[:content_doc_href] = %(#{item.id || (item.attr 'docname')}.xhtml))
+      else
+        item_label = sanitize_xml item.title, :pcdata
+        item_href = %(#{state[:content_doc_href]}##{item.id})
+      end
+      lines << %(<li><a href="#{item_href}">#{item_label}</a>)
+      unless depth == 0 || (child_sections = item.sections).empty?
+        lines << (nav_level child_sections, depth - 1, state)
+        lines << '</li>'
+      else
+        lines[-1] = %(#{lines[-1]}</li>)
+      end
+      state.delete :content_doc_href if item.context == :document
+    end
+    lines << '</ol>'
+    lines * EOL
+  end
+
+  # NOTE gepub doesn't support building a ncx TOC with depth > 1, so do it ourselves
+  def add_ncx_doc doc, spine_builder, spine
+    spine_builder.file 'toc.ncx' => (ncx_doc doc, spine).to_ios
+    spine_builder.id 'ncx'
+    nil
+  end
+
+  def ncx_doc doc, spine
+    # TODO populate docAuthor element based on unique authors in work
+    lines = [%(<?xml version="1.0" encoding="utf-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="#{doc.attr 'lang', 'en'}">
+<head>
+<meta name="dtb:uid" content="#{@book.identifier}"/>
+%{depth}
+<meta name="dtb:totalPageCount" content="0"/>
+<meta name="dtb:maxPageNumber" content="0"/>
+</head>
+<docTitle><text>#{sanitize_doctitle_xml doc, :cdata}</text></docTitle>
+<navMap>)]
+    lines << (ncx_level spine, [(doc.attr 'toclevels', 1).to_i, 0].max, state = {})
+    lines[0] = lines[0].sub '%{depth}', %(<meta name="dtb:depth" content="#{state[:max_depth]}"/>)
+    lines << %(</navMap>
+</ncx>)
+    lines * EOL
+  end
+
+  def ncx_level items, depth, state = {}
+    lines = []
+    state[:max_depth] = (state.fetch :max_depth, 0) + 1
+    items.each do |item|
+      index = (state[:index] = (state.fetch :index, 0) + 1)
+      if item.context == :document
+        item_id = %(nav_#{index})
+        item_label = sanitize_doctitle_xml item, :cdata
+        item_href = (state[:content_doc_href] = %(#{item.id || (item.attr 'docname')}.xhtml))
+      else
+        item_id = %(nav_#{index})
+        item_label = sanitize_xml item.title, :cdata
+        item_href = %(#{state[:content_doc_href]}##{item.id})
+      end
+      lines << %(<navPoint id="#{item_id}" playOrder="#{index}">)
+      lines << %(<navLabel><text>#{item_label}</text></navLabel>)
+      lines << %(<content src="#{item_href}"/>)
+      unless depth == 0 || (child_sections = item.sections).empty?
+        lines << (ncx_level child_sections, depth - 1, state)
+      end
+      lines << %(</navPoint>)
+      state.delete :content_doc_href if item.context == :document
+    end
+    lines * EOL
   end
 
   def collect_keywords doc, spine
@@ -324,6 +454,13 @@ body > svg {
   end
 end
 
+module GepubResourceBuilderMixin
+  # Add missing method in builder to add a property to last defined item
+  def add_property property
+    @last_defined_item.add_property property
+  end
+end
+
 class Packager
   KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
   EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
@@ -370,7 +507,8 @@ class Packager
       # replace with next line once the attributes argument is supported
       #unique_identifier doc.id, 'pub-id', 'uuid', 'scheme' => 'xsd:string'
 
-      title sanitized_doctitle(doc)
+      # NOTE we must use :plain_text here since gepub reencodes
+      title(sanitize_doctitle_xml doc, :plain_text)
       id 'pub-title'
 
       # FIXME this logic needs some work

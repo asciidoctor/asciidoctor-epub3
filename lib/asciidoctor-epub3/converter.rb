@@ -25,10 +25,17 @@ class Converter
     @extract = false
   end
 
-  def convert spine_doc, name = nil
-    @validate = true if spine_doc.attr? 'ebook-validate'
-    @extract = true if spine_doc.attr? 'ebook-extract'
-    Packager.new spine_doc, (spine_doc.references[:spine_items] || [spine_doc]), spine_doc.attributes['ebook-format'].to_sym
+  def convert node, name = nil
+    if (name ||= node.node_name) == 'document'
+      @validate = node.attr? 'ebook-validate'
+      @extract = node.attr? 'ebook-extract'
+      Packager.new node, (node.references[:spine_items] || [node]), node.attributes['ebook-format'].to_sym
+    # converting an element from the spine document, such as an inline node in the doctitle
+    elsif name.start_with? 'inline_'
+      (@content_converter ||= ::Asciidoctor::Converter::Factory.default.create('epub3-xhtml5')).convert node, name
+    else
+      raise ::ArgumentError, %(Encountered unexpected node in epub3 package converter: #{name})
+    end
   end
 
   # FIXME we have to package in write because we don't have access to target before this point
@@ -52,7 +59,7 @@ class ContentConverter
   RightAngleQuote = '&#x203a;'
 
   XmlElementRx = /<\/?.+?>/
-  CharEntityRx = /&#(\d{2,5});/
+  CharEntityRx = /&#(\d{2,6});/
   NamedEntityRx = /&([A-Z]+);/
   UppercaseTagRx = /<(\/)?([A-Z]+)>/
 
@@ -88,34 +95,8 @@ class ContentConverter
     if respond_to?(name ||= node.node_name)
       send name, node
     else
-      warn %(conversion missing in epub3 backend for #{name})
+      warn %(asciidoctor: WARNING: conversion missing in epub3 backend for #{name})
     end
-  end
-
-  # TODO aggregate authors of spine document into authors attribute(s) on main document
-  def navigation_document node, spine
-    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoinerRx, ''
-    lines = [%(<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = (node.attr 'lang', 'en')}" lang="#{lang}">
-<head>
-<meta charset="UTF-8"/>
-<title>#{doctitle_sanitized}</title>
-<link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
-<link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
-</head>
-<body>
-<h1>#{doctitle_sanitized}</h1>
-<nav epub:type="toc" id="toc">
-<h2>#{node.attr 'toc-title'}</h2>
-<ol>)]
-    spine.each do |item|
-      lines << %(<li><a href="#{item.id || (item.attr 'docname')}.xhtml">#{(item.doctitle sanitize: true, use_fallback: true).gsub WordJoinerRx, ''}</a></li>)
-    end
-    lines << %(</ol>
-</nav>
-</body>
-</html>)
-    lines * EOL
   end
 
   def document node
