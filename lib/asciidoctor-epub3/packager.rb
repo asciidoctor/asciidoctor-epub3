@@ -252,24 +252,6 @@ body > svg {
           file headshot => ::File.join(DATA_DIR, 'images/default-headshot.jpg')
         end
       end
-=begin
-      @spine.each do |item|
-        username = (item.attr 'username') || 'default'
-        avatar_target = %(#{imagesdir}avatars/#{username}.jpg)
-        if ::File.readable?(avatar = %(#{item.attr 'docname'}/avatar.jpg))
-          file avatar_target => avatar
-        else
-          warn %(Avatar #{avatar} not found or not readable. Falling back to default avatar for #{username}.)
-          ::Dir.chdir DATA_DIR do
-            file avatar_target => %(images/default-avatar.jpg)
-          end
-        end
-        if ::File.readable? (headshot = %(#{item.attr 'docname'}/headshot.jpg))
-          file headshot
-          # TODO default headshot?
-        end
-      end
-=end
     end
     nil
   end
@@ -481,7 +463,6 @@ class Packager
 
     images = spine.map {|item| item.find_by context: :image }.compact.flatten
         .uniq {|img| %(#{(img.document.attr 'imagesdir', '.').chomp '/'}/#{img.attr 'target'}) }
-    usernames = spine.map {|item| item.attr 'username' }.compact.uniq
     # FIXME authors should be aggregated already on parent document
     authors = if doc.attr? 'authors'
       (doc.attr 'authors').split(GepubBuilderMixin::CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }).uniq
@@ -569,7 +550,10 @@ class Packager
 
       add_theme_assets doc
       add_cover_image doc
-      add_profile_images doc, usernames
+      if (doc.attr 'publication-type', 'book') != 'book'
+        usernames = spine.map {|item| item.attr 'username' }.compact.uniq
+        add_profile_images doc, usernames
+      end
       # QUESTION move add_content_images to add_content method?
       add_content_images doc, images
       add_content doc
