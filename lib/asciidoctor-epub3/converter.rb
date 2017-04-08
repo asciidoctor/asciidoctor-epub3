@@ -832,7 +832,7 @@ class DocumentIdGenerator
     def generate_id doc
       unless (id = doc.id)
         id = if doc.header?
-          doc.doctitle(sanitize: true).gsub(WordJoinerRx, '').downcase.delete(':').tr_s(' ', '-').tr_s('-', '-')
+          doc.doctitle(sanitize: true).gsub(WordJoinerRx, '').downcase.tr_s(' :-', '-')
         elsif (first_section = doc.first_section)
           first_section.id
         else
