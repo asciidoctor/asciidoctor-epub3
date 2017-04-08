@@ -36,7 +36,9 @@ class SpineItemProcessor < Extensions::IncludeProcessor
 
     # REVIEW reaching into converter to resolve document id feels like a hack; should happen in Asciidoctor parser
     # also, strange that "id" doesn't work here
-    inherited_attrs['css-signature'] = DocumentIdGenerator.generate_id spine_item_doc_meta
+    idprefix = (spine_doc.attr 'idprefix') || (spine_item_doc_meta.attr 'idprefix')
+    idseparator = (spine_doc.attr 'idseparator') || (spine_item_doc_meta.attr 'idseparator')
+    inherited_attrs['css-signature'] = DocumentIdGenerator.generate_id spine_item_doc_meta, idprefix, idseparator
     inherited_attrs['docreldir'] = ::File.dirname target
 
     # NOTE can't assign spine document as parent since there's too many assumptions in the Asciidoctor processor

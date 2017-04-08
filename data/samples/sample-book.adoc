@@ -7,6 +7,8 @@ v1.0, 2014-04-15
 :copyright: CC-BY-SA 3.0
 // NOTE anthology adds support for an author per chapter; use book for a single author
 :publication-type: anthology
+:idprefix:
+:idseparator: -
 :imagesdir: images
 //:front-cover-image: image:front-cover.jpg[Front Cover,1050,1600]
 

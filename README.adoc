@@ -130,7 +130,7 @@ TIP: The include directive may be used in the chapter files to include other fil
 
 Rule 2::
 Each chapter must start with a document title (i.e., level-0 heading).
-The heading must declare an ID that matches the chapter filename (minus its file extension).
+The document header must declare an ID that matches the chapter filename (minus its file extension).
 
 Rule 3::
 No sections in a chapter may have the same ID as the chapter ID.
@@ -152,15 +152,32 @@ The next section goes into more detail about how to set up the spine document an
 
 === Declaring the Spine
 
-Asciidoctor relies on top-level include directives (i.e., include directives in the master document) to indicate where the chapter splits should occur.
-Each chapter must start with a single-line, level-0 section.
-The section title becomes the chapter title (also used as the TOC entry) and the section ID determines the chapter file name inside the EPUB3 archive.
-In other words, you must be explicit.
-{project-name} will not try to guess.
-If your AsciiDoc document is not structured in this way, you'll need to change it to use the {project-name} converter successfully.
+The spine (or master document) must be well-formed.
+Otherwise, {project-name} will not convert the document properly.
+If your AsciiDoc documents are not structured as explained in this section, you'll need to change them.
+
+Asciidoctor uses top-level include directives (i.e., include directives in the master document) to indicate where each chapter split should occur.
+The chapter files should begin with an AsciiDoc document header, which consists of an ID, a document title (i.e., level-0 heading), an author name, and a set of attribute entries.
+Only the document title is required.
+
+The document title in the chapter file is used as the chapter title and the label for the chapter in the TOC.
+The chapter ID, combined with the _.xhtml_ suffix, is used as the filename of the chapter inside the EPUB3 archive (though this could change in the future).
+We recommend that you base the filename of the chapter on the chapter ID.
+
+If you don't specify an ID for a chapter, one will be generated automatically from the document title.
+The rules for generating a chapter ID from the document title are as follows:
+
+* apply inline formatting, then remove XML elements
+* remove the `\&#8217;` character reference (so `John\&#8217;s` becomes `Johns`)
+* replace `\&amp;` with the word `and` (so `John \&amp; Jane` becomes `John and Jane`)
+* expand all other character references
+* lowercase all characters
+* replace illegal ID characters with the character defined by the `idseparator` attribute
+* prepend the value of the `idprefix` attribute
+* prepend an underscore if the ID begins with a number
 
 You can think of the master document as the spine of the book and the include directives the individual items being bound together.
-The target of each include directive in the master document is parsed and rendered as a separate AsciiDoc document, with certain options and attributes being passed down from the master to ensure consistent behavior.
+The target of each include directive in the master document is parsed and rendered as a separate AsciiDoc document, with certain options and attributes passed down from the master to ensure consistent behavior.
 Each resulting XHTML document is then added to the EPUB3 archive as a chapter document and the master document becomes the navigation file (i.e, the table of contents).
 
 Here's an example showing the structure of a spine document:
@@ -193,8 +210,7 @@ Here's an example showing the structure of a chapter document:
 chapter content
 ----
 
-CAUTION: Although an explicit ID over the chapter title is not required, it is recommended.
-See issue {uri-issues}/46[#46] for details.
+CAUTION: Although an explicit ID over the chapter title is not required, it's recommended for stability.
 
 If your chapter files start with a level-1 section instead of a level-2 section, you need to make the opposite adjustment in the header of the spine document:
 
