@@ -1,4 +1,4 @@
-= Asciidoctor EPUB3: A _native_ EPUB3 converter for AsciiDoc
+= {project-name}: A _native_ EPUB3 converter for AsciiDoc
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 // Settings:
 :experimental:
@@ -104,14 +104,51 @@ See <<WORKLOG#,WORKLOG.adoc>>.
 
 == Converter Workflow
 
-{project-name} takes a single, logical AsciiDoc document as input and converts it to an EPUB3 publication archive (often described as a “website in a box”).
-Using the EPUB3 publication as the “digital master”, {project-name} then produces a KF8/MOBI file, the format required by Amazon Kindle.
-The conversion to KF8/MOBI is performed by sending the EPUB3 through http://www.amazon.com/gp/feature.html?docId=1000765211[KindleGen].
+{project-name} takes an aggregate AsciiDoc document and its referenced assets as input and converts them to an EPUB3 publication archive (often described as a “website in a box”).
 
-An EPUB3 archive is typically structured with the contents of each “chapter” in a separate XHTML file.
-The converter must therefore “chunk” the source document into multiple XHTML files to put in the EPUB3 archive.
-Other converters tend to handle this task by automatically slicing up the XHTML output at predetermined heading levels.
-Asciidoctor takes a different approach.
+{project-name} can also produce a KF8/MOBI file, the format required for viewing on Amazon Kindle, using the EPUB3 publication as the “digital master”.
+The conversion to KF8/MOBI is performed by generating a slightly modified EPUB3 publication (necessary to adhere to Amazon Kindle requirements) and passing it through the http://www.amazon.com/gp/feature.html?docId=1000765211[KindleGen] application.
+
+== Structuring your Manuscript
+
+An EPUB3 archive is composed of multiple files. The content of each “chapter” is typically stored in a dedicated XHTML file.
+Therefore, the {project-name} converter “chunks” the AsciiDoc source document into multiple XHTML files to add to the EPUB3 archive.
+While other converters handle this chunking task by automatically slicing up the XHTML output at predetermined heading levels, this converter takes a different approach, outlined next.
+
+=== Composition Rules
+
+There are several rules you must follow to successfully convert your AsciiDoc source documents into an EPUB3 publication archive.
+These rules may be loosened in the future, but they are mandatory at the moment.
+
+Rule 1::
+Each chapter must begin in a dedicated file that resides at the root of the project.
+It must be included into the main document using the AsciiDoc include directive.
+The main document, which we call the “spine”, may only contain a document header and a sequence of include directives.
+See <<Declaring the Spine>> for details.
++
+TIP: The include directive may be used in the chapter files to include other files (even files in other folders).
+
+Rule 2::
+Each chapter must start with a document title (i.e., level-0 heading).
+The heading must declare an ID that matches the chapter filename (minus its file extension).
+
+Rule 3::
+No sections in a chapter may have the same ID as the chapter ID.
+
+Rule 4::
+The cross reference (i.e., xref) from one chapter to another must be in the format `+xref:chapter-id#chapter-id[optional reftext]+` (or `+<<chapter-id#chapter-id,optional reftext>>+`).
+If you want to reference a section in a chapter, update the fragment (i.e., the value that follows the hash) to match the target section ID.
+The reftext is optional since the reftext of the target is used by default.
++
+TIP: To assign reference text (i.e., reftext) to chapter title, use the document attribute named `docreftext`.
++
+TIP: Rule 2 states that the chapter ID must match the basename of the chapter file.
+In truth, the chapter ID can be a _derivative of_ the chapter filename.
+In that case, an attribute reference can be used to prepend a prefix to an inter-document cross reference.
+For example, if you want each chapter file to begin with `chapter-`, you'd write the xref as `+xref:{chapter-prefix}chapter-id#chapter-id[]+`.
+You'd then assign an empty value to the `chapter-prefix` attribute when converting to an e-book and `chapter-` for all other formats.
+
+The next section goes into more detail about how to set up the spine document and include the chapter files.
 
 === Declaring the Spine
 
@@ -119,7 +156,7 @@ Asciidoctor relies on top-level include directives (i.e., include directives in 
 Each chapter must start with a single-line, level-0 section.
 The section title becomes the chapter title (also used as the TOC entry) and the section ID determines the chapter file name inside the EPUB3 archive.
 In other words, you must be explicit.
-Asciidoctor EPUB3 will not try to guess.
+{project-name} will not try to guess.
 If your AsciiDoc document is not structured in this way, you'll need to change it to use the {project-name} converter successfully.
 
 You can think of the master document as the spine of the book and the include directives the individual items being bound together.
@@ -462,7 +499,7 @@ That's why we refer to the format in this project as KF8/MOBI.
 
 === EPUB3 Archive Structure
 
-Here's a sample manifest of files found in an EPUB3 document produced by Asciidoctor EPUB3.
+Here's a sample manifest of files found in an EPUB3 document produced by {project-name}.
 
 ....
 META-INF/
@@ -788,7 +825,7 @@ Feel free to use the {uri-issues}[issue tracker] or {uri-discuss}[Asciidoctor ma
 
 == Development
 
-To help develop Asciidoctor EPUB3, or to simply test drive the development version, you need to get the source from GitHub.
+To help develop {project-name}, or to simply test drive the development version, you need to get the source from GitHub.
 Follow the instructions below to learn how to clone the source and run it from your local copy.
 
 === Retrieve the Source Code
