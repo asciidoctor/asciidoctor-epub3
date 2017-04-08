@@ -1,4 +1,4 @@
-= Asciidoctor EPUB3: A _native_ EPUB3 converter for AsciiDoc
+= {project-name}: A _native_ EPUB3 converter for AsciiDoc
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 // Settings:
 :experimental:
@@ -112,8 +112,8 @@ The conversion to KF8/MOBI is performed by generating a slightly modified EPUB3 
 == Structuring your Manuscript
 
 An EPUB3 archive is composed of multiple files. The content of each “chapter” is typically stored in a dedicated XHTML file.
-Therefore, the Asciidoctor EPUB3 converter “chunks” the AsciiDoc source document into multiple XHTML files to add to the EPUB3 archive.
-While other converters handle this chunking task by automatically slicing up the XHTML output at predetermined heading levels, Asciidoctor EPUB3 takes a different approach, outlined next.
+Therefore, the {project-name} converter “chunks” the AsciiDoc source document into multiple XHTML files to add to the EPUB3 archive.
+While other converters handle this chunking task by automatically slicing up the XHTML output at predetermined heading levels, this converter takes a different approach, outlined next.
 
 === Composition Rules
 
@@ -156,7 +156,7 @@ Asciidoctor relies on top-level include directives (i.e., include directives in 
 Each chapter must start with a single-line, level-0 section.
 The section title becomes the chapter title (also used as the TOC entry) and the section ID determines the chapter file name inside the EPUB3 archive.
 In other words, you must be explicit.
-Asciidoctor EPUB3 will not try to guess.
+{project-name} will not try to guess.
 If your AsciiDoc document is not structured in this way, you'll need to change it to use the {project-name} converter successfully.
 
 You can think of the master document as the spine of the book and the include directives the individual items being bound together.
@@ -499,7 +499,7 @@ That's why we refer to the format in this project as KF8/MOBI.
 
 === EPUB3 Archive Structure
 
-Here's a sample manifest of files found in an EPUB3 document produced by Asciidoctor EPUB3.
+Here's a sample manifest of files found in an EPUB3 document produced by {project-name}.
 
 ....
 META-INF/
@@ -825,7 +825,7 @@ Feel free to use the {uri-issues}[issue tracker] or {uri-discuss}[Asciidoctor ma
 
 == Development
 
-To help develop Asciidoctor EPUB3, or to simply test drive the development version, you need to get the source from GitHub.
+To help develop {project-name}, or to simply test drive the development version, you need to get the source from GitHub.
 Follow the instructions below to learn how to clone the source and run it from your local copy.
 
 === Retrieve the Source Code
