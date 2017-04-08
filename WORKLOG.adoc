@@ -2,13 +2,19 @@
 
 == TODO
 
+* only uppercase document title if detected in CSS
 * add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
+ ** why can't we navigate to first chapter on Kindle from TOC?
 * remove text justification hack (#92)
-* why can't we navigate to first chapter on Kindle from TOC?
+* allow imagesdir to be customized (#22)
+* document more clearly how to provide your own CSS
+ ** currently it's not possible to override the epub3-fonts.css (though it should be)
 * add nav entry for cover if format != :kf8 ?
 * cleanup this sanitize XML stuff; move to Asciidoctor::Helpers?
 * allow role to be applied to chapter (which means the role must be on the document)
 * make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
+ ** I believe this is already true; just remove hack
+* only add svg property to spine item for front matter file if SVG is detected
 * switch to epubcheck-ruby
  ** epubcheck-ruby 4.0.2
  ** supports options such as -q
@@ -67,6 +73,7 @@
 * MEDIUM: use function to build and manipulate image paths
 * MEDIUM: issue warning if front-cover-image doesn't match proper syntax
 * MEDIUM: option to add nav.xhtml to navigation flow?
+* MEDIUM: add Pygments stylesheet to archive if pygments-css=class
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
 
