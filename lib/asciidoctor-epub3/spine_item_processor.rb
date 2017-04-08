@@ -53,7 +53,12 @@ class SpineItemProcessor < Extensions::IncludeProcessor
     # restore attributes to those defined in the document header
     spine_item_doc.restore_attributes
 
-    spine_item_doc.references[:spine_items] = ((spine_doc.references[:spine_items] ||= []) << spine_item_doc)
+    # FIXME core should register document ID if specified
+    unless (refs = spine_item_doc.references)[:ids].include? spine_item_doc.id
+      spine_item_doc.register :ids, [spine_item_doc.id, (spine_item_doc.attr 'docreftext') || spine_item_doc.doctitle]
+    end
+
+    refs[:spine_items] = ((spine_doc.references[:spine_items] ||= []) << spine_item_doc)
     # NOTE if there are attribute assignments between the include directives,
     # then this ordered list is not continguous, so bailing on the idea
     #reader.replace_line %(. link:#{::File.basename(spine_item_doc.attr 'outfile')}[#{spine_item_doc.doctitle}])
