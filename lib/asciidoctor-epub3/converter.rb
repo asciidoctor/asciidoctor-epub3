@@ -828,17 +828,58 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 end
 
 class DocumentIdGenerator
+  ReservedIds = %w(cover nav ncx)
+  CharRefRx = /&(?:([a-zA-Z]{2,})|#(\d{2,6})|#x([a-fA-F0-9]{2,5}));/
+  if defined? __dir__
+    InvalidIdCharsRx = /[^\p{Word}]+/
+    LeadingDigitRx = /^\p{Nd}/
+  else
+    InvalidIdCharsRx = /[^[:word:]]+/
+    LeadingDigitRx = /^[[:digit:]]/
+  end
   class << self
-    def generate_id doc
+    def generate_id doc, pre = nil, sep = nil
+      synthetic = false
       unless (id = doc.id)
-        id = if doc.header?
-          doc.doctitle(sanitize: true).gsub(WordJoinerRx, '').downcase.tr_s(' :-', '-')
+        # NOTE we assume pre is a valid ID prefix and that pre and sep only contain valid ID chars
+        pre ||= '_'
+        sep = sep ? sep.chr : '_'
+        if doc.header?
+          id = (doc.doctitle sanitize: true).gsub WordJoinerRx, ''
+          id = id.gsub(CharRefRx) {
+            $1 ? ($1 == 'amp' ? 'and' : sep) : ((d = $2 ? $2.to_i : $3.hex) == 8217 ? '' : ([d].pack 'U*'))
+          } if id.include? '&'
+          id = id.downcase.gsub InvalidIdCharsRx, sep
+          if id.empty?
+            id, synthetic = nil, true
+          else
+            unless sep.empty?
+              if (id = id.tr_s sep, sep).end_with? sep
+                if id == sep
+                  id, synthetic = nil, true
+                else
+                  id = (id.start_with? sep) ? id[1..-2] : id.chop
+                end
+              elsif id.start_with? sep
+                id = id[1..-1]
+              end
+            end
+            unless synthetic
+              if pre.empty?
+                id = %(_#{id}) if LeadingDigitRx =~ id
+              elsif !(id.start_with? pre)
+                id = %(#{pre}#{id})
+              end
+            end
+          end
         elsif (first_section = doc.first_section)
-          first_section.id
+          id = first_section.id
         else
-          %(document-#{doc.object_id})
+          synthetic = true
         end
+        id = %(#{pre}document#{sep}#{doc.object_id}) if synthetic
       end
+      warn %(asciidoctor: ERROR: chapter uses a reserved ID: #{id}) if !synthetic && (ReservedIds.include? id)
       id
     end
   end
@@ -870,7 +911,7 @@ Extensions.register do
     include_processor SpineItemProcessor.new(document)
     treeprocessor do
       process do |doc|
-        doc.id = DocumentIdGenerator.generate_id doc
+        doc.id = DocumentIdGenerator.generate_id doc, (doc.attr 'idprefix'), (doc.attr 'idseparator')
         nil
       end
     end
