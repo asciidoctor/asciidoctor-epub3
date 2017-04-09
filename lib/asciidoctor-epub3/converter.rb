@@ -112,9 +112,9 @@ class ContentConverter
       subtitle = doctitle.combined
     end
 
-    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).gsub WordJoinerRx, ''
+    doctitle_sanitized = doctitle.combined.gsub WordJoinerRx, ''
     subtitle_formatted = subtitle.gsub(WordJoinerRx, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
-    # FIXME make this uppercase routine more intelligent, less fragile
+    # FIXME make this uppercase routine more intelligent, less fragile (see logic in Asciidoctor PDF)
     subtitle_formatted_upper = subtitle_formatted.upcase
         .gsub(UppercaseTagRx) { %(<#{$1}#{$2.downcase}>) }
         .gsub(NamedEntityRx) { %(&#{$1.downcase};) }
