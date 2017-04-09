@@ -60,6 +60,7 @@ class SpineItemProcessor < Extensions::IncludeProcessor
       spine_item_doc.register :ids, [spine_item_doc.id, (spine_item_doc.attr 'docreftext') || spine_item_doc.doctitle]
     end
 
+    refs[:spine] = spine_doc
     refs[:spine_items] = ((spine_doc.references[:spine_items] ||= []) << spine_item_doc)
     # NOTE if there are attribute assignments between the include directives,
     # then this ordered list is not continguous, so bailing on the idea
