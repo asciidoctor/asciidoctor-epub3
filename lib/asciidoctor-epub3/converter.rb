@@ -29,6 +29,7 @@ class Converter
     if (name ||= node.node_name) == 'document'
       @validate = node.attr? 'ebook-validate'
       @extract = node.attr? 'ebook-extract'
+      @compress = node.attr 'ebook-compress'
       Packager.new node, (node.references[:spine_items] || [node]), node.attributes['ebook-format'].to_sym
     # converting an element from the spine document, such as an inline node in the doctitle
     elsif name.start_with? 'inline_'
@@ -40,7 +41,7 @@ class Converter
 
   # FIXME we have to package in write because we don't have access to target before this point
   def write packager, target
-    packager.package validate: @validate, extract: @extract, target: target
+    packager.package validate: @validate, extract: @extract, compress: @compress, target: target
     nil
   end
 end

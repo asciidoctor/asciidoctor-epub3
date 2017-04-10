@@ -447,6 +447,7 @@ class Packager
   KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
   EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
   EpubExtensionRx = /\.epub$/i
+  KindlegenCompression = ::Hash['0', '-c0', '1', '-c1', '2', '-c2', 'none', '-c0', 'standard', '-c1', 'huffdic', '-c2']
 
   def initialize spine_doc, spine, format = :epub3, options = {}
     @document = spine_doc
@@ -584,21 +585,22 @@ class Packager
 
     if fmt == :kf8
       # QUESTION shouldn't we validate this epub file too?
-      distill_epub_to_mobi epub_file, target
+      distill_epub_to_mobi epub_file, target, options[:compress]
     elsif options[:validate]
       validate_epub epub_file
     end
   end
 
-  # QUESTION how to enable the -c2 flag? (enables ~3-5% compression)
-  def distill_epub_to_mobi epub_file, target
+  def distill_epub_to_mobi epub_file, target, compress
     kindlegen_cmd = KINDLEGEN
     unless ::File.executable? kindlegen_cmd
       require 'kindlegen' unless defined? ::Kindlegen
       kindlegen_cmd = ::Kindlegen.command
     end
     mobi_file = ::File.basename(target.sub EpubExtensionRx, '.mobi')
-    ::Open3.popen2e(::Shellwords.join [kindlegen_cmd, '-dont_append_source', '-o', mobi_file, epub_file]) {|input, output, wait_thr|
+    compress_flag = KindlegenCompression[compress ? (compress.empty? ? '1' : compress.to_s) : '0']
+    cmd = [kindlegen_cmd, '-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
+    ::Open3.popen2e(::Shellwords.join cmd) {|input, output, wait_thr|
       output.each {|line| puts line } unless $VERBOSE.nil?
     }
     puts %(Wrote MOBI to #{::File.join ::File.dirname(epub_file), mobi_file}) if $VERBOSE

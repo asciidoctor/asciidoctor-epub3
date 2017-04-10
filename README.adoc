@@ -510,6 +510,9 @@ That's why we refer to the format in this project as KF8/MOBI.
 *-a ebook-validate* ::
   Runs Epubcheck 3.0.1 to validate output file against the EPUB3 specification
 
+*-a ebook-compress=<0|1|2|none|standard|huffdic>* ::
+  Controls the compression type used by kindlegen (0=none [default if unset], 1=standard [default if empty], 2=huffdic)
+
 *-v, --version* ::
   Display the program version
 
