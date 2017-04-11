@@ -125,10 +125,8 @@ class ContentConverter
     else
       author = node.attr 'author'
       username = node.attr 'username', 'default'
-      # FIXME needs to resolve to the imagesdir of the spine document, not this document
-      #imagesdir = (node.attr 'imagesdir', '.').chomp '/'
-      #imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
-      imagesdir = 'images/'
+      imagesdir = (node.references[:spine].attr 'imagesdir', '.').chomp '/'
+      imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
       byline = %(<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>#{EOL})
     end
 
