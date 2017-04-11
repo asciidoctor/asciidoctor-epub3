@@ -8,6 +8,7 @@ class SpineItemProcessor < Extensions::IncludeProcessor
   # NOTE only fires for includes in spine document if registered directly on the instance of the spine document
   def process doc, reader, target, attributes
     spine_doc = doc
+    # TODO allow URI value
     unless ::File.file?(include_file = (spine_doc.normalize_system_path target, reader.dir, nil, target_name: 'include file'))
       warn %(asciidoctor: WARNING: #{reader.line_info}: include file not found: #{include_file})
       return
