@@ -16,7 +16,7 @@ module GepubBuilderMixin
   FromHtmlSpecialCharsRx = ContentConverter::FromHtmlSpecialCharsRx
   CsvDelimiterRx = /\s*,\s*/
   DefaultCoverImage = 'images/default-cover.png'
-  InlineImageMacroRx = /^image:(.*?)\[(.*?)\]$/
+  ImageMacroRx = /^image::?(.*?)\[(.*?)\]$/
 
   attr_reader :book, :format, :spine
 
@@ -111,38 +111,48 @@ module GepubBuilderMixin
     imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
 
-    if (front_cover_image = doc.attr 'front-cover-image')
-      if front_cover_image =~ InlineImageMacroRx
-        front_cover_image = %(#{imagesdir}#{$1})
+    if (image_path = doc.attr 'front-cover-image')
+      image_attrs = {}
+      if (image_path.include? ':') && image_path =~ ImageMacroRx
+        if image_path.start_with? 'image::'
+          warn %(asciidoctor: WARNING: deprecated block macro syntax detected in front-cover-image attribute)
+        end
+        image_path = %(#{imagesdir}#{$1})
+        (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
       end
       workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
-    else
-      front_cover_image = DefaultCoverImage
-      workdir = DATA_DIR
+      if ::File.readable?(::File.join workdir, image_path)
+        unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
+          width, height = 1050, 1600
+        end
+      else
+        warn %(asciidoctor: ERROR: front cover image not found or readable: #{image_path})
+        image_path = nil
+      end
+    end
+
+    unless image_path
+      image_path, workdir, width, height = DefaultCoverImage, DATA_DIR, 1050, 1600
     end
 
     resources do
-      cover_image %(#{imagesdir}jacket/cover#{::File.extname front_cover_image}) => ::File.join(workdir, front_cover_image)
+      cover_image %(#{imagesdir}jacket/cover#{::File.extname image_path}) => (::File.join workdir, image_path)
+      @last_defined_item.tap do |last_item|
+        last_item['width'] = width
+        last_item['height'] = height
+      end
     end
     nil
   end
 
   # NOTE must be called within the ordered block
-  def add_cover_page doc, spine_builder
-    imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
-    imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
+  def add_cover_page doc, spine_builder, manifest
+    cover_item_attrs = manifest.items['item_cover'].instance_variable_get :@attributes
+    href = cover_item_attrs['href']
+    # NOTE we only store width and height temporarily to pass through the values
+    width = cover_item_attrs.delete 'width'
+    height = cover_item_attrs.delete 'height'
 
-    img = (doc.attr 'front-cover-image') || DefaultCoverImage
-
-    if img =~ InlineImageMacroRx
-      img = %(#{imagesdir}#{$1})
-      # TODO use proper attribute parser
-      _, w, h = $2.split ',', 3
-    end
-
-    w ||= 1050
-    h ||= 1600
-    img_path = %(#{imagesdir}jacket/cover#{::File.extname img})
     # NOTE SVG wrapper maintains aspect ratio and confines image to view box
     content = %(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
@@ -169,8 +179,8 @@ body > svg {
 </style>
 </head>
 <body epub:type="cover"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-  width="100%" height="100%" viewBox="0 0 #{w} #{h}" preserveAspectRatio="xMidYMid meet">
-<image width="#{w}" height="#{h}" xlink:href="#{img_path}"/>
+  width="100%" height="100%" viewBox="0 0 #{width} #{height}" preserveAspectRatio="xMidYMid meet">
+<image width="#{width}" height="#{height}" xlink:href="#{href}"/>
 </svg></body>
 </html>).to_ios
     # Gitden expects a cover.xhtml, so add it to the spine
@@ -265,7 +275,7 @@ body > svg {
       builder.add_nav_doc doc, self, spine, format
       builder.add_ncx_doc doc, self, spine
       ordered do
-        builder.add_cover_page doc, self unless format == :kf8
+        builder.add_cover_page doc, self, @book.manifest unless format == :kf8
         builder.add_front_matter_page doc, self
         spine.each_with_index do |item, i|
           file %(#{item.id || (item.attr 'docname')}.xhtml) => (builder.postprocess_xhtml item.convert, format)
