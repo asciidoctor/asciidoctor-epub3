@@ -34,16 +34,16 @@ endif::[]
 :uri-epub: http://www.idpf.org/epub/31/spec/epub-spec.html
 :uri-epubcheck: https://github.com/idpf/epubcheck
 
-{project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 and KF8/MOBI e-book formats.
+{project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 and KF8/MOBI ebook formats.
 
 == Introduction
 
-{project-name} is not merely a converter from AsciiDoc to EPUB3 and KF8/MOBI, but rather a tool to help you create aesthetic, professional, _easy-to-read_ e-books.
-Let's face it, many of the technical e-books out there--especially those produced from software documentation--are *_hideous_*.
+{project-name} is not merely a converter from AsciiDoc to EPUB3 and KF8/MOBI, but rather a tool to help you create aesthetic, professional, _easy-to-read_ ebooks.
+Let's face it, many of the technical ebooks out there--especially those produced from software documentation--are *_hideous_*.
 The Asciidoctor project wants to disrupt the status quo.
 
 ifdef::env-github[]
-.An excerpt from an e-book produced by {project-name} shown in Day, Night and Sepia mode.
+.An excerpt from an ebook produced by {project-name} shown in Day, Night and Sepia mode.
 image::screenshots/text.png[]
 endif::[]
 
@@ -66,11 +66,11 @@ Exceptional Readability::
 Complete & Accurate Metadata::
   Fully populate the EPUB3 package metadata using information in the AsciiDoc source document.
 Consistent Rendering::
-  Render consistently across a broad range of EPUB3 (and select EPUB2+) readers and respond to any size screen.
+  Render consistently across a broad range of EPUB3 (and select EPUB2+) ereading platforms and respond to any size screen.
 Polish, Polish & More Polish::
   Add polish to the final product such as font-based icons and callout numbers.
 
-We believe that the e-books produced by {project-name} are the _very best_ output you can expect to find in digital publishing today.
+We believe that the ebooks produced by {project-name} are the _very best_ output you can expect to find in digital publishing today.
 Of course, there's always room for improvement, so we'll continue to work with you to achieve and maintain this goal.
 
 === Notable Features
@@ -78,14 +78,14 @@ Of course, there's always room for improvement, so we'll continue to work with y
 * Direct AsciiDoc to EPUB3 conversion
 * Direct AsciiDoc to KF8/MOBI conversion
 * Highly-aesthetic and readable styles with optimized text legibility
-* Respects font settings (if supported by the reader) without altering headings, code or icons
+* Respects font settings (if supported by the ereader) without altering headings, code or icons
 * EPUB3 metadata, manifest and spine (assembled by Gepub)
 * Document metadata (title, authors, subject, keywords, etc.)
 * Internal cross reference links (not yet between chapters)
 * Syntax highlighting with CodeRay or Pygments (must use inline styles)
 * Unicode callout numbers
-* Page breaks avoided in block content (so much as it's supported by the reader)
-* Orphan section titles avoided (so much as it's supported by the reader)
+* Page breaks avoided in block content (so much as it's supported by the ereader)
+* Orphan section titles avoided (so much as it's supported by the ereader)
 * Table border settings honored
 * Support for SVG images in the content
 
@@ -146,7 +146,7 @@ TIP: Rule 2 states that the chapter ID must match the basename of the chapter fi
 In truth, the chapter ID can be a _derivative of_ the chapter filename.
 In that case, an attribute reference can be used to prepend a prefix to an inter-document cross reference.
 For example, if you want each chapter file to begin with `chapter-`, you'd write the xref as `+xref:{chapter-prefix}chapter-id#chapter-id[]+`.
-You'd then assign an empty value to the `chapter-prefix` attribute when converting to an e-book and `chapter-` for all other formats.
+You'd then assign an empty value to the `chapter-prefix` attribute when converting to an ebook and `chapter-` for all other formats.
 
 The next section goes into more detail about how to set up the spine document and include the chapter files.
 
@@ -284,7 +284,7 @@ v1.0, 2014-04-15
 :doctype: book
 :creator: {author}
 :producer: Asciidoctor
-:keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
+:keywords: Asciidoctor, samples, ebook, EPUB3, KF8, MOBI, Asciidoctor.js
 :copyright: CC-BY-SA 3.0
 :imagesdir: images
 
@@ -354,7 +354,7 @@ The keywords should be represented as comma-separated values (CSV).
 
 |front-cover-image
 |Populates the front cover image and the image on the cover page (EPUB3 only) in the package metadata.
-The image is also added to the e-book archive.
+The image is also added to the ebook archive.
 The value may be specified as a path or inline image macro.
 Using the inline image macro is preferred as it allows the height and width to be specified.
 
@@ -382,7 +382,7 @@ If set to a value other than book, the byline information (author and avatar) is
 Suggested values include: book (default), anthology, magazine, journal, article.
 |===
 
-When using the EPUB3 converter, the `ebook-format` attribute resolves to the name of the e-book format being generated (epub3 or kf8) and the corresponding attribute `ebook-format-<name>` is defined, where `<name>` is `epub3` or `kf8`.
+When using the EPUB3 converter, the `ebook-format` attribute resolves to the name of the ebook format being generated (epub3 or kf8) and the corresponding attribute `ebook-format-<name>` is defined, where `<name>` is `epub3` or `kf8`.
 You can use these attributes in a preprocessor directive if you only want to show certain content to readers using a particular device.
 For instance, if you want to display a message to readers on Kindle, you can use:
 
@@ -407,7 +407,7 @@ We also recommend specifying an output directory using the `-D` option flag.
  $ asciidoctor-epub3 -D output data/samples/sample-book.adoc
 
 When the script completes, you'll see the file [file]_sample-book.epub_ appear in the [path]_output_ directory.
-Open that file with an EPUB3 reader to view the result.
+Open that file with an EPUB reader (aka ereader) to view the result.
 
 Below are several screenshots of this sample book as it appears on an Android phone.
 
@@ -505,7 +505,7 @@ That's why we refer to the format in this project as KF8/MOBI.
   Extracts the EPUB3 to a folder in the destination directory after the file is generated
 
 *-a ebook-format=<format>* ::
-  Specifies the e-book format to generate (epub3 or kf8, default: epub3)
+  Specifies the ebook format to generate (epub3 or kf8, default: epub3)
 
 *-a ebook-validate* ::
   Runs Epubcheck 3.0.1 to validate output file against the EPUB3 specification
@@ -570,7 +570,7 @@ The sample book contains placeholder images for an author avatar and a book cove
 
 === Changing the Cover Image
 
-E-book readers have different image resolution and file size limits regarding a book's cover.
+Ereaders have different image resolution and file size limits regarding a book's cover.
 Kindle covers tend to be 1050x1600 (16:9 resolution), which is the size of the sample cover provided with {project-name}.
 To ensure your cover displays correctly, you'll want to review the documentation or publisher guidelines for the application you're targeting.
 
@@ -597,11 +597,11 @@ If you don't specify a width and height, then the dimensions are assumed to be 1
 == About the Theme
 
 EPUB3 and KF8/MOBI files are styled using CSS3.
-However, each e-book reader honors a reduced set of CSS3 styles, and the styles they allow and how they implement them are rarely documented.
+However, each ereading platform honors a reduced set of CSS3 styles, and the styles they allow and how they implement them are rarely documented.
 All we've got to say is _thank goodness for CSS hacks, media queries and years of CSS experience!_
 
-The theme provided with {project-name} has been crafted to display EPUB3 and KF8/MOBI files as consistently as possible across the most common EPUB3 reader applications and to degrade gracefully in select EPUB2 readers.
-The theme maintains readability regardless of the e-book reader's background mode (i.e., day, night or sepia) or the display device's pixel density and screen resolution.
+The theme provided with {project-name} has been crafted to display EPUB3 and KF8/MOBI files as consistently as possible across the most common EPUB3 platforms and to degrade gracefully in select EPUB2 platforms.
+The theme maintains readability regardless of the reading mode (i.e., day, night or sepia) or the display device's pixel density and screen resolution.
 
 The theme's CSS files are located in the [path]_data/style_ directory.
 
@@ -622,8 +622,8 @@ Refer to the <<NOTICE#,NOTICE>> file for further information about the fonts.
 
 === Text Justification Hack
 
-Many of the EPUB3 readers use the http://webkit.org[WebKit browser engine] to render the content and apply the CSS formatting and styles.
-Generally speaking, WebKit is a great engine that brings a lot of consistency and power to the e-book reader landscape.
+Many of the EPUB3 ereaders use the http://webkit.org[WebKit browser engine] to render the content and apply the CSS formatting and styles.
+Generally speaking, WebKit is a great engine that brings a lot of consistency and power to the ereading landscape.
 It also brings along the same set of bugs present in browsers that are based on it.
 
 One particular bug in WebKit causes rich text to be justified incorrectly.
@@ -728,12 +728,12 @@ File type,Destination on Android device
 ,===
 
 Amazon Kindle should immediately detect the new file and display it in your “On Device” library.
-You'll have to manually import the EPUB3 into your reader application of choice.
+You'll have to manually import the EPUB3 into your ereader of choice.
 
 == E-book Reader Recommendations and Quirks
 
-EPUB3 readers will provide the best reading experience when viewing the book generated by {project-name}.
-Here's a list of some of the readers we know to have good EPUB3 support and the systems on which they run:
+EPUB3 ereaders will provide the best reading experience when viewing the book generated by {project-name}.
+Here's a list of some of the ereaders we know to have good EPUB3 support and the systems on which they run:
 
 * http://www.amazon.com/gp/feature.html?docId=1000493771[Amazon Kindle] (most platforms)
 * http://gitden.com/gitdenreader[Gitden] (Android and iOS)
@@ -743,15 +743,15 @@ Here's a list of some of the readers we know to have good EPUB3 support and the 
 * http://www.namo.com/site/namo/menu/5074.do[Namo PubTreeViewer] (Android, iOS and Windows)
 * http://calibre-ebook.com[Calibre ebook-viewer] (Linux, OSX, Windows)
 
-IMPORTANT: To get the full experience, ensure that the reader is configured to use the publisher's styles.
-Different readers word this setting in different ways.
+IMPORTANT: To get the full experience, *ensure that the ereader is configured to use the publisher's styles*.
+Different ereaders word this setting in different ways.
 Look for the option screen that allows you to set the fonts and font colors and disable it.
 With publisher's styles active, you'll still be able to adjust the relative size of the fonts and margins and toggle between day, night and sepia mode.
 
-When the book is viewed in EPUB2 readers and Kindle apps/devices which have reached their end-of-life (EOL), the e-book relies on the strong semantics of the HTML and some fallback styles to render properly.
-EPUB2 readers, such as Aldiko, don't understand CSS3 styles and therefore miss out on some of subtleties in the formatting.
+When the book is viewed in EPUB2 ereaders and Kindle apps/devices which have reached their end-of-life (EOL), the ebook relies on the strong semantics of the HTML and some fallback styles to render properly.
+EPUB2 ereaders, such as Aldiko, don't understand CSS3 styles and therefore miss out on some of subtleties in the formatting.
 
-As mentioned in the <<About the Theme,theme section>>, the stylesheet attempts to provide as consistent a reading experience as possible in the common EPUB3 readers, despite the different CSS implementation rules and limitations unique to each e-book application.
+As mentioned in the <<About the Theme,theme section>>, the stylesheet attempts to provide as consistent a reading experience as possible in the common EPUB3 ereaders, despite the different CSS implementation rules and limitations unique to each ebook application.
 Most of these obstacles were addressed using media queries or explicit classes.
 Some we haven't conquered.
 Yet.
@@ -788,7 +788,7 @@ It's known to strip out all the font files and break the encoding of the documen
 If you use this feature, don't be surprised if you see default fonts, missing font-based icons, and other font and style errors.
 We *strongly* recommend that you transfer the file to your device using other means, such as a USB cable or sync service like Dropbox.
 
-It's also important to know that “Send to Kindle” is not indicative of the experience your reader will have when shopping in the Kindle store.
+It's also important to know that “Send to Kindle” is not indicative of the experience readers will have when shopping in the Kindle store.
 If you use Kindle Direct Publishing (KDP) to publish your book, the integrity of your book will be preserved (to the degree that Amazon allows).
 
 ////
@@ -951,5 +951,5 @@ Refer to the <<NOTICE#,NOTICE>> file for information about third-party Open Sour
 * circled numbers from M+ 1mn for annotation numbers in listing blocks
 * avatars for authors
 * document command to generate the M+ 1p latin fonts
-* recommended readers (Readium, Gitden, Kindle, etc)
+* recommended ereaders (Readium, Gitden, Kindle, etc)
 ////
