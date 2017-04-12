@@ -309,7 +309,7 @@ body > svg {
     lines = []
     lines << '<ol>'
     items.each do |item|
-      index = (state[:index] = (state.fetch :index, 0) + 1)
+      #index = (state[:index] = (state.fetch :index, 0) + 1)
       if item.context == :document
         # NOTE we sanitize the chapter titles because we use formatting to control layout
         item_label = sanitize_doctitle_xml item, :cdata
