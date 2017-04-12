@@ -205,7 +205,6 @@ body > svg {
   def add_front_matter_page doc, spine_builder
     if ::File.file? 'front-matter.html'
       spine_builder.file 'front-matter.xhtml' => (postprocess_xhtml_file 'front-matter.html', @format)
-      spine_builder.add_property 'svg'
     end
     nil
   end
