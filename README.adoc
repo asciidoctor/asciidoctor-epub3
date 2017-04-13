@@ -335,7 +335,7 @@ The title is added to the metadata in plain text format.
 The authors in each chapter document are aggregated together with the authors in the master file.
 
 |username
-|Used to resolve an avatar for the author that is displayed in the header of a chapter.
+|Used to resolve the avatar for the author that is displayed in the header of a chapter when the `publication-type` is set to a value other than `book`.
 The avatar image should be located at the path _\{imagesdir}/avatars/\{username}.jpg_, where `\{username}` is the value of this attribute.
 
 |producer
@@ -558,11 +558,15 @@ mimetype
 
 == Working with Images
 
-Images that your AsciiDoc document references should be saved in the directory defined in the `imagesdir` attribute, which defaults to the directory of the document.
-{project-name} will discover all local image references and insert the images into the EPUB3 archive at the same relative path.
+Images referenced in your AsciiDoc document should be stored in the directory defined by the `imagesdir` attribute.
+We term this location the images catalog.
+If this attribute is not set, the images catalog defaults to the directory of the document.
+{project-name} will discover all local image references and insert those images into the EPUB3 archive at the same relative path.
 
-WARNING: Currently including images only works correctly if you set `imagesdir` to the directory `images` like in the example shown above.
-This will be fixed in future versions.
+WARNING: {project-name} does not currently discover and package inline images.
+See issue {uri-issues}/30[#30].
+
+=== Default Images
 
 The sample book contains placeholder images for an author avatar and a book cover.
 
@@ -572,7 +576,7 @@ The sample book contains placeholder images for an author avatar and a book cove
 
 Ereaders have different image resolution and file size limits regarding a book's cover.
 Kindle covers tend to be 1050x1600 (16:9 resolution), which is the size of the sample cover provided with {project-name}.
-To ensure your cover displays correctly, you'll want to review the documentation or publisher guidelines for the application you're targeting.
+To ensure your cover displays correctly, you'll want to review the documentation or publisher guidelines for the reading platform you're targeting.
 
 WARNING: We've found that if the book cover is more than 1600px on any side, Aldiko will not render it and may even crash.
 
@@ -584,15 +588,26 @@ Once your image is ready, you can replace the placeholder cover image by definin
 :front-cover-image: image:cover.png[Front Cover,1050,1600]
 ----
 
-The image is resolved relative to the directory specified in the `imagesdir` attribute, which defaults to the document directory.
-The image can be in any format, though we recommend using PNG or JPG as they are the most portable formats.
+The image is resolved relative to the directory specified in the `imagesdir` attribute, which defaults to the directory of the spine document.
+The image can be in any format, though we recommend using PNG, JPG, or SVG as they are the most portable formats.
 
-WARNING: Currently including images only works correctly if you set `imagesdir` to the directory `images` like in the example shown above.
-This will be fixed in future versions.
-
-IMPORTANT: You should always specify the dimensions of the cover image.
+IMPORTANT: *You should always specify the dimensions of the cover image.*
 This ensures the viewer will preserve the aspect ratio if it needs to be scaled to fit the screen.
 If you don't specify a width and height, then the dimensions are assumed to be 1050x1600.
+
+=== How to Organize Images by Chapter
+
+You can set the `imagesdir` attribute per chapter (as long as the attribute is not overridden by the API).
+To do so, use an attribute entry to set the value of the `imagesdir` attribute on the line above the include directive for a chapter.
+
+[source,asciidoc]
+----
+:imagesdir: chapter-one/images
+\include::chapter-one.adoc[]
+
+:imagesdir: chapter-two/images
+\include::chapter-two.adoc[]
+----
 
 == About the Theme
 
