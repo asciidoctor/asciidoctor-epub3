@@ -222,11 +222,11 @@ body > svg {
         imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
         image_path = %(#{imagesdir}#{image.attr 'target'})
         if image_path.start_with? %(#{docimagesdir}jacket/cover.)
-          warn %(The image path #{image_path} is reserved for the cover artwork. Ignoring conflicting image from content.)
+          warn %(asciidoctor: WARNING: image path is reserved for cover artwork: #{image_path}; skipping image found in content)
         elsif ::File.readable? image_path
           file image_path
         else
-          warn %(Image not found or not readable: #{image_path})
+          warn %(asciidoctor: ERROR: image not found or not readable: #{image_path})
         end
       end
     end
@@ -249,7 +249,7 @@ body > svg {
         if ::File.readable?(resolved_avatar = ::File.join(workdir, avatar))
           file avatar => resolved_avatar
         else
-          warn %(Avatar #{avatar} not found or readable. Falling back to default avatar for #{username}.)
+          warn %(asciidoctor: ERROR: avatar for #{username} not found or readable: #{avatar}; falling back to default avatar)
           file avatar => ::File.join(DATA_DIR, 'images/default-avatar.jpg')
         end
 
@@ -257,7 +257,7 @@ body > svg {
         if ::File.readable?(resolved_headshot = ::File.join(workdir, headshot))
           file headshot => resolved_headshot
         elsif doc.attr? 'builder', 'editions'
-          warn %(Headshot #{headshot} not found or readable. Falling back to default headshot for #{username}.)
+          warn %(asciidoctor: ERROR: headshot for #{username} not found or readable: #{headshot}; falling back to default headshot)
           file headshot => ::File.join(DATA_DIR, 'images/default-headshot.jpg')
         end
       end
