@@ -895,7 +895,7 @@ blockquote footer {
 
 blockquote footer .context {
   font-size: 0.9em;
-  letter-spacing: -0.1em;
+  letter-spacing: -0.05em;
   color: #666665;
 }
 
