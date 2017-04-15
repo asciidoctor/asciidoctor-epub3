@@ -434,9 +434,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     table_class_attr = %( class="#{table_classes * ' '}")
     table_styles = []
     unless (node.option? 'autowidth') && !(node.attr? 'width', nil, false)
-      table_styles << %(width: #{node.attr 'tablepcwidth'}%;)
+      table_styles << %(width: #{node.attr 'tablepcwidth'}%)
     end
-    table_style_attr = table_styles.size > 0 ? %( style="#{table_styles * ' '}") : nil
+    table_style_attr = table_styles.size > 0 ? %( style="#{table_styles * '; '}") : nil
 
     lines << %(<table#{table_id_attr}#{table_class_attr}#{table_style_attr}>)
     lines << %(<caption>#{node.captioned_title}</caption>) if node.title?
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       #else
       #  node.columns.each do |col|
-      #    lines << %(<col style="width: #{col.attr 'colpcwidth'}%;"/>)
+      #    lines << %(<col style="width: #{col.attr 'colpcwidth'}%"/>)
       #  end
       #end
       lines << '</colgroup>'
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             cell_class_attr = cell_classes.size > 0 ? %( class="#{cell_classes * ' '}") : nil
             cell_colspan_attr = cell.colspan ? %( colspan="#{cell.colspan}") : nil
             cell_rowspan_attr = cell.rowspan ? %( rowspan="#{cell.rowspan}") : nil
-            cell_style_attr = (node.document.attr? 'cellbgcolor') ? %( style="background-color: #{node.document.attr 'cellbgcolor'};") : nil
+            cell_style_attr = (node.document.attr? 'cellbgcolor') ? %( style="background-color: #{node.document.attr 'cellbgcolor'}") : nil
             lines << %(<#{cell_tag_name}#{cell_class_attr}#{cell_colspan_attr}#{cell_rowspan_attr}#{cell_style_attr}>#{cell_content}</#{cell_tag_name}>)
           end
           lines << '</tr>'
@@ -631,7 +631,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     img_attrs = [%(alt="#{node.attr 'alt'}")]
     case type
     when 'svg'
-      img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'};")
+      img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'}")
       # TODO make this a convenience method on document
       epub_properties = (node.document.attr 'epub-properties') || []
       unless epub_properties.include? 'svg'
@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
     else
       if node.attr? 'scaledwidth'
-        img_attrs << %(style="width: #{node.attr 'scaledwidth'};")
+        img_attrs << %(style="width: #{node.attr 'scaledwidth'}")
       end
     end
 =begin
@@ -653,7 +653,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       #  img_attrs << %(width="#{node.attr 'scaledheight'}" height="#{node.attr 'scaledheight'}")
       # ePub3
       elsif node.attr? 'scaledheight'
-        img_attrs << %(height="#{node.attr 'scaledheight'}" style="max-height: #{node.attr 'scaledheight'} !important;")
+        img_attrs << %(height="#{node.attr 'scaledheight'}" style="max-height: #{node.attr 'scaledheight'} !important")
       else
         # Aldiko doesn't not scale width to 100% by default
         img_attrs << %(width="100%")
