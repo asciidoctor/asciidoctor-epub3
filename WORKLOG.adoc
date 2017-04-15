@@ -7,7 +7,6 @@
 * don't add image from front matter if already referenced by chapter
 * add document filename to warn messages
 * look for front-matter.html relative to docdir (or base_dir?); also allow front-matter.xhtml
-* cleanup stashes
 * change references[:spine] to spine_document property
 * add helper to resolve imagesdir
 * support inline SVG
@@ -43,7 +42,6 @@
 * Don't package sample documents (create separate folder in repo)
 
 //^
-
 .Converter
 * CRITICAL: if document doesn't have doctitle, Untitled shows in epub2 TOC
 * CRITICAL: conversion missing in epub3 backend for embedded (AsciiDoc table cell?)
@@ -51,6 +49,7 @@
 * CRITICAL: put e-book reader class on html instead of body
 * CRITICAL: we're dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
 * CRITICAL: try to pull username from author email field; pull avatar from gravatar
+* CRITICAL: make generated file name strategy configurable (source file vs id)
 * HIGH: cross references between chapters does not work (would it work if we used the smart cross reference syntax?)
 * HIGH: add full table of contents to nav.xhtml, but use hidden below first level (check if works in Kindle); respect toclevels
 * HIGH: if running on a single article, then the document id has a conflicting purpose
@@ -61,10 +60,11 @@
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
 * MEDIUM: add landmarks nav list to nav.xhtml; see https://github.com/IDPF/epub3-samples/blob/master/31/moby-dick-mo-xhtml/EPUB/toc.xhtml
 * MEDIUM: Kindle links to cover page when clicking on first chapter instead of first chapter page
-* MEDIUM: auto-space button in btn macro, or add icon & icon placement as attributes on btn macro
+* MEDIUM: add icon & icon placement as attributes on btn macro (was auto-space button macro, whatever that means)
 * MEDIUM: move client sniffer JavaScript to file
 * MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
 * MEDIUM: source highlighting using Rouge (instead of Pygments)
+* MEDIUM: to remove text indent in mobi7, set width="0pt" (text-indent) on <p> tag; also set height="1em" (margin top)
 * QUESTION: add word joiner before inline tags too?
 * we could detect Calibre by looking for the window.calibre_utils object
 * packager doesn't resolve include files in subdirectory totally correctly
@@ -73,7 +73,6 @@
 * upgrade to kindlegen 2.9.6 (only works for Ruby >= 2.0.0)
 
 //^
-
 .Packager
 * HIGH: retain file name of original chapter file (otherwise, it can break interdoc xrefs)
 * HIGH: add NOTICE.adoc to e-book archive
@@ -101,6 +100,7 @@
   - see if Google Play books supports JavaScript and epubReadingSystem (no, but adds its own class to body)
 * CRITICAL: use a following sibling selector for :first-line in abstract so it works when page is partitioned (e.g., in Google Play Books)
 * CRITICAL: add support for different numbering systems (lowergreek, etc)
+* CRITICAL: surround prose in <span> (e.g., simple <dd>) which is not nested in <p> or <div> so iBooks can change the font
 * HIGH: kindlegen no longer strips <header> elements, so we can drop our div wrapper hack
 * HIGH: don't set text color so light on monochrome devices (use media query to detect)
 * HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute (don't use word joiner in this case)
@@ -108,7 +108,9 @@
 * HIGH: review the table border color
 * HIGH: style example block
 * HIGH: allow theme to be customized using stylesheet attribute
+* HIGH: move -webkit-hyphens: auto to epub3-css3-only inside @media not amzn-kf8? (if we decide to reenable)
 * MEDIUM: headshot has too much top margin when at top of page (not below section title)
+* namo pubtree is justifying preformatted blocks
 * support both jpg and png avatars
 * add docinfo support
 * add navigation links in meta, e.g.,
@@ -129,19 +131,21 @@
 * customize id of <item> elements in epub manifest?
 
 //^
+.Samples
+* move samples out of data (or don't package them in the gem)
+* add example of itemized dlist
 
+//^
 .CLI
 * augment Asciidoctor::Cli::Options with --validate and --extract options, pass on as attributes
 
 //^
-
 .Asciidoctor
 * patch sanitize of any section or block title into Asciidoctor
 * generate id for chapter <= make part of Asciidoctor parsing API
 * patch Asciidoctor to replace smart quotes w/ unicode chars instead of entities (glyph replacement mode)
 
 //^
-
 == REVIEW
 
 * conversion of single file (no master document)
@@ -163,6 +167,13 @@
 * Control+Shift+u to type in a unicode sequent, then press enter to accept
 * Calibre gets confused when there are local fonts that closely match font in stylesheet, uses them over embedded styles (in particular M+ weights)
 * iBooks info: http://authoradventures.blogspot.com/2013/08/ibooks-tutorial-update-version-30.html
+* use the following media query to target non-Kindle devices (works in iBooks at least)
+
+ @media not amzn-kf8 {
+   @media not amzn-mobi {
+   }
+ }
+
 * selector for all prose text (including symbols)
 
  body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,
