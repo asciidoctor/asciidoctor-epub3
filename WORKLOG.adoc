@@ -2,11 +2,17 @@
 
 == TODO
 
-* remove text justification hack (#92)
+* remove text justification hack (#92) (PR sent)
+* warn in case when target of inter-document xref can't be resolved, but xref has explicit text
+* don't add image from front matter if already referenced by chapter
+* add document filename to warn messages
+* look for front-matter.html relative to docdir (or base_dir?); also allow front-matter.xhtml
 * cleanup stashes
 * change references[:spine] to spine_document property
-* use standard warning format in packager
-* note that EPUB that uses hexidecimal character references doesn't validate
+* add helper to resolve imagesdir
+* support inline SVG
+* describe the leveloffset setting in more detail
+* link to https://medium.com/@sandersk/responsive-ebook-design-a-primer-8bba01328219 in style section in README
 * why don't we just use the chapter filename as the id?
 * only uppercase document title if detected in CSS
 * add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
@@ -20,7 +26,6 @@
 * allow role to be applied to chapter (which means the role must be on the document)
 * make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
  ** I believe this is already true; just remove hack
-* only add svg property to spine item for front matter file if SVG is detected
 * should we enable hyphens in non-Kindle?
  ** we can reenable once we confirm it doesn't crash Kindle for Mac
 * switch to epubcheck-ruby
@@ -141,7 +146,6 @@
 
 * conversion of single file (no master document)
 * package images referenced by content
-* do we need the SVG property if the HTML links to an SVG document?
 * how custom CSS is specified
 
 == NOTES
