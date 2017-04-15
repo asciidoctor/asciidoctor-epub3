@@ -204,7 +204,11 @@ body > svg {
 
   def add_front_matter_page doc, spine_builder
     if ::File.file? 'front-matter.html'
-      spine_builder.file 'front-matter.xhtml' => (postprocess_xhtml_file 'front-matter.html', @format)
+      front_matter_content = ::File.read 'front-matter.html'
+      spine_builder.file 'front-matter.xhtml' => (postprocess_xhtml front_matter_content, @format)
+      unless (spine_builder.property? 'svg') || /<img src=".*?\.svg"/ !~ front_matter_content
+        spine_builder.add_property 'svg'
+      end
     end
     nil
   end
@@ -446,9 +450,14 @@ body > svg {
 end
 
 module GepubResourceBuilderMixin
-  # Add missing method in builder to add a property to last defined item
+  # Add missing method to builder to add a property to last defined item
   def add_property property
     @last_defined_item.add_property property
+  end
+
+  # Add helper method to builder to check if property is set on last defined item
+  def property? property
+    (@last_defined_item['properties'] || []).include? property
   end
 end
 
