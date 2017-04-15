@@ -4,9 +4,6 @@ require_relative 'font_icon_map'
 
 module Asciidoctor
 module Epub3
-# tried 8288, but it didn't work in older readers
-WordJoiner = [65279].pack 'U*'
-WordJoinerRx = RUBY_ENGINE_JRUBY ? /\uFEFF/ : WordJoiner
 
 # Public: The main converter for the epub3 backend that handles packaging the
 # EPUB3 or KF8 publication file.
@@ -53,11 +50,11 @@ class ContentConverter
 
   register_for 'epub3-xhtml5'
 
-  WordJoiner = Epub3::WordJoiner
-  EOL = "\n"
+  EOL = %(\n)
   NoBreakSpace = '&#xa0;'
   ThinNoBreakSpace = '&#x202f;'
   RightAngleQuote = '&#x203a;'
+  CalloutStartNum = %(\u2460)
 
   XmlElementRx = /<\/?.+?>/
   CharEntityRx = /&#(\d{2,6});/
@@ -113,9 +110,9 @@ class ContentConverter
       subtitle = doctitle.combined
     end
 
-    doctitle_sanitized = doctitle.combined.gsub WordJoinerRx, ''
-    subtitle_formatted = subtitle.gsub(WordJoinerRx, '').split(' ').map {|w| %(<b>#{w}</b>) } * ' '
-    # FIXME make this uppercase routine more intelligent, less fragile (see logic in Asciidoctor PDF)
+    doctitle_sanitized = doctitle.combined
+    subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
+    # FIXME use uppercase pcdata helper to make less fragile (see logic in Asciidoctor PDF)
     subtitle_formatted_upper = subtitle_formatted.upcase
         .gsub(UppercaseTagRx) { %(<#{$1}#{$2.downcase}>) }
         .gsub(NamedEntityRx) { %(&#{$1.downcase};) }
@@ -327,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>
 ) : nil
     # patches conums to fix extra or missing leading space
-    # TODO apply this patch upstream to Asciidoctor
+    # TODO remove patch once upgrading to Asciidoctor 1.5.6
     %(<figure class="#{figure_classes * ' '}">
 #{title_div}<pre class="#{pre_classes * ' '}"><code>#{(node.content || '').gsub(/(?<! )<i class="conum"| +<i class="conum"/, ' <i class="conum"')}</code></pre>
 </figure>)
@@ -398,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       title = node.title
       title_sanitized = xml_sanitize title
       title_attr = %( title="#{title_sanitized}")
+      # FIXME use uppercase pcdata helper to make less fragile (see logic in Asciidoctor PDF)
       title_upper = title.upcase.gsub(NamedEntityRx) { %(&#{$1.downcase};) }
       title_el = %(<h2>#{title_upper}</h2>
 )
@@ -504,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def colist node
     lines = ['<div class="callout-list">
 <ol>']
-    num = "\u2460"
+    num = CalloutStartNum
     node.items.each_with_index do |item, i|
       lines << %(<li><i class="conum" data-value="#{i + 1}">#{num}</i> #{item.text}</li>)
       num = num.next
@@ -600,7 +598,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def ulist node
     complex = false
     div_classes = ['itemized-list', node.style, node.role].compact
-    # TODO could strip WordJoiner if brief since not using justify
     ul_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
     ul_class_attr = ul_classes.empty? ? nil : %( class="#{ul_classes * ' '}")
     id_attribute = node.id ? %( id="#{node.id}") : nil
@@ -700,13 +697,13 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           text = node.document.references[:ids][refid] || %([#{refid}])
         end
       end
-      %(<a#{id_attr} href="#{target}" class="xref">#{text}</a>#{WordJoiner})
+      %(<a#{id_attr} href="#{target}" class="xref">#{text}</a>)
     when :ref
       %(<a id="#{target}"></a>)
     when :link
-      %(<a href="#{target}" class="link">#{node.text}</a>#{WordJoiner})
+      %(<a href="#{target}" class="link">#{node.text}</a>)
     when :bibref
-      %(<a id="#{target}" href="#xref-#{target}">[#{target}]</a>#{WordJoiner})
+      %(<a id="#{target}" href="#xref-#{target}">[#{target}]</a>)
     end
   end
 
@@ -715,11 +712,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def inline_button node
-    %(<b class="button">[<span class="label">#{node.text}</span>]</b>#{WordJoiner})
+    %(<b class="button">[<span class="label">#{node.text}</span>]</b>)
   end
 
   def inline_callout node
-    num = "\u2460"
+    num = CalloutStartNum
     int_num = node.text.to_i
     (int_num - 1).times { num = num.next }
     %(<i class="conum" data-value="#{int_num}">#{num}</i>)
@@ -757,7 +754,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     if (keys = node.attr 'keys').size == 1
       %(<kbd>#{keys[0]}</kbd>)
     else
-      key_combo = keys.map {|key| %(<kbd>#{key}</kbd>+) }.join.chop
+      key_combo = keys.map {|key| %(<kbd>#{key}</kbd>) }.join '+'
       %(<span class="keyseq">#{key_combo}</span>)
     end
   end
@@ -779,11 +776,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def inline_quoted node
     case node.type
     when :strong
-      %(<strong>#{node.text}</strong>#{WordJoiner})
+      %(<strong>#{node.text}</strong>)
     when :emphasis
-      %(<em>#{node.text}</em>#{WordJoiner})
+      %(<em>#{node.text}</em>)
     when :monospaced
-      %(<code class="literal">#{node.text}</code>#{WordJoiner})
+      %(<code class="literal">#{node.text}</code>)
     when :double
       #%(&#x201c;#{node.text}&#x201d;)
       %(“#{node.text}”)
@@ -791,9 +788,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       #%(&#x2018;#{node.text}&#x2019;)
       %(‘#{node.text}’)
     when :superscript
-      %(<sup>#{node.text}</sup>#{WordJoiner})
+      %(<sup>#{node.text}</sup>)
     when :subscript
-      %(<sub>#{node.text}</sub>#{WordJoiner})
+      %(<sub>#{node.text}</sub>)
     else
       node.text
     end
@@ -803,12 +800,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     node.content_model == :simple ? %(<p>#{node.content}</p>) : node.content
   end
 
+  # FIXME merge into with xml_sanitize helper
   def xml_sanitize value, target = :attribute
-    sanitized = (value.include? '<') ? value.gsub(XmlElementRx, '').tr_s(' ', ' ').strip : value
+    sanitized = (value.include? '<') ? value.gsub(XmlElementRx, '').strip.tr_s(' ', ' ') : value
     if target == :plain && (sanitized.include? ';')
-      sanitized = sanitized.gsub(CharEntityRx) { [$1.to_i].pack('U*') }.gsub(FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap)
+      sanitized = sanitized.gsub(CharEntityRx) { [$1.to_i].pack 'U*' } if sanitized.include? '&#'
+      sanitized = sanitized.gsub(FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap)
     elsif target == :attribute
-      sanitized = sanitized.gsub(WordJoinerRx, '').gsub('"', '&quot;')
+      sanitized = sanitized.gsub '"', '&quot;' if sanitized.include? '"'
     end
     sanitized
   end
@@ -844,10 +843,10 @@ class DocumentIdGenerator
         pre ||= '_'
         sep = sep ? sep.chr : '_'
         if doc.header?
-          id = (doc.doctitle sanitize: true).gsub WordJoinerRx, ''
-          id = id.gsub(CharRefRx) {
+          id = doc.doctitle sanitize: true
+          id = id.gsub CharRefRx do
             $1 ? ($1 == 'amp' ? 'and' : sep) : ((d = $2 ? $2.to_i : $3.hex) == 8217 ? '' : ([d].pack 'U*'))
-          } if id.include? '&'
+          end if id.include? '&'
           id = id.downcase.gsub InvalidIdCharsRx, sep
           if id.empty?
             id, synthetic = nil, true

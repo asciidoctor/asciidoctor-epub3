@@ -635,62 +635,6 @@ Refer to the <<NOTICE#,NOTICE>> file for further information about the fonts.
 
 // TODO document command to generate the M+ 1p latin fonts
 
-=== Text Justification Hack
-
-Many of the EPUB3 ereaders use the http://webkit.org[WebKit browser engine] to render the content and apply the CSS formatting and styles.
-Generally speaking, WebKit is a great engine that brings a lot of consistency and power to the ereading landscape.
-It also brings along the same set of bugs present in browsers that are based on it.
-
-One particular bug in WebKit causes rich text to be justified incorrectly.
-Specifically, when the value of the `text-align` property is `justify`, WebKit drops the space between formatted text (bold, italic, hyperlink, etc) and non-formatted text, causing the words to be unevenly spaced across the line.
-You can see an example of this problem in the screenshot below.
-
-.WebKit justifying rich text incorrectly
-image::incorrect-text-justification.png[]
-
-It's not terrible, but just enough to disrupt a reader's flow.
-Here's how we expect the text to look:
-
-.WebKit justifying rich text correctly after the “word joiner hack” is applied
-image::correct-text-justification.png[]
-
-After some time in the tech lab and some dumb luck, we found a way to trick WebKit into justifying the text correctly!
-We call it the “word joiner hack”.
-
-Here's the HTML source of the first sentence from the screenshots:
-
-```xml
-<strong><a href="...">Fork</a> the repository</strong> <span>and clone it locally.</span>
-```
-
-WebKit treats the space following an inline element as insignificant and thus fails to account for it when justifying the text.
-
-At first glance, you might think to add a normal space character before the closing tag of the inline element (e.g., `+<a href="...">Fork </a>+`).
-However, that would cause any underline beneath links to extend past the end of the word.
-
-At second glance, you might think to add a zero-width space character immediately following the element (e.g., `+<a href="...">Fork</a>&#x200b;+`).
-However, that's problematic if the next character is a period or other punctuation because it introduces a wrap opportunity where there shouldn't be one.
-
-Reflecting on the problem of the zero-width space brings us to either the http://www.fileformat.info/info/unicode/char/FEFF/index.htm[zero-width no-break space] character (e.g., `+<a href="...">Fork</a>&#xfeff+`) or the http://www.fileformat.info/info/unicode/char/2060/index.htm[word joiner] character (e.g., `+<a href="...">Fork</a>&#x2060;+`).
-Like the zero-width space, these characters occupy no space.
-However, instead of introducing a wrap opportunity, they prevent one.
-
-But here's the clincher.
-If the character following a zero-width non-break space or a word joiner is a normal space (e.g., `+<a href="...">Fork</a>&#xfeff; the+`), then it behaves just like a regular space.
-We've covered all the scenarios!
-Hey WebKit, you've been Unicode punked!
-
-*UPDATE:* The zero-width no-break space was deprecated in favor of the word joiner.
-However, as we've discovered, font support for the word joiner is abysmal, whereas the zero-width no-break space is supported everywhere we've checked.
-Therefore, we've decided to go with the zero-width no-break space to avoid nasty rectangle outlines from font bombing your content.
-
-_By adding the +++<del>word joiner</del>+++ zero-width no-break space character immediately after any inline element, we can trick WebKit into justifying the text properly, as shown in the second screenshot above._
-
-NOTE: You won't see `+&#xfeff;+` anywhere in the HTML source.
-That's because we use the actual Unicode character so that any regular expressions being applied to the text still work as expected.
-
-Although the fix may seem minor enhancement, it plays an important role in reaching one of the core objectives of this converter: to make the text in the EPUB3 as readable as possible.
-
 === Device-specific Styles
 
 For readers that support JavaScript, {project-name} adds a CSS class to the body element of each chapter that corresponds to the name of the reader as reported by the http://www.idpf.org/epub/301/spec/epub-contentdocs.html#app-epubReadingSystem[epubReadingSystem] JavaScript object.

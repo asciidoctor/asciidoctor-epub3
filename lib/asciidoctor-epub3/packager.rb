@@ -8,8 +8,6 @@ module Epub3
 module GepubBuilderMixin
   DATA_DIR = ::File.expand_path(::File.join ::File.dirname(__FILE__), '..', '..', 'data')
   SAMPLES_DIR = ::File.join DATA_DIR, 'samples'
-  WordJoiner = Epub3::WordJoiner
-  WordJoinerRx = Epub3::WordJoinerRx
   CharEntityRx = ContentConverter::CharEntityRx
   XmlElementRx = ContentConverter::XmlElementRx
   FromHtmlSpecialCharsMap = ContentConverter::FromHtmlSpecialCharsMap
@@ -30,24 +28,21 @@ module GepubBuilderMixin
 
   # FIXME move to Asciidoctor::Helpers
   def sanitize_xml content, content_spec
-    if content_spec == :pcdata
-      content = content
-      content = (content.end_with? WordJoiner) ? content.chop : content
-    elsif content.include? '<'
-      if (content = content.gsub(XmlElementRx, '').tr_s(' ', ' ').strip).include? WordJoiner
-        content = content.gsub WordJoinerRx, ''
+    if content_spec != :pcdata && (content.include? '<')
+      if (content = (content.gsub XmlElementRx, '').strip).include? ' '
+        content = content.tr_s ' ', ' '
       end
     end
 
     case content_spec
     when :attribute_cdata
-      content = content.gsub('"', '&quot;') if content.include? '"'
+      content = content.gsub '"', '&quot;' if content.include? '"'
     when :cdata, :pcdata
       # noop
     when :plain_text
       if content.include? ';'
         content = content.gsub(CharEntityRx) { [$1.to_i].pack 'U*' } if content.include? '&#'
-        content = content.gsub(FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap)
+        content = content.gsub FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap
       end
     else
       raise ::ArgumentError, %(Unknown content spec: #{content_spec})
