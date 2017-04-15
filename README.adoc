@@ -963,6 +963,7 @@ Refer to the <<NOTICE#,NOTICE>> file for information about third-party Open Sour
 == Additional Points of Note
 
 * uppercase chapter titles to work around line-height limitation in Kindle (1.4 minimum)
+* using vw units crashes Aldiko
 * circled numbers from M+ 1mn for annotation numbers in listing blocks
 * avatars for authors
 * document command to generate the M+ 1p latin fonts
