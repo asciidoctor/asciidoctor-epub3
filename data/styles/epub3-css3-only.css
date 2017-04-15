@@ -11,20 +11,20 @@ body.calibre-desktop > section {
   margin: 0 3.5%; /* equal to 1.75vw when there are two columns */
 }
 
-/* Gitden & Namo default to 16px font-size; bump it to 20px (125%) */
+/* Gitden & Namo default to 16px font-size; bump it to 19px (118.75%) */
 body.gitden-reader,
 body.namo-epub-library {
-  font-size: 125%;
+  font-size: 118.75%;
 }
 
-/* Gitden doesn't give us much margin, so let's match Kindle */
+/* Gitden doesn't give us much margin, so let's roughly match Aldiko and Kindle (narrow setting) */
 body.gitden-reader {
-  margin: 0 25pt;
+  margin: 0 5pt !important;
 }
 
 /* Namo has the same margin problem, except setting side margins doesn't work */
 /*body.namo-epub-library > section.chapter {
-  margin: 0 25pt;
+  margin: 0 5pt;
 }*/
 
 /* Use tighter margins and smaller font (18px) on phones (Nexus 4 and smaller) */
@@ -35,9 +35,9 @@ only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
     font-size: 112.5%;
   }
 
-  body.gitden-reader {
-    margin: 0 5pt;
-  }
+  /*body.gitden-reader {
+    margin: 0 5pt !important;
+  }*/
 
   /*body.namo-epub-library > section.chapter {
     margin: 0 5pt;
