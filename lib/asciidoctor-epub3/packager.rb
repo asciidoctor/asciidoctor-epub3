@@ -17,6 +17,8 @@ module GepubBuilderMixin
   CsvDelimiterRx = /\s*,\s*/
   DefaultCoverImage = 'images/default-cover.png'
   ImageMacroRx = /^image::?(.*?)\[(.*?)\]$/
+  ImgSrcScanRx = /<img src="(.+?)"/
+  SvgImgSniffRx = /<img src=".+?\.svg"/
 
   attr_reader :book, :format, :spine
 
@@ -194,7 +196,7 @@ body > svg {
   end
 
   def add_images_from_front_matter
-    ::File.read('front-matter.html').scan(/<img src="(.+?)"/) do
+    (::File.read 'front-matter.html').scan ImgSrcScanRx do
       resources do
         file $1
       end
@@ -206,7 +208,7 @@ body > svg {
     if ::File.file? 'front-matter.html'
       front_matter_content = ::File.read 'front-matter.html'
       spine_builder.file 'front-matter.xhtml' => (postprocess_xhtml front_matter_content, @format)
-      unless (spine_builder.property? 'svg') || /<img src=".*?\.svg"/ !~ front_matter_content
+      unless (spine_builder.property? 'svg') || SvgImgSniffRx !~ front_matter_content
         spine_builder.add_property 'svg'
       end
     end
