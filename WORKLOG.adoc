@@ -2,36 +2,34 @@
 
 == TODO
 
-* remove text justification hack (#92) (PR sent)
-* warn in case when target of inter-document xref can't be resolved, but xref has explicit text
 * don't add image from front matter if already referenced by chapter
-* add document filename to warn messages
+* add document filename to warn messages (added for some)
 * look for front-matter.html relative to docdir (or base_dir?); also allow front-matter.xhtml
 * change references[:spine] to spine_document property
+* make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
+ ** I believe this is already true; just remove hack
 * add helper to resolve imagesdir
 * support inline SVG
-* describe the leveloffset setting in more detail
+* describe the leveloffset setting in more detail in the README
 * link to https://medium.com/@sandersk/responsive-ebook-design-a-primer-8bba01328219 in style section in README
 * why don't we just use the chapter filename as the id?
 * only uppercase document title if detected in CSS
 * add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
  ** why can't we navigate to first chapter on Kindle from TOC?
-* allow imagesdir to be customized (#22)
+* allow imagesdir to be outside of docdir (#22)
 * document more clearly how to provide your own CSS
  ** currently it's not possible to override the epub3-fonts.css (though it should be)
 * add nav entry for cover if format != :kf8 ?
 * cleanup this sanitize XML stuff; move to Asciidoctor::Helpers?
  ** also need an upcase_pcdata
 * allow role to be applied to chapter (which means the role must be on the document)
-* make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
- ** I believe this is already true; just remove hack
 * should we enable hyphens in non-Kindle?
  ** we can reenable once we confirm it doesn't crash Kindle for Mac
 * switch to epubcheck-ruby
  ** epubcheck-ruby 4.0.2
  ** supports options such as -q
  ** add -w option by default (perhaps allow additional options to be passed via the ebook-validate attribute)
-* store spine as map in references?
+* document KINDLEGEN and EPUBCHECK env vars
 * part vs chapter? a difference?
 
 * create a video to demonstrate Google Play Books read aloud reading complete sentences in books generated with Asciidoctor EPUB3
@@ -43,34 +41,30 @@
 
 //^
 .Converter
-* CRITICAL: if document doesn't have doctitle, Untitled shows in epub2 TOC
-* CRITICAL: conversion missing in epub3 backend for embedded (AsciiDoc table cell?)
-* CRITICAL: revisit the headshot image logic
 * CRITICAL: put e-book reader class on html instead of body
-* CRITICAL: we're dropping subsequent paragraphs of preamble when abstract is found...need to pass them through
+* CRITICAL: surround prose in <span> (e.g., simple <dd>) which is not nested in <p> or <div> so iBooks can change the font
+* CRITICAL: don't drop subsequent paragraphs of preamble when abstract is found...need to pass them through
+* CRITICAL: if document doesn't have doctitle, Untitled shows in epub2 TOC (isn't this correct?)
 * CRITICAL: try to pull username from author email field; pull avatar from gravatar
 * CRITICAL: make generated file name strategy configurable (source file vs id)
-* HIGH: cross references between chapters does not work (would it work if we used the smart cross reference syntax?)
-* HIGH: add full table of contents to nav.xhtml, but use hidden below first level (check if works in Kindle); respect toclevels
+* HIGH: revisit the headshot image logic
 * HIGH: if running on a single article, then the document id has a conflicting purpose
 * HIGH: require spine option on include directive in order to create a chapter file (requires change in Asciidoctor)
-* HIGH: move regexp to constants
+* HIGH: promote regexps to constants
 * HIGH: use more thorough image path resolution
-* HIGH: move navigation_document method to Packager
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
 * MEDIUM: add landmarks nav list to nav.xhtml; see https://github.com/IDPF/epub3-samples/blob/master/31/moby-dick-mo-xhtml/EPUB/toc.xhtml
 * MEDIUM: Kindle links to cover page when clicking on first chapter instead of first chapter page
-* MEDIUM: add icon & icon placement as attributes on btn macro (was auto-space button macro, whatever that means)
-* MEDIUM: move client sniffer JavaScript to file
+* MEDIUM: add icon & icon placement as attributes on btn macro
+* MEDIUM: move client sniffer JavaScript to file and read/include from converter
 * MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
 * MEDIUM: source highlighting using Rouge (instead of Pygments)
 * MEDIUM: to remove text indent in mobi7, set width="0pt" (text-indent) on <p> tag; also set height="1em" (margin top)
-* QUESTION: add word joiner before inline tags too?
-* we could detect Calibre by looking for the window.calibre_utils object
+* MEDIUM: create back link in bibliography entry for each reference to it (currently only the first)
 * packager doesn't resolve include files in subdirectory totally correctly
 * implement checklists
 * quiet flag
-* upgrade to kindlegen 2.9.6 (only works for Ruby >= 2.0.0)
+* document that to use kindlegen with Ruby 1.9.3, must use kindlegen 2.9.4 gem (or specify KINDLEGEN env var)
 
 //^
 .Packager
@@ -83,9 +77,8 @@
 * MEDIUM: rename OEBPS folder to EPUB
 * MEDIUM: set modified date explicitly
 * MEDIUM: use function to build and manipulate image paths
-* MEDIUM: issue warning if front-cover-image doesn't match proper syntax
 * MEDIUM: option to add nav.xhtml to navigation flow?
-* MEDIUM: add Pygments stylesheet to archive if pygments-css=class
+* MEDIUM: add Pygments stylesheet to EPUB archive if pygments-css=class
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
 
@@ -97,20 +90,23 @@
 * CRITICAL: padding around code in formal listing blocks
 * CRITICAL: check style of level 5 and 6 headings (see Groovy docs)
 * CRITICAL: use CSS3 filter scheme that allows admonitions to appear correctly on Google Play Books
-  - see if Google Play books supports JavaScript and epubReadingSystem (no, but adds its own class to body)
+ ** see if Google Play books supports JavaScript and epubReadingSystem (no, but adds its own class to body)
 * CRITICAL: use a following sibling selector for :first-line in abstract so it works when page is partitioned (e.g., in Google Play Books)
 * CRITICAL: add support for different numbering systems (lowergreek, etc)
-* CRITICAL: surround prose in <span> (e.g., simple <dd>) which is not nested in <p> or <div> so iBooks can change the font
+* HIGH: should we restore font size of embed table cell?
+
+ table.table div.embed > *:not(p) { font-size: 1.25em; }
+
 * HIGH: kindlegen no longer strips <header> elements, so we can drop our div wrapper hack
-* HIGH: don't set text color so light on monochrome devices (use media query to detect)
-* HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute (don't use word joiner in this case)
+* HIGH: don't set text color so light on monochrome devices (use media query to detect) (#67)
+* HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute
 * HIGH: image border option (or add drop shadow to screenshots in README)
 * HIGH: review the table border color
 * HIGH: style example block
 * HIGH: allow theme to be customized using stylesheet attribute
 * HIGH: move -webkit-hyphens: auto to epub3-css3-only inside @media not amzn-kf8? (if we decide to reenable)
 * MEDIUM: headshot has too much top margin when at top of page (not below section title)
-* namo pubtree is justifying preformatted blocks
+* MEDIUM: namo pubtree is justifying preformatted blocks (still true?)
 * support both jpg and png avatars
 * add docinfo support
 * add navigation links in meta, e.g.,
@@ -122,13 +118,12 @@
 * add title/subtitle delimiter into HTML and hide with CSS?
 * use less side padding in sidebar?
 * can we remove content wrapper in sidebar?
-* sidebar heading not right in readmill...maybe nothing to worry about?
 * manually style ordered list numbers
 * reduce vertical margins around basic lists (partially addressed via "brief" class)
 * use float trick to fix line spacing for primary title like with the subtitle
 * better handling of title without subtitle, particularly HTML and CSS
 * add pink theme: http://designplus.co/en/designplus
-* customize id of <item> elements in epub manifest?
+* LOW: customize id of <item> elements in epub manifest?
 
 //^
 .Samples
@@ -154,7 +149,7 @@
 
 == NOTES
 
-* content must be XHTML (not HTML)
+* content must be XHTML (not HTML) (this will change in EPUB 3.1)
 * Aldiko uses the image on the cover page (or a screenshot of the cover page) as the image in the bookshelf
 * use -webkit-transform: translate/translateX/translateY to move objects from origin by relative distances (alternative to relative positioning, which is not permitted on Kindle)
 * don't need attributes above header in sub-documents anymore (except for PDF; we'll cross that bridge when we get to it)
