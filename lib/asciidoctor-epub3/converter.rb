@@ -703,7 +703,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     when :link
       %(<a href="#{target}" class="link">#{node.text}</a>)
     when :bibref
-      %(<a id="#{target}" href="#xref-#{target}">[#{target}]</a>)
+      if @xrefs_seen.include? target
+        %(<a id="#{target}" href="#xref-#{target}">[#{target}]</a>)
+      else
+        %(<a id="#{target}"></a>[#{target}])
+      end
     end
   end
 
