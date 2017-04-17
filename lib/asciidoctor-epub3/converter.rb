@@ -668,36 +668,48 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def inline_anchor node
     target = node.target
     case node.type
-    when :xref
-      # FIXME would be nice to know what type the target is (e.g., bibref)
-      refid = (node.attr 'refid') || target
-      if (path = node.attr 'path')
-        # reconfigure reference to a spine item root (e.g., chapter-id#)
-        refid = %(#{refid}##{refid}) unless node.attr 'fragment'
-      end
-      id_attr = unless @xrefs_seen.include? refid
-        @xrefs_seen << refid
-        # QUESTION should we just drop the id attribute for inter-document xrefs?
-        %( id="xref-#{path ? (refid.sub '#', '--') : refid}")
-      end
-      unless (text = node.text)
-        if path
-          xdoc_id, xdoc_refid = refid.split '#', 2
-          xdoc = node.document.references[:spine_items].find {|doc| xdoc_id == (doc.id || (doc.attr 'docname')) }
-          if xdoc
-            unless (text = xdoc.references[:ids][xdoc_refid])
-              warn %(asciidoctor: WARNING: cannot resolve reference to #{xdoc_refid} in document #{xdoc_id})
-              text = %([#{refid}])
-            end
+    when :xref # TODO would be helpful to know what type the target is (e.g., bibref)
+      doc, refid, text, path = node.document, ((node.attr 'refid') || target), node.text, (node.attr 'path')
+      # NOTE if path is non-nil, we have an inter-document xref
+      # QUESTION should we drop the id attribute for an inter-document xref?
+      if path
+        # ex. chapter-id#section-id
+        if node.attr 'fragment'
+          refdoc_id, refdoc_refid = refid.split '#', 2
+          if refdoc_id == refdoc_refid
+            target = target[0...(target.index '#')]
+            id_attr = %( id="xref--#{refdoc_id}")
           else
-            warn %(asciidoctor: WARNING: cannot resolve reference to #{xdoc_refid} in unknown document #{xdoc_id})
-            text = %([#{refid}])
+            id_attr = %( id="xref--#{refdoc_id}--#{refdoc_refid}")
+          end
+        # ex. chapter-id#
+        else
+          refdoc_id = refdoc_refid = refid
+          # inflate key to spine item root (e.g., transform chapter-id to chapter-id#chapter-id)
+          refid = %(#{refid}##{refid})
+          id_attr = %( id="xref--#{refdoc_id}")
+        end
+        id_attr = nil unless @xrefs_seen.add? refid
+        refdoc = doc.references[:spine_items].find {|it| refdoc_id == (it.id || (it.attr 'docname')) }
+        if refdoc
+          if (reftext = refdoc.references[:ids][refdoc_refid])
+            text ||= reftext
+          else
+            warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: invalid reference to unknown anchor in #{refdoc_id} chapter: #{refdoc_refid})
           end
         else
-          text = node.document.references[:ids][refid] || %([#{refid}])
+          warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: invalid reference to anchor in unknown chapter: #{refdoc_id})
+        end
+      else
+        id_attr = (@xrefs_seen.add? refid) ? %( id="xref-#{refid}") : nil
+        if (reftext = doc.references[:ids][refid])
+          text ||= reftext
+        else
+          # FIXME we get false negatives for reference to bibref
+          warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: invalid reference to unknown local anchor (or valid bibref): #{refid})
         end
       end
-      %(<a#{id_attr} href="#{target}" class="xref">#{text}</a>)
+      %(<a#{id_attr} href="#{target}" class="xref">#{text || "[#{refid}]"}</a>)
     when :ref
       %(<a id="#{target}"></a>)
     when :link
