@@ -5,9 +5,54 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
-== 1.5.0.alpha.7 (2017-04-17) - @mojavelinux
+== 1.5.0.alpha.7 (2017-04-18) - @mojavelinux
 
-...
+* generate TOC levels in navigation document based on toclevels attribute (#90)
+* automatically resolve title of reference between documents (#87)
+* fix xref between chapter files (#27)
+* don't include byline in chapter header if the value of the publication-type attribute is book (#86)
+* don't include avatars if value of publication-type attribute is book (#53)
+* make a stronger statement in the README about the dangers of the “Send to Kindle” tool
+* add ebook-compress flag to enable huffdic compression in kindlegen
+* implement embedded to handle AsciiDoc table cell content (#69)
+* go into more depth about how to structure the document in README (#45)
+* explain how to adjust section level of chapters if they use level-2 headings
+* don't add content image to archive more than once (#76)
+* warn when xref cannot be resolved and text is provided (#103)
+* built-in avatar location should respect imagesdir (#2)
+* change admonition icons (#72) (@PrimaryFeather)
+* fix broken refs in bibliography (#19)
+* remove text justification hack (#92)
+* reset @page for CSS3-capable readers
+* detect Calibre, set class attribute on body to calibre-desktop, add page margins
+* force preformatted text to wrap in Gitden
+* add svg property to front matter only if reference to SVG is detected
+* switch from word-wrap to standard overflow-wrap property in stylesheet
+* loosen letter spacing in quote attribute context
+* adjust font size and margins on Gitden; force margins to be set
+* document in README that using vw units causes Aldiko to crash
+* drop trailing semi-colon in value of inline style attributes
+* use standard format (from core) for warning and error messages
+* update terminology in README; use ebook instead of e-book; refer to application as ereader
+* allow front-cover-image to be specified using block image macro (#3)
+* clean auto-generated file names for chapters (#46)
+* register chapter ID in references
+* only wrap open block content in div if id or role is defined (@rvolz)
+* link to EPUB 3.1 spec from README
+* set ebook-format-kf8 attribute when ebook-format is specified as mobi
+* document the front-cover-image attribute properly
+* update adb-push-book script to honor file extension if specified
+* document limitations of applying page-break-* property on Kindle
+* document that Asciidoctor is added as creator if creator attribute is not specified (#68)
+* group optional gems in the :optional group; remove from gemspec
+* upgrade kindlegen gem to 3.0.3
+* upgrade Pygments to 1.1.1 and allow JRuby to install it
+* document that Pygments bw style is used by default
+* honor explicit table width even when autowidth option is set
+* use method_defined? instead of respond_to? to check if method is already defined
+* fix README typo, strong tag misspelled (@neontapir)
+* fix name of bundler gem; add NOKOGIRI_USE_SYSTEM_LIBRARIES to install command
+* state in README that the spine document must only have include directives as content
 
 == 1.5.0.alpha.6 (2016-01-05) - @mojavelinux
 
