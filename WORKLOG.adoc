@@ -2,12 +2,14 @@
 
 == TODO
 
+* make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
+ ** I believe this is already true; just remove hack
+* allow imagesdir to be outside of docdir (#22)
 * don't add image from front matter if already referenced by chapter
 * add document filename to warn messages (added for some)
 * look for front-matter.html relative to docdir (or base_dir?); also allow front-matter.xhtml
 * change references[:spine] to spine_document property
-* make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
- ** I believe this is already true; just remove hack
+* reorder sections in README; needs to flow a bit better...Getting Started is too large & after Structuring your Manuscript
 * add helper to resolve imagesdir
 * support inline SVG
 * describe the leveloffset setting in more detail in the README
@@ -16,7 +18,6 @@
 * only uppercase document title if detected in CSS
 * add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
  ** why can't we navigate to first chapter on Kindle from TOC?
-* allow imagesdir to be outside of docdir (#22)
 * document more clearly how to provide your own CSS
  ** currently it's not possible to override the epub3-fonts.css (though it should be)
 * add nav entry for cover if format != :kf8 ?
