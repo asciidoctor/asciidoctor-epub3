@@ -1,0 +1,89 @@
+= {project-name} Changelog
+:project-name: Asciidoctor EPUB3
+:uri-repo: https://github.com/asciidoctor/asciidoctor-epub3
+
+This document provides a high-level view of the changes to the {project-name} by release.
+For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
+
+== 1.5.0.alpha.7 (2017-04-17) - @mojavelinux
+
+...
+
+== 1.5.0.alpha.6 (2016-01-05) - @mojavelinux
+
+* disable text-rendering: optimizeLegibility on Kindle devices (#58)
+* proxy CSS in KF8 format to work around KDP removing font-related CSS rules
+* don't append source when generating mobi file
+* disable -webkit-hyphens to prevent Kindle for Mac from crashing (#26)
+* don't explicitly enable hyphenation
+* disable hyphens in preformatted text
+* don't fail if source block is empty
+* hide style element in body from Aldiko
+* enable Original (Publisher) font option in iBooks client
+* preserve heading & monospaced fonts in Kindle Paperwhite/Voyage
+* force left justification in listings (fix for Namo)
+* fix documentation regarding uuid attribute (@chkal)
+* add note that currently images must be placed in a directory called images (@chkal)
+* fix file type of avatar image in docs (@chkal)
+* document how to install the pre-release gem (#38)
+* use built-in font names for mobi7 (#56)
+* document the epub3-stylesdir attribute
+* prevent ellipsis from being used in inline code
+* don't include scoped icon CSS in KF8 format
+* remove link color hack for Gitden since its already covered
+* override heading and monospace fonts for non-Kindle epub3 readers
+* wrap simple dd content in span to allow font to be controlled in iBooks
+* enforce use of monospace font for preformatted elements
+* upgrade kindlegen
+* don't allow UI button to wrap
+* remove amzn-mobi from media query in CSS3-only file
+* use CSS property word-wrap instead of word-break
+* remove charset declaration from CSS
+* switch samples to modern AsciiDoc syntax
+
+{uri-repo}/issues?q=milestone%3Av1.5.0.alpha.6[issues resolved] |
+{uri-repo}/releases/tag/v1.5.0.alpha.6[git tag]
+
+== 1.5.0.alpha.5 (2015-11-01) - @mojavelinux
+
+* implement -o flag (output file) (#31) (@chloerei)
+* implement the converter method for floating_title (#36)
+* don't print kindlegen output if -q flag is used (#34)
+* CLI now identifies as asciidoctor-epub3 (#32)
+
+{uri-repo}/issues?q=milestone%3Av1.5.0.alpha.5[issues resolved] |
+{uri-repo}/releases/tag/v1.5.0.alpha.5[git tag]
+
+== 1.5.0.alpha.4 (2014-11-28) - @mojavelinux
+
+* set ebook-format-epub3 attribute (#16)
+* add box drawing symbols to M+ 1mn font
+* switch version to 1.5.0.x to align with core
+
+{uri-repo}/issues?q=milestone%3Av1.5.0.alpha.4[issues resolved] |
+{uri-repo}/releases/tag/v1.5.0.alpha.4[git tag]
+
+== 1.0.0.alpha.3 (2014-08-17) - @mojavelinux
+
+* don't attempt to chdir to DATA_DIR; use full path; for compatibility with AsciidoctorJ
+* fix BOM regexp in JRuby (again)
+* switch sample png avatars to jpg
+* don't install pygments.rb on JRuby
+
+{uri-repo}/releases/tag/v1.0.0.alpha.4[git tag]
+
+== 1.0.0.alpha.2 (2014-08-15) - @mojavelinux
+
+* upgrade to Asciidoctor 1.5.0
+* use new functionality of doctitle method for splitting up doctitle
+* don't put units on line-height in stylesheet
+* use regexp to match the BOM character (used to fix text justification) in JRuby
+
+{uri-repo}/releases/tag/v1.0.0.alpha.2[git tag]
+
+== 1.0.0.alpha.1 (2014-07-29) - @mojavelinux
+
+* initial pre-release
+
+{uri-repo}/issues?q=milestone%3Av1.0.0.alpha.1[issues resolved] |
+{uri-repo}/releases/tag/v1.0.0.alpha.1[git tag]
