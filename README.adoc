@@ -565,9 +565,11 @@ mimetype
 
 == Working with Images
 
-Images referenced in your AsciiDoc document should be stored in the directory defined by the `imagesdir` attribute.
-We term this location the images catalog.
-If this attribute is not set, the images catalog defaults to the directory of the document.
+Images referenced in your AsciiDoc document must be stored in the images catalog.
+The images catalog is defined by the `imagesdir` attribute.
+If set, the value of this attribute is resolved relative to the spine document and must be at or below (i.e., within) the directory of that document.
+(In other words, it cannot point to a location outside the document directory).
+If this attribute is not set, the images catalog defaults to the directory of the spine document.
 {project-name} will discover all local image references and insert those images into the EPUB3 archive at the same relative path.
 
 WARNING: {project-name} does not currently discover and package inline images.
