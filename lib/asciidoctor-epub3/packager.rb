@@ -210,7 +210,6 @@ body > svg {
     nil
   end
 
-  # FIXME don't add same image more than once
   # FIXME add inline images
   def add_content_images doc, images
     docimagesdir = (doc.attr 'imagesdir', '.').chomp '/'
