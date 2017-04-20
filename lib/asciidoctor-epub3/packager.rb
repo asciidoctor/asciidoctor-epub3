@@ -480,7 +480,7 @@ class Packager
         .uniq {|img| %(#{(img.document.attr 'imagesdir', '.').chomp '/'}/#{img.attr 'target'}) }
     # FIXME authors should be aggregated already on parent document
     authors = if doc.attr? 'authors'
-      (doc.attr 'authors').split(GepubBuilderMixin::CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }).uniq
+      (doc.attr 'authors').split(GepubBuilderMixin::CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }).uniq.reject {|a| a.nil?}
     else
       []
     end
