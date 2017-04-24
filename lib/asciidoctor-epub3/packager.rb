@@ -507,36 +507,58 @@ class Packager
       title(sanitize_doctitle_xml doc, :plain_text)
       id 'pub-title'
 
-      # FIXME this logic needs some work
-      if doc.attr? 'publisher'
-        publisher(publisher_name = doc.attr('publisher'))
-        # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
-        creator doc.attr('producer', publisher_name), 'bkp'
-      else
-        # NOTE Use producer as both publisher and producer if publisher isn't specified
-        if doc.attr? 'producer'
-          producer_name = doc.attr 'producer'
-          publisher producer_name
-          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
-          creator producer_name, 'bkp'
-        # NOTE Use author as creator if both publisher or producer are absent
-        elsif doc.attr? 'author'
-          # marc role: Author (see http://www.loc.gov/marc/relators/relaterm.html)
-          creator doc.attr('author'), 'aut'
+      if (doc.attr 'publication-type', 'book') == 'book'
+        # For books add authors as creators
+        # NOTE Move authors to the front because reading systems will display the first creator(s) as the author(s),
+        # see http://www.idpf.org/epub/31/spec/epub-packages.html#sec-opf-dccreator
+        nauthors = authors.map {|a| [a, 'aut']}
+        creators(*nauthors)
+
+        # NOTE attributed creator links for bkp, mfr are currently removed for books because some reading systems
+        # (e.g. Kindle) won't recognize the attributes and use them as author entries
+        if doc.attr? 'publisher'
+          publisher(publisher_name = doc.attr('publisher'))
+        else
+          # NOTE Use producer as both publisher and producer if publisher isn't specified
+          if doc.attr? 'producer'
+            producer_name = doc.attr 'producer'
+            publisher producer_name
+          end
         end
-      end
-
-      if doc.attr? 'creator'
-        # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
-        creator doc.attr('creator'), 'cre'
       else
-        # marc role: Manufacturer (see http://www.loc.gov/marc/relators/relaterm.html)
-        # QUESTION should this be bkp?
-        creator 'Asciidoctor', 'mfr'
+        # FIXME this logic needs some work
+        if doc.attr? 'publisher'
+          publisher(publisher_name = doc.attr('publisher'))
+          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+          creator doc.attr('producer', publisher_name), 'bkp'
+        else
+          # NOTE Use producer as both publisher and producer if publisher isn't specified
+          if doc.attr? 'producer'
+            producer_name = doc.attr 'producer'
+            publisher producer_name
+            # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+            creator producer_name, 'bkp'
+            # NOTE Use author as creator if both publisher or producer are absent
+          elsif doc.attr? 'author'
+            # marc role: Author (see http://www.loc.gov/marc/relators/relaterm.html)
+            creator doc.attr('author'), 'aut'
+          end
+        end
+
+        if doc.attr? 'creator'
+          # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
+          creator doc.attr('creator'), 'cre'
+        else
+          # marc role: Manufacturer (see http://www.loc.gov/marc/relators/relaterm.html)
+          # QUESTION should this be bkp?
+          creator 'Asciidoctor', 'mfr'
+        end
+
+        # TODO getting author list should be a method on Asciidoctor API
+        contributors(*authors)
       end
 
-      # TODO getting author list should be a method on Asciidoctor API
-      contributors(*authors)
+
 
       if doc.attr? 'revdate'
         # TODO ensure this is a real date
