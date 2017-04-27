@@ -394,6 +394,10 @@ The recommended practice is to identify the referenced resource by means of a st
 |An optional override of the properties attribute for this document's item in the manifest.
 _Only applies to a chapter document._
 
+|epub3-frontmatterdir
+|The path to a directory that contains frontmatter files. The file names must match `front-matter*.html` and will be included in alphabetic order. The files are expected to be valid EPUB HTML files. _If only one front matter page is
+ required, the default 'front-matter.html' file can be used instead._
+
 |epub3-stylesdir
 |The path to a directory that contains alternate epub3.css and epub3-css3-only.css files to customize the look and feel.
 
