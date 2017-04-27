@@ -16,13 +16,17 @@ class SpineItemProcessor < Extensions::IncludeProcessor
     inherited_attrs = spine_doc.attributes.dup
     # QUESTION should we keep backend-epub3 for convenience?
     %w(backend-epub3 backend-epub3-doctype-book docdir docfile docname doctitle outfilesuffix spine).each {|key| inherited_attrs.delete key }
+    if (leveloffset = inherited_attrs['leveloffset'])
+      leveloffset = inherited_attrs['leveloffset'] = %(#{leveloffset}@) unless leveloffset.end_with? '@'
+    end
 
     # parse header to get author information
     spine_item_doc_meta = ::Asciidoctor.load_file include_file,
         safe: spine_doc.safe,
         backend: 'epub3-xhtml5',
         doctype: :article,
-        parse_header_only: true
+        parse_header_only: true,
+        attributes: leveloffset ? { 'leveloffset' => leveloffset } : nil
 
     # blank out author information if present in sub-document
     # FIXME this is a huge hack...we need a cleaner way to do this; perhaps an API method that retrieves all the author attribute names
