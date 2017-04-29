@@ -843,7 +843,7 @@ end
 
 class DocumentIdGenerator
   ReservedIds = %w(cover nav ncx)
-  CharRefRx = /&(?:([a-zA-Z]{2,})|#(\d{2,6})|#x([a-fA-F0-9]{2,5}));/
+  CharRefRx = /&(?:([a-zA-Z][a-zA-Z]+\d{0,2})|#(\d\d\d{0,4})|#x([\da-fA-F][\da-fA-F][\da-fA-F]{0,3}));/
   if defined? __dir__
     InvalidIdCharsRx = /[^\p{Word}]+/
     LeadingDigitRx = /^\p{Nd}/
