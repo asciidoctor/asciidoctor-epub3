@@ -251,6 +251,9 @@ You can install the published gem using the following command:
 
  $ NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install asciidoctor-epub3 --pre
 
+This optional environment variable tells the gem installer to link against the C libraries on the system, if available, instead of compiling the libraries from scratch.
+This speeds up the installation of Nokogiri considerably.
+
 If you want to syntax highlight source listings, you'll also want to install CodeRay or Pygments.
 Choose one (or more) of the following:
 
