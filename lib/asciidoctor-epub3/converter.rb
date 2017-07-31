@@ -344,6 +344,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def quote node
+    id_attribute = node.id ? %( id="#{node.id}") : nil
+    classes = ['blockquote', node.role].compact
+    class_attribute = %( class="#{classes * ' '}")
+
     footer_content = []
     if (attribution = node.attr 'attribution')
       footer_content << attribution
@@ -363,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     content = (convert_content node).strip.
       sub(OpenParagraphTagRx, '<p><span class="open-quote">“</span>').
       sub(CloseParagraphTagRx, '<span class="close-quote">”</span></p>')
-    %(<div class="blockquote">
+    %(<div#{id_attribute}#{class_attribute}>
 <blockquote>
 #{content}#{footer_tag}
 </blockquote>
