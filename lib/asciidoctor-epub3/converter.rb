@@ -344,9 +344,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def quote node
-    id_attribute = node.id ? %( id="#{node.id}") : nil
-    classes = ['blockquote', node.role].compact
-    class_attribute = %( class="#{classes * ' '}")
+    id_attr = %( id="#{node.id}") if node.id
+    class_attr = (role = node.role) ? %( class="blockquote #{role}") : ' class="blockquote"'
 
     footer_content = []
     if (attribution = node.attr 'attribution')
@@ -367,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     content = (convert_content node).strip.
       sub(OpenParagraphTagRx, '<p><span class="open-quote">“</span>').
       sub(CloseParagraphTagRx, '<span class="close-quote">”</span></p>')
-    %(<div#{id_attribute}#{class_attribute}>
+    %(<div#{id_attr}#{class_attr}>
 <blockquote>
 #{content}#{footer_tag}
 </blockquote>
@@ -375,6 +374,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def verse node
+    id_attr = %( id="#{node.id}") if node.id
+    class_attr = (role = node.role) ? %( class="verse #{role}") : ' class="verse"'
+
     footer_content = []
     if (attribution = node.attr 'attribution')
       footer_content << attribution
@@ -387,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
     footer_tag = footer_content.size > 0 ? %(
 <span class="attribution">~ #{footer_content * ', '}</span>) : nil
-    %(<div class="verse">
+    %(<div#{id_attr}#{class_attr}>
 <pre>#{node.content}#{footer_tag}</pre>
 </div>)
   end
