@@ -1,5 +1,6 @@
 /.ruby-gemset
 /.ruby-version
+/.sass-cache
 /_*/
 /Gemfile.lock
 /README.html

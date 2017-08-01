@@ -1,12 +1,20 @@
+@charset "UTF-8";
+/* type scale::
+ * 50 2.27
+ * 32 1.45
+ * 30 1.36
+ * 24 1.1
+ * 22 1 */
 @import url("epub3-fonts.css");
-
-*, *:before, *:after {
+* {
+  box-sizing: border-box;
+}
+*:before, *:after {
   box-sizing: border-box;
 }
 
 /* educate older readers about tags introduced in HTML5 */
-article, aside, details, figcaption, figure,
-footer, header, nav, section, summary {
+article, aside, details, figcaption, figure, footer, header, nav, section, summary {
   display: block;
 }
 
@@ -33,7 +41,6 @@ body {
   /* -webkit-font-smoothing has no noticable effect and is controversial, so leaving it off */
 }
 
-/* disables night mode in Aldiko, hoo-ha! */
 html body {
   background-color: #FFFFFF;
 }
@@ -41,14 +48,10 @@ html body {
 /* @page only applies to EPUB2 readers; not supported by EPUB3 readers such as Kindle and Gitden */
 @page {
   /* sets minimum margin permitted */
-  /* pushes the top & bottom margins down in Aldiko to emulate Kindle (Kindle uses ~ 10% of screen by default )*/
+  /* pushes the top & bottom margins down in Aldiko to emulate Kindle (Kindle uses ~ 10% of screen by default ) */
   margin: 1cm;
 }
-
-div, p, blockquote, pre, figure, figcaption,
-h1, h2, h3, h4, h5, h6,
-dl, dt, dd, ol, ul, li,
-table, caption, thead, tfoot, tbody, tr, th, td {
+div, p, blockquote, pre, figure, figcaption, h1, h2, h3, h4, h5, h6, dl, dt, dd, ol, ul, li, table, caption, thead, tfoot, tbody, tr, th, td {
   margin: 0;
   padding: 0;
   font-size: 100%;
@@ -62,7 +65,6 @@ a, abbr, address, cite, code, em, kbd, span, strong {
 a {
   background: transparent;
 }
-
 a:active, a:hover {
   outline: 0;
 }
@@ -85,7 +87,6 @@ b.button {
   color: #191918;
   white-space: nowrap;
 }
-
 b.button .label {
   padding: 0 0.25em;
 }
@@ -94,7 +95,7 @@ kbd {
   display: inline-block;
   font-size: 0.8em;
   line-height: 1;
-  background-color: #F7F7F7; /* #FAFAFA */
+  background-color: #F7F7F7;
   border: 1px solid #BEBEBC;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -110,24 +111,19 @@ kbd {
 }
 
 .menuseq .caret {
-  /*
-  font-family: "FontAwesome";
-  font-size: 0.7em;
-  line-height: 1;
-  font-weight: bold;
-  vertical-align: 0.08rem;
-  */
-
+  /*font-family: "FontAwesome";
+   *font-size: 0.7em;
+   *line-height: 1;
+   *font-weight: bold;
+   *vertical-align: 0.08rem; */
   font-weight: bold;
 }
-
 .menuseq span[class~="caret"] {
   visibility: hidden;
 }
-
 .menuseq .caret::before {
   font-family: "FontAwesome";
-  content: "\f054";
+  content: "";
   font-size: 0.6em;
   vertical-align: 0.15em;
   visibility: visible;
@@ -149,23 +145,21 @@ small {
   font-size: 80%;
 }
 
-sub, sup {
+sub {
   font-size: 0.75em;
   line-height: 1;
 }
 
 sup {
+  font-size: 0.75em;
+  line-height: 1;
   /* position: relative not permitted on Kindle */
-  /*
-  position: relative;
-  top: -0.5em;
-  */
+  /*position: relative;
+   *top: -0.5em; */
   /* alternate approach #1 */
-  /*
-  display: inline-block;
-  vertical-align: text-top;
-  padding-top: .25em;
-  */
+  /*display: inline-block;
+   *vertical-align: text-top;
+   *padding-top: .25em; */
   /* alternate approach #2 */
   line-height: 1;
   vertical-align: text-top;
@@ -173,16 +167,12 @@ sup {
 
 sub {
   /* position: relative not permitted on Kindle */
-  /*
-  position: relative;
-  bottom: -0.25em;
-  */
+  /*position: relative;
+   *bottom: -0.25em; */
   /* alternate approach #1 */
-  /*
-  display: inline-block;
-  vertical-align: text-bottom;
-  padding-bottom: .5em;
-  */
+  /*display: inline-block;
+   *vertical-align: text-bottom;
+   *padding-bottom: .5em; */
   /* alternate approach #2 */
   line-height: 1;
   vertical-align: text-bottom;
@@ -206,20 +196,16 @@ body a:link {
   text-decoration: none !important;
   border-bottom: 1px dashed #666665;
   /* allow URLs to break anywhere if they don't fit on a line; but how do we know it's a URL? */
-  /*
-  word-break: break-all;
-  */
+  /*word-break: break-all; */
 }
-
 body:first-of-type a:link {
   border-bottom: none;
   background-repeat: no-repeat;
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, #666665 5%, #666665 95%, rgba(255,255,255,0) 100%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 0%, #666665 5%, #666665 95%, rgba(255,255,255,0) 100%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%);
   background-size: 100% 1px;
   background-position: 0 1.2em;
 }
-
 body a:visited {
   color: #666665;
   /* hack for font color in iBooks */
@@ -229,10 +215,8 @@ body a:visited {
 code.literal {
   /* don't let it affect line spacing */
   /* disable since M+ 1mn won't interrupt line height */
-  /*line-height: 1;*/
-  /*
-  white-space: nowrap;
-  */
+  /*line-height: 1; */
+  /*white-space: nowrap; */
   word-wrap: break-word;
 }
 
@@ -241,12 +225,13 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   letter-spacing: -0.01em;
   /* NOTE Kindle doesn't allow the line-height to be less than the font size (refer to heading font sizes) */
-  line-height: 1.4; /* or 1.2125 */
+  line-height: 1.4;
+  /* or 1.2125 */
   text-align: left;
-
-  -webkit-hyphens: none; /* disable hyphenation where supported (e.g., iBooks) */
-  word-wrap: break-word; /* break in middle of long word if no other break opportunities are available */
-
+  -webkit-hyphens: none;
+  /* disable hyphenation where supported (e.g., iBooks) */
+  word-wrap: break-word;
+  /* break in middle of long word if no other break opportunities are available */
   /* avoiding page breaks does not seem to work in Kindle */
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
@@ -260,14 +245,28 @@ body p {
   margin: 1em 0 0 0;
   text-align: justify;
   text-indent: 0;
-
   widows: 2;
   orphans: 2;
+  color: #333332;
+  /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
+  /* NOTE iBooks honors Original font for prose text if declared in display-options.xml */
+  font-family: "Noto Serif", serif;
 }
 
-body p,
-ul, ol, li, dl, dt, dd, footer,
-div.verse .attribution, table.table th, table.table td,
+ul, ol, li, dl, dt, dd, footer, div.verse .attribution {
+  color: #333332;
+  /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
+  /* NOTE iBooks honors Original font for prose text if declared in display-options.xml */
+  font-family: "Noto Serif", serif;
+}
+
+table.table th, table.table td {
+  color: #333332;
+  /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
+  /* NOTE iBooks honors Original font for prose text if declared in display-options.xml */
+  font-family: "Noto Serif", serif;
+}
+
 figcaption, caption {
   color: #333332;
   /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
@@ -282,13 +281,12 @@ body p, li, dt, dd, footer {
 code, kbd, pre {
   color: #191918;
   font-family: "M+ 1mn", monospace;
-  -webkit-hyphens: none; /* disable hyphenation where supported (e.g., iBooks) */
+  -webkit-hyphens: none;
+  /* disable hyphenation where supported (e.g., iBooks) */
 }
 
 /* QUESTION should we kern preformatted text blocks? */
-h1, h2, h3, h4, h5, h6,
-body p, li, dd, blockquote > footer,
-th, td, figcaption, caption {
+h1, h2, h3, h4, h5, h6, body p, li, dd, blockquote > footer, th, td, figcaption, caption {
   /* forward-compatible CSS to enable kerning (if we want ligatures, add "liga" and "dlig") */
   /* WebKits that don't recognize these properties don't kern well, hence why we don't simply enable kerning via text-rendering */
   -webkit-font-feature-settings: "kern";
@@ -302,7 +300,8 @@ p.last::after {
   display: inline-block;
   font-family: "FontAwesome";
   font-size: 1em;
-  content: "\f121"; /* i.e., </> */
+  content: "";
+  /* i.e., </> */
   margin-left: 0.25em;
 }
 
@@ -312,19 +311,15 @@ ul li, ol li {
 }
 
 /* use paragraph-size gaps between list items */
-.complex > ul > li,
-.complex > ol > li {
+.complex > ul > li, .complex > ol > li {
   margin-top: 1em;
 }
 
 /* squeeze content in complex lists */
-/*
-li > figure,
-li > p {
-  margin-top: 0.4em;
-}
-*/
-
+/*li > figure,
+ *li > p {
+ *  margin-top: 0.4em;
+ *} */
 dl {
   margin-top: 0;
   margin-bottom: 0;
@@ -335,22 +330,16 @@ dt {
   page-break-inside: avoid;
   -webkit-column-break-after: avoid;
   page-break-after: avoid;
+  margin-top: 0.75em;
+  /* balances 0.25em to term */
 }
-
 dt > span.term {
   font-style: italic;
 }
 
-/*
-dt > span.term > code.literal {
-  font-style: normal;
-}
-*/
-
-dt {
-  margin-top: 0.75em; /* balances 0.25em to term */
-}
-
+/*dt > span.term > code.literal {
+ *  font-style: normal;
+ *} */
 dl dd {
   /* minimum margin in case there is no paragraph content */
   margin-top: 0.25em;
@@ -359,13 +348,11 @@ dl dd {
 div.callout-list {
   margin-top: 0.5em;
 }
-
 div.callout-list ol {
   font-size: 80%;
   margin-left: 1.5em !important;
   list-style-type: none;
 }
-
 div.callout-list ol li {
   text-align: left;
 }
@@ -378,36 +365,31 @@ i.conum {
 
 /* don't let conum affect line spacing; REVIEW may not need this! */
 /*pre i.conum {
-  line-height: 1;
-}*/
-
+ *  line-height: 1;
+ *} */
 div.callout-list li > i.conum {
   float: left;
   margin-left: -1.25em;
   display: block;
   width: 1.25em;
 }
-
 div.itemized-list, div.ordered-list, div.description-list {
   margin-top: 1em;
-  padding-bottom: 0.25em; /* REVIEW maybe, maybe not */
+  padding-bottom: 0.25em;
+  /* REVIEW maybe, maybe not */
 }
-
-/* QUESTION should we add the class "list" so we can style these generically? */
-div.itemized-list div.itemized-list,
-div.itemized-list div.ordered-list,
-div.itemized-list div.description-list,
-div.ordered-list div.itemized-list,
-div.ordered-list div.ordered-list,
-div.ordered-list div.description-list {
+div.itemized-list div.itemized-list, div.itemized-list div.ordered-list, div.itemized-list div.description-list {
+  margin-top: 0;
+}
+div.ordered-list div.itemized-list, div.ordered-list div.ordered-list, div.ordered-list div.description-list {
   margin-top: 0;
 }
 
+/* QUESTION should we add the class "list" so we can style these generically? */
 /*div.description-list div.itemized-list,
-div.description-list div.ordered-list,
-div.description-list div.description-list {
-}*/
-
+ *div.description-list div.ordered-list,
+ *div.description-list div.description-list {
+ *} */
 h3.list-heading {
   font-size: 1em;
   font-family: "Noto Serif", serif;
@@ -418,8 +400,7 @@ h3.list-heading {
   letter-spacing: 0;
 }
 
-div.stack li strong.subject,
-div.stack-subject li strong.subject {
+div.stack li strong.subject, div.stack-subject li strong.subject {
   display: block;
 }
 
@@ -428,18 +409,20 @@ ul {
   margin-left: 1em !important;
   list-style-type: square;
 }
-
 ul ul {
   list-style-type: circle;
 }
-
 ul ul ul {
   list-style-type: disc;
 }
 
 /* disable list style type for CSS3-enabled clients */
-body:first-of-type ul,
-body:first-of-type ul ul,
+body:first-of-type ul {
+  list-style-type: none;
+}
+body:first-of-type ul ul {
+  list-style-type: none;
+}
 body:first-of-type ul ul ul {
   list-style-type: none;
 }
@@ -452,40 +435,33 @@ ul > li::before {
   /* guarantee it's out of the flow */
   width: 0;
   display: block;
-}
-
-ul > li::before {
-  content: "\25AA"; /* small black square */
+  content: "▪";
+  /* small black square */
   color: #666665;
 }
-
 ul ul > li::before {
-  content: "\25E6"; /* small white circle */
+  content: "◦";
+  /* small white circle */
   color: #57AD68;
 }
-
 ul ul ul > li::before {
-  content: "\2022"; /* small black circle */
+  content: "•";
+  /* small black circle */
   color: #666665;
 }
-
 ul ul ul ul > li::before {
-  content: "\25AB"; /* small white square */
+  content: "▫";
+  /* small white square */
   color: #57AD68;
 }
 
 ol {
   margin-left: 1.75em !important;
-}
-
-ol {
   list-style-type: decimal;
 }
-
 ol ol {
   list-style-type: lower-alpha;
 }
-
 ol ol ol {
   list-style-type: lower-roman;
 }
@@ -501,76 +477,76 @@ li > span.principal, dd > span.principal {
   text-align: justify;
 }
 
-ol.brief > li > span.principal,
-ul.brief > li > span.principal {
+ol.brief > li > span.principal {
+  text-align: left;
+}
+
+ul.brief > li > span.principal, ul.bibliography > li > span.principal, ul.references > li > span.principal {
   text-align: left;
 }
 
 /* REVIEW still considering keeping this one */
 /* disable justify within a link */
-/*
-li strong.subject a:link {
-  white-space: pre-wrap;
-  word-spacing: 0.1em;
-}*/
-
-/*
-.bibliography ul li,
-.references ul li {
-  text-align: left;
-}
-*/
-
-ul.bibliography > li > span.principal,
-ul.references > li > span.principal {
-  text-align: left;
-}
-
+/*li strong.subject a:link {
+ *  white-space: pre-wrap;
+ *  word-spacing: 0.1em;
+ *} */
+/*.bibliography ul li,
+ *.references ul li {
+ *  text-align: left;
+ *} */
 /* sized based on the major third modular scale (4:5, 16px, 24px) */
 h1, h2 {
   color: #333332;
   font-size: 1.5em;
   word-spacing: -0.075em;
-  margin-top: 1em; /* 1.5rem */
-  margin-bottom: -0.3333em; /* -0.5rem, 0.5rem to content */
+  margin-top: 1em;
+  /* 1.5rem */
+  margin-bottom: -0.3333em;
+  /* -0.5rem, 0.5rem to content */
 }
 
 h3 {
   color: #333332;
   font-size: 1.25em;
-  margin-top: 0.84em; /* 1.05rem */
-  margin-bottom: -0.5em; /* -0.625rem, 0.375rem to content */
+  margin-top: 0.84em;
+  /* 1.05rem */
+  margin-bottom: -0.5em;
+  /* -0.625rem, 0.375rem to content */
 }
 
 h4 {
   color: #4F4F4C;
   font-weight: 200;
-
   font-size: 1.1em;
-  margin-top: 1em; /* 1.1rem */
-  margin-bottom: -0.818em; /* -0.9rem, 0.1rem to content */
-
+  margin-top: 1em;
+  /* 1.1rem */
+  margin-bottom: -0.818em;
+  /* -0.9rem, 0.1rem to content */
   font-size: 1.2em;
-  margin-top: .917em; /* 1.1rem */
-  margin-top: 0.875em; /* 1.05rem */
-  /*margin-bottom: -0.75em;*/ /* -0.9rem, 0.1rem to content */
-  margin-bottom: -0.625em; /* -0.75rem, 0.25rem to content */
+  margin-top: 0.917em;
+  /* 1.1rem */
+  margin-top: 0.875em;
+  /* 1.05rem */
+  /*margin-bottom: -0.75em; */
+  /* -0.9rem, 0.1rem to content */
+  margin-bottom: -0.625em;
+  /* -0.75rem, 0.25rem to content */
 }
 
 h5 {
   color: #666665;
-  /*
-  font-size: 1em;
-  text-transform: uppercase;
-  margin-top: 1em;
-  margin-bottom: -1em;
-  */
-
+  /*font-size: 1em;
+   *text-transform: uppercase;
+   *margin-top: 1em;
+   *margin-bottom: -1em; */
   font-size: 0.9em;
   font-weight: 700;
   text-transform: uppercase;
-  margin-top: 1.11em; /* 1rem */
-  margin-bottom: -0.972em; /* -0.875rem */
+  margin-top: 1.11em;
+  /* 1rem */
+  margin-bottom: -0.972em;
+  /* -0.875rem */
 }
 
 h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
@@ -585,41 +561,42 @@ h5 code {
 .chapter-header {
   background-color: #333332;
   /* NOTE div must have at least 1px top padding for background to fill */
-  padding: 0.75em 1.5em 0.25em 1.5em; /* would like to use 1.5vh 1.5em */
+  padding: 0.75em 1.5em 0.25em 1.5em;
+  /* would like to use 1.5vh 1.5em */
   margin-bottom: 2.5em;
   /* TODO maybe what we need to get articles to start in left column
-  -webkit-column-break-before: left;
-  page-break-before: left;
-  */
+   *-webkit-column-break-before: left;
+   *page-break-before: left; */
 }
 
 h1.chapter-title {
   font-weight: 200;
   font-size: 1.2em;
-  margin-top: 3.5em; /* 4.2rem - would like to use 9vh */
+  margin-top: 3.5em;
+  /* 4.2rem - would like to use 9vh */
   margin-bottom: 0;
-  padding-bottom: 0.8333em; /* 1.2rem */
+  padding-bottom: 0.8333em;
+  /* 1.2rem */
   color: #B3B3B1;
   text-transform: uppercase;
   word-spacing: -0.075em;
   letter-spacing: -0.01em;
   border-bottom: 1px solid #DCDCDE;
 }
-
 h1.chapter-title .subtitle {
   font-weight: 400;
   color: #FFFFFF;
   display: block;
   font-size: 1.5em;
-  margin: 0 0 0 0.75em; /* would like to use 2vw */
-  line-height: 1.2; /* line-height will remain 1.4 on Kindle, see hack in media query */
+  margin: 0 0 0 0.75em;
+  /* would like to use 2vw */
+  line-height: 1.2;
+  /* line-height will remain 1.4 on Kindle, see hack in media query */
 }
-
 h1.chapter-title em {
   color: #57AD68;
   font-style: normal;
 }
-
 h1.chapter-title b {
   font-weight: inherit;
 }
@@ -634,14 +611,14 @@ h1.chapter-title b {
   margin-top: 0;
   line-height: 2;
 }
-
 .chapter-header p.byline b {
   font-weight: normal;
-  padding-left: 0.2em; /* 0.25rem */
+  padding-left: 0.2em;
+  /* 0.25rem */
   font-size: 0.8em;
-  line-height: 2.5; /* 2rem */
+  line-height: 2.5;
+  /* 2rem */
 }
-
 .chapter-header p.byline img {
   -webkit-border-radius: 0.5em;
   border-radius: 0.5em;
@@ -654,19 +631,17 @@ h1.chapter-title b {
 div.abstract {
   margin: 5% 1.5em 2.5em 1.5em;
 }
-
 div.abstract > p {
   color: #666665;
-  font-size: 1.05em; /* or 1.1em? */
+  font-size: 1.05em;
+  /* or 1.1em? */
   line-height: 1.75;
 }
-
 div.abstract > p a:link {
   color: #666665;
   /* hack for font color in iBooks */
   -webkit-text-fill-color: #666665;
 }
-
 div.abstract > p:first-child::first-line {
   font-weight: bold;
   -webkit-font-feature-settings: "kern" off;
@@ -675,7 +650,6 @@ div.abstract > p:first-child::first-line {
   /* and for Kindle... */
   text-rendering: optimizeSpeed;
 }
-
 div.abstract p strong {
   font-weight: inherit;
   font-style: italic;
@@ -689,55 +663,44 @@ p.lead {
 hr.thematicbreak {
   display: none;
 }
-
 hr.thematicbreak + p {
   margin-top: 1.5em;
 }
-
-/* TODO finish layout of first-letter */
 hr.thematicbreak + p::first-letter {
   font-size: 200%;
 }
 
-p.stack > strong.head,
-p.stack-head > strong.head {
+/* TODO finish layout of first-letter */
+p.stack > strong.head, p.stack-head > strong.head {
   display: block;
 }
-
 p.signature {
   font-size: 0.9em;
 }
 
-figure,
-aside.sidebar {
+figure, aside.sidebar {
   margin-top: 1em;
 }
 
-/*
-aside.sidebar {
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-  float: left;
-  margin-bottom: 1em;
-}
-*/
-
+/*aside.sidebar {
+ *  -webkit-column-break-inside: avoid;
+ *  page-break-inside: avoid;
+ *  float: left;
+ *  margin-bottom: 1em;
+ *} */
 figure.image {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
 }
-
 figure.image img {
   max-width: 100%;
 }
-
 figure.coalesce {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
 }
 
-figcaption,
-caption {
+figcaption, caption {
   font-size: 0.9em;
   font-style: italic;
   color: #666665;
@@ -757,216 +720,195 @@ figure.image figcaption {
   page-break-after: auto;
 }
 
-p + figure.listing,
-span.principal + figure.listing {
-  margin-top: 0.75em; /* 0.75rem */
+p + figure.listing, span.principal + figure.listing {
+  margin-top: 0.75em;
+  /* 0.75rem */
 }
 
 figure.listing > pre {
   margin-top: 0;
 }
-
-/* REVIEW TODO put margin bottom on the figcaption instead */
 figure.listing > figcaption + pre {
-  margin-top: 0.294em; /* 0.25rem */
+  margin-top: 0.294em;
+  /* 0.25rem */
 }
 
+/* REVIEW TODO put margin bottom on the figcaption instead */
 aside.sidebar {
   border: 1px solid #B3B3B1;
   padding: 0 1.5em;
   font-size: 0.9em;
   background-color: #F2F2F2;
-  text-align: right; /* aligns heading to right */
-  /*
-  -webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.15);
-  box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.15);
-  */
+  text-align: right;
+  /* aligns heading to right */
+  /*-webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.15);
+   *box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.15); */
 }
 
 body:first-of-type aside.sidebar {
-  background-color: rgba(0, 0, 0, 0.05); /* using transparency is night-mode friendly */
-  /*background-color: rgba(51, 51, 50, 0.06);*/ /* using transparency is night-mode friendly */
+  background-color: rgba(0, 0, 0, 0.05);
+  /* using transparency is night-mode friendly */
+  /*background-color: rgba(51, 51, 50, 0.06); */
+  /* using transparency is night-mode friendly */
 }
 
 /* a bit of a cheat; could use aside.sidebar[title] instead, but not on Aldiko */
 aside.sidebar.titled {
   margin-top: 2em;
 }
-
 aside.sidebar > h2 {
-  /*text-transform: uppercase;*/ /* uppercase done manually to support Aldiko */
+  /*text-transform: uppercase; */
+  /* uppercase done manually to support Aldiko */
   font-size: 1em;
-  /*
-  font-weight: 700;
-  */
+  /*font-weight: 700; */
   font-weight: 400;
   letter-spacing: 0;
   display: inline-block;
-  white-space: nowrap; /* for some reason it's wrapping prematurely */
+  white-space: nowrap;
+  /* for some reason it's wrapping prematurely */
   border: 1px solid #B3B3B1;
-  padding: 1.5em .75em .5em .75em;
+  padding: 1.5em 0.75em 0.5em 0.75em;
   margin: -1em 0.5em -0.25em 0.5em;
   background-color: #FFFFFF;
-  /*
-  -webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
-  box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
-  */
+  /*-webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
+   *box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1); */
 }
-
-/* doesn't work
-body:first-of-type aside.sidebar > h2 {
-  background-color: rgba(255, 255, 255, 1);
-}
-*/
-
 aside.sidebar > div.content {
   margin-bottom: 1em;
-  text-align: justify; /* restore text alignment in content */
+  text-align: justify;
+  /* restore text alignment in content */
 }
-
-/* QUESTION same for ordered-list? */
 aside.sidebar > div.content > div.itemized-list > ul {
   margin-left: 0.5em !important;
 }
 
+/* doesn't work
+ *body:first-of-type aside.sidebar > h2 {
+ *  background-color: rgba(255, 255, 255, 1);
+ *} */
+/* QUESTION same for ordered-list? */
 div.blockquote {
   padding: 0 1em;
   margin: 1.25em auto;
 }
-
-/* display: table causes quotes to be repeated in Aldiko, so we hide this part */
 div[class~="blockquote"] {
   display: table;
 }
 
+/* display: table causes quotes to be repeated in Aldiko, so we hide this part */
 blockquote > p {
   color: #191918;
   font-style: italic;
-
-  /*
-  font-size: 1.2em;
-  word-spacing: 0.1em;
-  */
-
+  /*font-size: 1.2em;
+   *word-spacing: 0.1em; */
   font-size: 1.15em;
   word-spacing: 0.1em;
-
   margin-top: 0;
   line-height: 1.75;
 }
-
-/* hide explicit open quote for CSS3-enabled clients */
 blockquote span.open-quote:not(:empty) {
   display: none;
 }
-
-/* NOTE if we mapped the font icon to "\201c", we could just style the .open-quote */
 blockquote > p:first-of-type::before {
   display: inline-block;
   color: #666665;
   text-shadow: 0 1px 2px rgba(102, 102, 101, 0.3);
-
   /* using serif quote from entypo */
   font-family: "FontIcons";
-
-  /*content: "\f10e";*/ /* quote-right from Entypo */
-  /*
-  -webkit-transform: rotate(180deg);
-  transform: rotate(180deg);
-  padding-left: .3em;
-  padding-right: .2em;
-  */
-
-  content: "\f10d"; /* quote-left, a flipped version of the quote-right from Entypo */
-  padding-right: .5em;
+  /*content: "\f10e"; */
+  /* quote-right from Entypo */
+  /*-webkit-transform: rotate(180deg);
+   *transform: rotate(180deg);
+   *padding-left: .3em;
+   *padding-right: .2em; */
+  content: "";
+  /* quote-left, a flipped version of the quote-right from Entypo */
+  padding-right: 0.5em;
   font-size: 1.5em;
   line-height: 1.3;
   margin-top: -0.5em;
   vertical-align: text-bottom;
 }
-
 blockquote footer {
   font-size: 0.9em;
   font-style: italic;
-
   margin-top: 0.5rem;
   text-align: right;
 }
-
 blockquote footer .context {
   font-size: 0.9em;
   letter-spacing: -0.05em;
   color: #666665;
 }
 
+/* hide explicit open quote for CSS3-enabled clients */
+/* NOTE if we mapped the font icon to "\201c", we could just style the .open-quote */
 /* Kindle requires text-align: center on surrounding div to align image to center */
 figure.image div.content {
   text-align: center;
 }
-
-/* in the event the viewer adds display: block to the image */
 figure.image img {
   /* max-width not supported in Kindle, need to use a media query to add */
-  /*max-width: 95%;*/
+  /*max-width: 95%; */
   margin: 0 auto;
 }
 
+/* in the event the viewer adds display: block to the image */
 pre {
-  text-align: left; /* fix for Namo */
-  margin-top: 1em; /* 0.85rem */
-  /*margin-top: 1.176em;*/ /* 1rem */
+  text-align: left;
+  /* fix for Namo */
+  margin-top: 1em;
+  /* 0.85rem */
+  /*margin-top: 1.176em; */
+  /* 1rem */
   white-space: pre-wrap;
-  overflow-wrap: break-word; /* break in middle of long word if no other break opportunities are available */
+  overflow-wrap: break-word;
+  /* break in middle of long word if no other break opportunities are available */
   font-size: 0.85em;
-  line-height: 1.4; /* matches what Kindle uses and can't go less */
+  line-height: 1.4;
   background-color: #F2F2F2;
   padding: 0.5rem 0.75rem;
-  /*
-  border-top: 3px solid #DCDCDE;
-  */
-  /* QUESTION #B3B3B1? */
   border-top: 1px solid #DCDCDE;
   border-right: 1px solid #DCDCDE;
 }
 
 body:first-of-type pre {
-  background-color: rgba(0, 0, 0, 0.05); /* using transparency is night-mode friendly */
-  /*background-color: rgba(51, 51, 50, 0.06);*/ /* using transparency is night-mode friendly */
+  background-color: rgba(0, 0, 0, 0.05);
+  /* using transparency is night-mode friendly */
+  /*background-color: rgba(51, 51, 50, 0.06); */
+  /* using transparency is night-mode friendly */
 }
 
 /* TODO what we really want is for pre w/o caption to be unbreakable */
 pre.screen {
-  /*
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-  */
+  /*-webkit-column-break-inside: avoid;
+   *page-break-inside: avoid; */
   orphans: 3;
-  widows: 3; /* widows doesn't seem to work here */
+  widows: 3;
+  /* widows doesn't seem to work here */
 }
-
 pre.source {
   orphans: 3;
-  widows: 3; /* widows doesn't seem to work here */
+  widows: 3;
+  /* widows doesn't seem to work here */
 }
 
 div.verse {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
 }
-
-/* TODO we may want to reenable hyphens here, but not for kf8 */
 div.verse > pre {
   background-color: transparent;
   border: none;
   font-size: 1.2em;
   text-align: center;
 }
-
 div.verse .attribution {
   display: block;
   margin-top: 1.4em;
 }
 
+/* TODO we may want to reenable hyphens here, but not for kf8 */
 aside.admonition {
   margin-top: 1em;
   padding: 1em;
@@ -974,40 +916,38 @@ aside.admonition {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
 }
-
-/* overrides for CSS3-enabled clients */
 aside[class~="admonition"] {
-  margin: 1.5em 2em; /* even if admonition is at bottom of block, we want that extra space below */
+  margin: 1.5em 2em;
+  /* even if admonition is at bottom of block, we want that extra space below */
   padding: 0;
   border-width: 0;
   background: none !important;
 }
-
 aside.note {
   border-left-color: #FFC14F;
-  background-color: #FFF0D4; /* 25% opacity of border */
+  background-color: #FFF0D4;
+  /* 25% opacity of border */
 }
-
 aside.tip {
   border-left-color: #40403E;
-  background-color: #D0D0CF; /* 25% opacity of border */
+  background-color: #D0D0CF;
+  /* 25% opacity of border */
 }
-
 aside.caution {
   border-left-color: #7F7F7D;
-  background-color: #DFDFDF; /* 25% opacity of border */
+  background-color: #DFDFDF;
+  /* 25% opacity of border */
 }
-
 aside.warning {
   border-left-color: #C83737;
-  background-color: #F1CECE; /* 25% opacity of border */
+  background-color: #F1CECE;
+  /* 25% opacity of border */
 }
-
 aside.important {
   border-left-color: #F2642A;
-  background-color: #FCD9CA; /* 25% opacity of border */
+  background-color: #FCD9CA;
+  /* 25% opacity of border */
 }
-
 aside.admonition::before {
   display: block;
   font-family: "FontAwesome";
@@ -1019,12 +959,11 @@ aside.admonition::before {
   margin-left: -0.5em;
   text-shadow: 0px 1px 1px rgba(102, 102, 101, 0.15);
 }
-
 aside.admonition > div.content {
   font-size: 90%;
-  margin-top: -1em; /* prevent at top of content when using block form of admonition */
+  margin-top: -1em;
+  /* prevent at top of content when using block form of admonition */
 }
-
 aside[class~="admonition"] > div[class~="content"] {
   margin-top: 0;
   padding-bottom: 1em;
@@ -1032,68 +971,60 @@ aside[class~="admonition"] > div[class~="content"] {
   background-repeat: no-repeat;
   background-position: 0 bottom;
   /* template
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, <color> 45%, <color> 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, <color> 45%, <color> 55%, rgba(255,255,255,0) 57.5%);
-  */
+   *background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, <color> 45%, <color> 55%, rgba(255,255,255,0) 57.5%);
+   *background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, <color> 45%, <color> 55%, rgba(255,255,255,0) 57.5%); */
 }
-
 aside.note::before {
-  content: "\f040"; /* fa-pencil */
+  content: "";
+  /* fa-pencil */
   color: #FFC14F;
 }
-
 aside[class~="note"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%);
 }
-
 aside.tip::before {
-  content: "\f0eb"; /* fa-lightbulb-o */
+  content: "";
+  /* fa-lightbulb-o */
   color: #40403E;
 }
-
 aside[class~="tip"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%);
 }
-
 aside.caution::before {
-  content: "\f0c2"; /* fa-cloud */
+  content: "";
+  /* fa-cloud */
   color: #7F7F7D;
 }
-
 aside[class~="caution"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%);
 }
-
 aside.warning::before {
-  content: "\f0e7"; /* fa-bolt */
+  content: "";
+  /* fa-bolt */
   color: #C83737;
 }
-
 aside[class~="warning"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #C83737 45%, #C83737 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #C83737 45%, #C83737 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%);
 }
-
 aside.important::before {
-  content: "\f12a"; /* fa-exclamation */
+  content: "";
+  /* fa-exclamation */
   color: #F2642A;
 }
-
 aside[class~="important"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%);
 }
-
 aside.admonition > h2 {
   margin-top: 0;
   margin-bottom: 1.5em;
   font-size: 1em;
   text-align: center;
 }
-
 aside[class~="admonition"] > h2 {
   float: left;
   width: 100%;
@@ -1101,22 +1032,18 @@ aside[class~="admonition"] > h2 {
   margin-bottom: 0;
 }
 
+/* overrides for CSS3-enabled clients */
 div.table {
   margin-top: 1em;
 }
 
-table.table thead,
-table.table tbody,
-table.table tfoot {
+table.table thead, table.table tbody, table.table tfoot {
   font-size: 0.8em;
 }
-
 table.table > caption {
   padding-bottom: 0.1em;
 }
-
-table.table th,
-table.table td {
+table.table th, table.table td {
   line-height: 1.4;
   padding: 0.5em 0.5em 1em 0.1em;
   vertical-align: top;
@@ -1124,98 +1051,76 @@ table.table td {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
 }
-
 table.table th {
   font-weight: bold;
 }
-
 table.table thead th {
   border-bottom: 1px solid #80807F;
 }
-
-table.table td > p,
-table.table div.embed > * {
+table.table td > p, table.table div.embed > * {
   margin-top: 0;
 }
-
 table.table td > p {
   text-align: left;
 }
-
-/* REVIEW */
-table.table td > p + p,
+table.table td > p + p {
+  margin-top: 1em;
+}
 table.table div.embed > * + * {
   margin-top: 1em;
 }
-
 table.table-framed {
   border-width: 1px;
   border-style: solid;
   border-color: #80807F;
 }
-
 table.table-framed-topbot {
   border-width: 1px 0;
   border-style: solid;
   border-color: #80807F;
 }
-
 table.table-framed-sides {
   border-width: 0 1px;
   border-style: solid;
   border-color: #80807F;
 }
-
-table.table-grid th,
-table.table-grid td {
+table.table-grid th, table.table-grid td {
   border-width: 0 1px 1px 0;
   border-style: solid;
   border-color: #80807F;
 }
-
 table.table-grid thead tr > *:last-child {
   border-right-width: 0;
 }
-
-table.table-grid tbody tr:last-child > th,
-table.table-grid tbody tr:last-child > td {
+table.table-grid tbody tr:last-child > th, table.table-grid tbody tr:last-child > td {
   border-bottom-width: 0;
 }
-
-table.table-grid-rows tbody th,
-table.table-grid-rows tbody td {
+table.table-grid-rows tbody th, table.table-grid-rows tbody td {
   border-width: 1px 0 0 0;
   border-style: solid;
   border-color: #80807F;
 }
-
-table.table-grid-cols th,
-table.table-grid-cols td {
+table.table-grid-cols th, table.table-grid-cols td {
   border-width: 0 1px 0 0;
   border-style: solid;
   border-color: #80807F;
 }
-
-table.table-grid-cols thead th:last-child {
+table.table-grid-cols thead th:last-child, table.table-grid-cols tbody tr > td:last-child {
   border-right-width: 0;
 }
 
-table.table-grid-cols tbody tr > td:last-child {
-  border-right-width: 0;
-}
-
+/* REVIEW */
 hr.pagebreak {
   -webkit-column-break-after: always;
   page-break-after: always;
   border: none;
   margin: 0;
 }
-
-/* REVIEW */
 hr.pagebreak + * {
   margin-top: 0 !important;
 }
 
+/* REVIEW */
 #_about_the_author {
   -webkit-column-break-before: always;
   page-break-before: always;
@@ -1240,18 +1145,16 @@ img.headshot {
 div.footnotes {
   margin-top: 1em;
 }
-
 div.footnotes p {
   font-size: 0.8rem;
   margin-top: 0.4rem;
 }
-
 div.footnotes sup.noteref {
   font-weight: bold;
   font-size: 0.9em;
 }
 
-/*div.footnotes sup.noteref a {*/
+/*div.footnotes sup.noteref a { */
 sup.noteref a {
   /* Kindle wants to underline these links */
   text-decoration: none !important;
@@ -1268,13 +1171,22 @@ nav#toc ol {
 
 @media amzn-mobi {
   /* NOTE mobi7 doesn't support custom fonts, so revert to generic ones */
-  body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,
-  table.table th, table.table td, div.verse .attribution {
+  body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer {
     font-family: serif;
   }
+
+  table.table th, table.table td {
+    font-family: serif;
+  }
+
+  div.verse .attribution {
+    font-family: serif;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: sans-serif;
   }
+
   code, kbd, pre, i.conum {
     font-family: monospace;
   }

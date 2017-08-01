@@ -34,6 +34,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.extra_rdoc_files = ['CHANGELOG.adoc', 'LICENSE.adoc', 'NOTICE.adoc', 'README.adoc']
 
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'compass'
   #s.add_development_dependency 'rdoc', '~> 4.1.0'
 
   s.add_runtime_dependency 'asciidoctor', '~> 1.5.0'
