@@ -194,8 +194,8 @@ body
   &:first-of-type a:link
     border-bottom: none
     background-repeat: no-repeat
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%)
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%)
+    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255, 255, 255, 0) 100%)
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255, 255, 255, 0) 100%)
     background-size: 100% 1px
     background-position: 0 1.2em
 
@@ -979,8 +979,6 @@ div.verse
     display: block
     margin-top: 1.4em
 
-// TODO use color vars below
-
 /* TODO we may want to reenable hyphens here, but not for kf8
 
 aside
@@ -1000,32 +998,32 @@ aside
     background: none !important
 
   &.note
-    border-left-color: #FFC14F
-    background-color: #FFF0D4
+    border-left-color: $note-border
+    background-color: $note-background
 
     /* 25% opacity of border
 
   &.tip
-    border-left-color: #40403E
-    background-color: #D0D0CF
+    border-left-color: $tip-border
+    background-color: $tip-background
 
     /* 25% opacity of border
 
   &.caution
-    border-left-color: #7F7F7D
-    background-color: #DFDFDF
+    border-left-color: $caution-border
+    background-color: $caution-background
 
     /* 25% opacity of border
 
   &.warning
-    border-left-color: #C83737
-    background-color: #F1CECE
+    border-left-color: $warning-border
+    background-color: $warning-background
 
     /* 25% opacity of border
 
   &.important
-    border-left-color: #F2642A
-    background-color: #FCD9CA
+    border-left-color: $important-border
+    background-color: $important-background
 
     /* 25% opacity of border
 
@@ -1062,51 +1060,51 @@ aside
     content: "\f040"
 
     /* fa-pencil
-    color: #FFC14F
+    color: $note-border
 
   &[class~="note"] > div[class~="content"]
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%)
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $note-border 45%, $note-border 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $note-border 45%, $note-border 55%, rgba(255, 255, 255, 0) 57.5%)
 
   &.tip::before
     content: "\f0eb"
 
     /* fa-lightbulb-o
-    color: #40403E
+    color: $tip-border
 
   &[class~="tip"] > div[class~="content"]
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%)
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $tip-border 45%, $tip-border 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $tip-border 45%, $tip-border 55%, rgba(255, 255, 255, 0) 57.5%)
 
   &.caution::before
     content: "\f0c2"
 
     /* fa-cloud
-    color: #7F7F7D
+    color: $caution-border
 
   &[class~="caution"] > div[class~="content"]
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%)
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $caution-border 45%, $caution-border 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $caution-border 45%, $caution-border 55%, rgba(255, 255, 255, 0) 57.5%)
 
   &.warning::before
     content: "\f0e7"
 
     /* fa-bolt
-    color: #C83737
+    color: $warning-border
 
   &[class~="warning"] > div[class~="content"]
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%)
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $warning-border 45%, $warning-border 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $warning-border 45%, $warning-border 55%, rgba(255, 255, 255, 0) 57.5%)
 
   &.important::before
     content: "\f12a"
 
     /* fa-exclamation
-    color: #F2642A
+    color: $important-border
 
   &[class~="important"] > div[class~="content"]
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%)
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $important-border 45%, $important-border 55%, rgba(255, 255, 255, 0) 57.5%)
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $important-border 45%, $important-border 55%, rgba(255, 255, 255, 0) 57.5%)
 
   &.admonition > h2
     margin-top: 0
@@ -1145,7 +1143,7 @@ table
       font-weight: bold
 
     thead th
-      border-bottom: 1px solid #80807F
+      border-bottom: 1px solid $table-border
 
     td > p, div.embed > *
       margin-top: 0
@@ -1162,23 +1160,23 @@ table
   &.table-framed
     border-width: 1px
     border-style: solid
-    border-color: #80807F
+    border-color: $table-border
 
   &.table-framed-topbot
     border-width: 1px 0
     border-style: solid
-    border-color: #80807F
+    border-color: $table-border
 
   &.table-framed-sides
     border-width: 0 1px
     border-style: solid
-    border-color: #80807F
+    border-color: $table-border
 
   &.table-grid
     th, td
       border-width: 0 1px 1px 0
       border-style: solid
-      border-color: #80807F
+      border-color: $table-border
 
     thead tr > *:last-child
       border-right-width: 0
@@ -1191,13 +1189,13 @@ table
     th, td
       border-width: 1px 0 0 0
       border-style: solid
-      border-color: #80807F
+      border-color: $table-border
 
   &.table-grid-cols
     th, td
       border-width: 0 1px 0 0
       border-style: solid
-      border-color: #80807F
+      border-color: $table-border
 
     thead th:last-child, tbody tr > td:last-child
       border-right-width: 0
@@ -1218,11 +1216,11 @@ hr.pagebreak
 #_about_the_author
   -webkit-column-break-before: always
   page-break-before: always
-  border-bottom: 1px solid #B3B3B3
+  border-bottom: 1px solid $about-author-border
 
 img.headshot
   float: left
-  border: 1px solid #80807F
+  border: 1px solid $headshot-border
   padding: 1px
   margin: 0.35em 1em 0.15em 0
   height: 5em !important
