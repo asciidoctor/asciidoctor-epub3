@@ -58,8 +58,6 @@ class ContentConverter
 
   XmlElementRx = /<\/?.+?>/
   CharEntityRx = /&#(\d{2,6});/
-  NamedEntityRx = /&([A-Z]+);/
-  UppercaseTagRx = /<(\/)?([A-Z]+)>/
 
   FromHtmlSpecialCharsMap = {
     '&lt;' => '<',
@@ -102,20 +100,15 @@ class ContentConverter
 
     if (doctitle = node.doctitle partition: true, sanitize: true, use_fallback: true).subtitle?
       title = doctitle.main
-      title_upper = title.upcase
       subtitle = doctitle.subtitle
     else
       # HACK until we get proper handling of title-only in CSS
-      title = title_upper = ''
+      title = ''
       subtitle = doctitle.combined
     end
 
     doctitle_sanitized = doctitle.combined
     subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
-    # FIXME use uppercase pcdata helper to make less fragile (see logic in Asciidoctor PDF)
-    subtitle_formatted_upper = subtitle_formatted.upcase
-        .gsub(UppercaseTagRx) { %(<#{$1}#{$2.downcase}>) }
-        .gsub(NamedEntityRx) { %(&#{$1.downcase};) }
 
     if (node.attr 'publication-type', 'book') == 'book'
       byline = nil
@@ -171,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
 #{icon_css_scoped}<header>
 <div class="chapter-header">
-#{byline}<h1 class="chapter-title">#{title_upper}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted_upper}</small>] : nil}</h1>
+#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted}</small>] : nil}</h1>
 </div>
 </header>
 #{content})]
@@ -401,9 +394,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       title = node.title
       title_sanitized = xml_sanitize title
       title_attr = %( title="#{title_sanitized}")
-      # FIXME use uppercase pcdata helper to make less fragile (see logic in Asciidoctor PDF)
-      title_upper = title.upcase.gsub(NamedEntityRx) { %(&#{$1.downcase};) }
-      title_el = %(<h2>#{title_upper}</h2>
+      title_el = %(<h2>#{title}</h2>
 )
     else
       title_attr = nil

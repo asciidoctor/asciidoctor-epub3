@@ -568,7 +568,7 @@ h5 {
 
   font-size: 0.9em;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: uppercase; /* not supported in Adobe Digital Editions */
   margin-top: 1.11em; /* 1rem */
   margin-bottom: -0.972em; /* -0.875rem */
 }
@@ -600,7 +600,7 @@ h1.chapter-title {
   margin-bottom: 0;
   padding-bottom: 0.8333em; /* 1.2rem */
   color: #B3B3B1;
-  text-transform: uppercase;
+  text-transform: uppercase; /* not supported in Adobe Digital Editions */
   word-spacing: -0.075em;
   letter-spacing: -0.01em;
   border-bottom: 1px solid #DCDCDE;
@@ -794,7 +794,7 @@ aside.sidebar.titled {
 }
 
 aside.sidebar > h2 {
-  /*text-transform: uppercase;*/ /* uppercase done manually to support Aldiko */
+  text-transform: uppercase; /* not supported in Adobe Digital Editions */
   font-size: 1em;
   /*
   font-weight: 700;
