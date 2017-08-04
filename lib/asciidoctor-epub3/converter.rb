@@ -1,4 +1,4 @@
-# encoding: UTF-8
+# encoding: utf-8
 require_relative 'spine_item_processor'
 require_relative 'font_icon_map'
 
@@ -415,14 +415,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     frame_class = {
       'all' => 'table-framed',
       'topbot' => 'table-framed-topbot',
-      'sides' => 'table-framed-sides'
+      'sides' => 'table-framed-sides',
+      'none' => ''
     }
     grid_class = {
       'all' => 'table-grid',
       'rows' => 'table-grid-rows',
-      'cols' => 'table-grid-cols'
+      'cols' => 'table-grid-cols',
+      'none' => ''
     }
-    table_classes = %W(table #{frame_class[(node.attr 'frame')] || frame_class['topbot']} #{grid_class[(node.attr 'grid')] || grid_class['rows']})
+    table_classes = %W(table #{frame_class[node.attr 'frame'] || frame_class['topbot']} #{grid_class[node.attr 'grid'] || grid_class['rows']})
     if (role = node.role)
       table_classes << role
     end
