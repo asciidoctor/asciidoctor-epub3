@@ -4,7 +4,11 @@ source 'https://rubygems.org'
 gemspec
 
 group :optional do
-  gem 'pygments.rb', '1.1.1'
-  gem 'kindlegen', '3.0.3'
+  gem 'pygments.rb', '1.1.2'
   gem 'epubcheck', '3.0.1'
+  if (ruby_version = Gem::Version.new RUBY_VERSION) < (Gem::Version.new '2.0.0')
+    gem 'kindlegen', '2.9.4'
+  else
+    gem 'kindlegen', '3.0.3'
+  end
 end
