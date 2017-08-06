@@ -1,0 +1,21 @@
+sudo: false
+git:
+  # use depth 2 just in case two refs get pushed at once (like a tag)
+  depth: 2
+language: ruby
+cache: bundler
+bundler_args: --path=.bundle/gems
+rvm:
+- &release_ruby 2.4.1
+- 2.0.0-p648
+- 1.9.3-p551
+script: bundle exec asciidoctor-epub3 -D . data/samples/sample-book.adoc
+deploy:
+  provider: rubygems
+  gem: asciidoctor-epub3
+  on:
+    tags: true
+    repo: asciidoctor/asciidoctor-epub3
+    rvm: *release_ruby
+  api_key:
+    secure: hLoN4ZYpguWdoFFB5xs3eeB9uCGheistDI3v0CJ0CU8hfdWXPXEkuvS0hftbE5KpSkCjgASxiH/s4jbB1n+Si8/3eAyTV9dUaXsTF2AAZT0TWDsBvkDBk4iBEAcQa7YdIqmKisU8dg/00kmtLkhGVCwPjpAGQOoLojvsre17hgs=
