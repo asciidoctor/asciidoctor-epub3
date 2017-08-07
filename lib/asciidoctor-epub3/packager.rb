@@ -407,7 +407,12 @@ body > svg {
   def select_fonts filename, scripts = 'latin'
     font_css = ::File.read(filename)
     font_css = font_css.gsub(/(?<=-)latin(?=\.ttf\))/, scripts) unless scripts == 'latin'
-    font_list = font_css.scan(/url\(\.\.\/(.+\.ttf)\);$/).flatten
+
+    # match CSS font urls in the forms of:
+    # src: url(../fonts/notoserif-regular-latin.ttf);
+    # src: url(../fonts/notoserif-regular-latin.ttf) format("truetype");
+    font_list = font_css.scan(/url\(\.\.\/(.+\.ttf)\)/).flatten
+
     return [font_list, font_css.to_ios]
   end
 
