@@ -423,7 +423,7 @@ body > svg {
     # match CSS font urls in the forms of:
     # src: url(../fonts/notoserif-regular-latin.ttf);
     # src: url(../fonts/notoserif-regular-latin.ttf) format("truetype");
-    font_list = font_css.scan(/url\(\.\.\/(.+\.ttf)\)/).flatten
+    font_list = font_css.scan(/url\(\.\.\/([^)]+\.ttf)\)/).flatten
 
     return [font_list, font_css.to_ios]
   end
