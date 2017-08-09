@@ -108,7 +108,6 @@ class ContentConverter
     end
 
     doctitle_sanitized = doctitle.combined
-    subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
 
     if (node.attr 'publication-type', 'book') == 'book'
       byline = nil
@@ -164,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
 #{icon_css_scoped}<header>
 <div class="chapter-header">
-#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted}</small>] : nil}</h1>
+#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %[ <small class="subtitle">#{subtitle}</small>] : nil}</h1>
 </div>
 </header>
 #{content})]
