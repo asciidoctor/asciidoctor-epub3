@@ -753,13 +753,15 @@ To see all of the workarounds and why we chose certain style options, check out 
 
 WARNING: Don't use it!
 
-The “Send to Kindle” feature, a convenient tool for transferring a MOBI file to a Kindle device, is utterly broken.
+https://www.amazon.com/gp/sendtokindle/[“Send to Kindle”] is a tempting choice for transferring MOBI files to a Kindle device.
+However, it's utterly broken.
+If you use this tool, don't be surprised if you see missing font-based icons, default fonts, and other font and style errors in your manuscript.
 It's known to strip out all the font files and break the encoding of the document.
 
-If you use this feature, don't be surprised if you see default fonts, missing font-based icons, and other font and style errors.
-We *strongly* recommend that you transfer the file to your device using other means, such as a USB cable or sync service like Dropbox.
+We *strongly* recommend you transfer the file to your device using either a USB cable or a sync service such as Dropbox.
+Whispersync will detect the new file (usually looking in the Books folder) and add it to the “On Device” library.
 
-It's also important to know that “Send to Kindle” is not indicative of the experience readers will have when shopping in the Kindle store.
+It's important to note that “Send to Kindle” is not reflective of the experience readers will have when shopping in the Kindle store.
 If you use Kindle Direct Publishing (KDP) to publish your book, the integrity of your book will be preserved (to the degree that Amazon allows).
 
 ////
