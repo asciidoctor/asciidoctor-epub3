@@ -121,7 +121,6 @@ kbd {
   font-size: 0.8em;
   line-height: 1;
   background-color: #f7f7f7;
-/* #FAFAFA */
   border: 1px solid #bebebc;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -911,10 +910,6 @@ pre {
 /* matches what Kindle uses and can't go less */
   background-color: #f2f2f2;
   padding: 0.5rem 0.75rem;
-/*
-  border-top: 3px solid #DCDCDE;
-  */
-/* QUESTION #B3B3B1? */
   border-top: 1px solid #dcdcde;
   border-right: 1px solid #dcdcde;
 }

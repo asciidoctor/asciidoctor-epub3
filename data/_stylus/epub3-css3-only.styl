@@ -1,6 +1,9 @@
+@require "includes"
+
 /* @page is for EPUB2 only */
 @page
   margin: 0
+
 body.calibre-desktop
   padding: 20pt 0 !important
 
@@ -52,7 +55,7 @@ h6 :not(code)
   /* !important required to override custom font setting in Kindle / Gitden / Namo */
   /* Gitden requires the extra weight of a parent selector; it also makes headings bold when custom font is specified */
   /* Kindle and Gitden require the override on heading child elements */
-  font-family: "M+ 1p", sans-serif !important
+  font-family: $header-font !important
 
 /* QUESTION what about nested elements inside code? */
 body code,
@@ -62,7 +65,7 @@ pre :not(code)
   /* !important required to override custom font setting in Kindle / Gitden / Namo */
   /* Gitden requires the extra weight of a parent selector */
   /* Kindle and Gitden require the override on pre child elements */
-  font-family: "M+ 1mn", monospace !important
+  font-family: $mono-font !important
 
 @media amzn-kf8
   /* Kindle does its own margin management, so don't use an explicit margin */

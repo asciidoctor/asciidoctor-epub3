@@ -1,4 +1,7 @@
 @import url("epub3-fonts.css")
+
+@require "includes"
+
 *,
 *:before,
 *:after
@@ -40,7 +43,7 @@ body
 
 /* disables night mode in Aldiko, hoo-ha! */
 html body
-  background-color: #FFFFFF
+  background-color: $body-background
 
 /* @page only applies to EPUB2 readers; not supported by EPUB3 readers such as Kindle and Gitden */
 @page
@@ -108,8 +111,8 @@ strong
 
 b.button
   font-weight: normal
-  text-shadow: 1px 0 0 #B3B3B1
-  color: #191918
+  text-shadow: 1px 0 0 $button-shadow
+  color: $button-text
   white-space: nowrap
 
 b.button .label
@@ -119,9 +122,8 @@ kbd
   display: inline-block
   font-size: 0.8em
   line-height: 1
-  background-color: #F7F7F7
-  /* #FAFAFA */
-  border: 1px solid #BEBEBC
+  background-color: $kbd-background
+  border: 1px solid $kbd-border
   -webkit-border-radius: 3px
   border-radius: 3px
   -webkit-box-shadow: 1px 1px 0 rgba(102, 102, 101, 0.25), 0 0 0 1px white inset
@@ -160,8 +162,8 @@ img
   border: 0
 
 mark
-  background-color: #FFC14F
-  color: #191918
+  background-color: $light-yellow
+  color: $mark-text
 
 small
   font-size: 80%
@@ -212,13 +214,13 @@ th
   padding: 0
 
 body a:link
-  color: #333332
+  color: $link-text
   /* hack for font color in iBooks and Gitden (though Gitden would accept color !important too) */
-  -webkit-text-fill-color: #333332
+  -webkit-text-fill-color: $link-text
   /* Kindle requires the !important on text-decoration */
   /* In night mode, the only indicator of a link is the underline, so we need it or a background image */
   text-decoration: none !important
-  border-bottom: 1px dashed #666665
+  border-bottom: 1px dashed $link-border
   /* allow URLs to break anywhere if they don't fit on a line; but how do we know it's a URL? */
   /*
   word-break: break-all;
@@ -227,15 +229,15 @@ body a:link
 body:first-of-type a:link
   border-bottom: none
   background-repeat: no-repeat
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, #666665 5%, #666665 95%, rgba(255,255,255,0) 100%)
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 0%, #666665 5%, #666665 95%, rgba(255,255,255,0) 100%)
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255,255,255,0) 100%)
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255,255,255,0) 100%)
   background-size: 100% 1px
   background-position: 0 1.2em
 
 body a:visited
-  color: #666665
+  color: $link-visited-text
   /* hack for font color in iBooks */
-  -webkit-text-fill-color: #666665
+  -webkit-text-fill-color: $link-visited-text
 
 code.literal
   /* don't let it affect line spacing */
@@ -252,7 +254,7 @@ h3,
 h4,
 h5,
 h6
-  font-family: "M+ 1p", sans-serif
+  font-family: $header-font
   font-weight: 400
   letter-spacing: -0.01em
   /* NOTE Kindle doesn't allow the line-height to be less than the font size (refer to heading font sizes) */
@@ -291,10 +293,10 @@ table.table th,
 table.table td,
 figcaption,
 caption
-  color: #333332
+  color: $body-text
   /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
   /* NOTE iBooks honors Original font for prose text if declared in display-options.xml */
-  font-family: "Noto Serif", serif
+  font-family: $body-font
 
 body p,
 li,
@@ -306,8 +308,8 @@ footer
 code,
 kbd,
 pre
-  color: #191918
-  font-family: "M+ 1mn", monospace
+  color: $pre-text
+  font-family: $mono-font
   -webkit-hyphens: none
   /* disable hyphenation where supported (e.g., iBooks) */
 
@@ -334,7 +336,7 @@ caption
   /* NOTE see Kindle hack in epub3-css3-only.css for additional kerning settings (disabled) */
 
 p.last::after
-  color: #57AD68
+  color: $last-mark-text
   display: inline-block
   font-family: "FontAwesome"
   font-size: 1em
@@ -397,8 +399,8 @@ div.callout-list ol li
   text-align: left
 
 i.conum
-  color: #468C54
-  font-family: "M+ 1mn", monospace
+  color: $i-conum-text
+  font-family: $mono-font
   font-style: normal
 
 /* don't let conum affect line spacing; REVIEW may not need this! */
@@ -433,7 +435,7 @@ div.description-list div.description-list {
 }*/
 h3.list-heading
   font-size: 1em
-  font-family: "Noto Serif", serif
+  font-family: $body-font
   font-weight: bold
   line-height: 1.6
   margin-top: 1em
@@ -473,22 +475,22 @@ ul > li::before
 ul > li::before
   content: "\25AA"
   /* small black square */
-  color: #666665
+  color: $list-lvl1
 
 ul ul > li::before
   content: "\25E6"
   /* small white circle */
-  color: #57AD68
+  color: $list-lvl2
 
 ul ul ul > li::before
   content: "\2022"
   /* small black circle */
-  color: #666665
+  color: $list-lvl3
 
 ul ul ul ul > li::before
   content: "\25AB"
   /* small white square */
-  color: #57AD68
+  color: $list-lvl4
 
 ol
   margin-left: 1.75em !important
@@ -536,7 +538,7 @@ ul.references > li > span.principal
 /* sized based on the major third modular scale (4:5, 16px, 24px) */
 h1,
 h2
-  color: #333332
+  color: $header-text
   font-size: 1.5em
   word-spacing: -0.075em
   margin-top: 1em
@@ -545,7 +547,7 @@ h2
   /* -0.5rem, 0.5rem to content */
 
 h3
-  color: #333332
+  color: $header-text
   font-size: 1.25em
   margin-top: 0.84em
   /* 1.05rem */
@@ -553,7 +555,7 @@ h3
   /* -0.625rem, 0.375rem to content */
 
 h4
-  color: #4F4F4C
+  color: $h4-header-text
   font-weight: 200
   font-size: 1.1em
   margin-top: 1em
@@ -571,7 +573,7 @@ h4
   /* -0.75rem, 0.25rem to content */
 
 h5
-  color: #666665
+  color: $h5-header-text
   /*
   font-size: 1em;
   text-transform: uppercase;
@@ -600,7 +602,7 @@ h5 code
 
 /* Kindle strips (or unwraps) <header> tags, so we use an inner div to style */
 .chapter-header
-  background-color: #333332
+  background-color: $chapter-header-background
   /* NOTE div must have at least 1px top padding for background to fill */
   padding: 0.75em 1.5em 0.25em 1.5em
   /* would like to use 1.5vh 1.5em */
@@ -618,16 +620,16 @@ h1.chapter-title
   margin-bottom: 0
   padding-bottom: 0.8333em
   /* 1.2rem */
-  color: #B3B3B1
+  color: $chapter-header-title-text
   text-transform: uppercase
   /* not supported in Adobe Digital Editions */
   word-spacing: -0.075em
   letter-spacing: -0.01em
-  border-bottom: 1px solid #DCDCDE
+  border-bottom: 1px solid $chapter-header-title-border
 
 h1.chapter-title .subtitle
   font-weight: 400
-  color: #FFFFFF
+  color: $chapter-header-subtitle-text
   display: block
   font-size: 1.5em
   margin: 0 0 0 0.75em
@@ -636,14 +638,14 @@ h1.chapter-title .subtitle
   /* line-height will remain 1.4 on Kindle, see hack in media query */
 
 h1.chapter-title em
-  color: #57AD68
+  color: $chapter-header-em
   font-style: normal
 
 h1.chapter-title b
   font-weight: inherit
 
 .chapter-header p.byline
-  color: #DCDCDE
+  color: $chapter-header-byline
   /* float left and height 0 takes this line out of the flow */
   float: left
   height: 0
@@ -672,15 +674,15 @@ div.abstract
   margin: 5% 1.5em 2.5em 1.5em
 
 div.abstract > p
-  color: #666665
+  color: $abstract-text
   font-size: 1.05em
   /* or 1.1em? */
   line-height: 1.75
 
 div.abstract > p a:link
-  color: #666665
+  color: $abstract-link
   /* hack for font color in iBooks */
-  -webkit-text-fill-color: #666665
+  -webkit-text-fill-color: $abstract-link
 
 div.abstract > p:first-child::first-line
   font-weight: bold
@@ -742,7 +744,7 @@ figcaption,
 caption
   font-size: 0.9em
   font-style: italic
-  color: #666665
+  color: $caption-text
   letter-spacing: -0.01em
   line-height: 1.4
   text-align: left
@@ -771,10 +773,10 @@ figure.listing > figcaption + pre
   /* 0.25rem */
 
 aside.sidebar
-  border: 1px solid #B3B3B1
+  border: 1px solid $aside-border
   padding: 0 1.5em
   font-size: 0.9em
-  background-color: #F2F2F2
+  background-color: $aside-background
   text-align: right
   /* aligns heading to right */
   /*
@@ -804,10 +806,10 @@ aside.sidebar > h2
   display: inline-block
   white-space: nowrap
   /* for some reason it's wrapping prematurely */
-  border: 1px solid #B3B3B1
+  border: 1px solid $aside-border
   padding: 1.5em .75em .5em .75em
   margin: -1em 0.5em -0.25em 0.5em
-  background-color: #FFFFFF
+  background-color: $aside-header-background
   /*
   -webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
   box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
@@ -836,7 +838,7 @@ div[class~="blockquote"]
   display: table
 
 blockquote > p
-  color: #191918
+  color: $blockquote-text
   font-style: italic
   /*
   font-size: 1.2em;
@@ -854,7 +856,7 @@ blockquote span.open-quote:not(:empty)
 /* NOTE if we mapped the font icon to "\201c", we could just style the .open-quote */
 blockquote > p:first-of-type::before
   display: inline-block
-  color: #666665
+  color: $para-first-text
   text-shadow: 0 1px 2px rgba(102, 102, 101, 0.3)
   /* using serif quote from entypo */
   font-family: "FontIcons"
@@ -883,7 +885,7 @@ blockquote footer
 blockquote footer .context
   font-size: 0.9em
   letter-spacing: -0.05em
-  color: #666665
+  color: $footer-context
 
 /* Kindle requires text-align: center on surrounding div to align image to center */
 figure.image div.content
@@ -908,14 +910,10 @@ pre
   font-size: 0.85em
   line-height: 1.4
   /* matches what Kindle uses and can't go less */
-  background-color: #F2F2F2
+  background-color: $pre-background
   padding: 0.5rem 0.75rem
-  /*
-  border-top: 3px solid #DCDCDE;
-  */
-  /* QUESTION #B3B3B1? */
-  border-top: 1px solid #DCDCDE
-  border-right: 1px solid #DCDCDE
+  border-top: 1px solid $pre-border
+  border-right: 1px solid $pre-border
 
 body:first-of-type pre
   background-color: rgba(0, 0, 0, 0.05)
@@ -969,28 +967,28 @@ aside[class~="admonition"]
   background: none !important
 
 aside.note
-  border-left-color: #FFC14F
-  background-color: #FFF0D4
+  border-left-color: $note-border
+  background-color: $note-background
   /* 25% opacity of border */
 
 aside.tip
-  border-left-color: #40403E
-  background-color: #D0D0CF
+  border-left-color: $tip-border
+  background-color: $tip-background
   /* 25% opacity of border */
 
 aside.caution
-  border-left-color: #7F7F7D
-  background-color: #DFDFDF
+  border-left-color: $caution-border
+  background-color: $caution-background
   /* 25% opacity of border */
 
 aside.warning
-  border-left-color: #C83737
-  background-color: #F1CECE
+  border-left-color: $warning-border
+  background-color: $warning-background
   /* 25% opacity of border */
 
 aside.important
-  border-left-color: #F2642A
-  background-color: #FCD9CA
+  border-left-color: $important-border
+  background-color: $important-background
   /* 25% opacity of border */
 
 aside.admonition::before
@@ -1023,47 +1021,47 @@ aside[class~="admonition"] > div[class~="content"]
 aside.note::before
   content: "\f040"
   /* fa-pencil */
-  color: #FFC14F
+  color: $note-border
 
 aside[class~="note"] > div[class~="content"]
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%)
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%)
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, $note-border 45%, $note-border 55%, rgba(255,255,255,0) 57.5%)
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, $note-border 45%, $note-border 55%, rgba(255,255,255,0) 57.5%)
 
 aside.tip::before
   content: "\f0eb"
   /* fa-lightbulb-o */
-  color: #40403E
+  color: $tip-border
 
 aside[class~="tip"] > div[class~="content"]
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%)
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%)
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, $tip-border 45%, $tip-border 55%, rgba(255,255,255,0) 57.5%)
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, $tip-border 45%, $tip-border 55%, rgba(255,255,255,0) 57.5%)
 
 aside.caution::before
   content: "\f0c2"
   /* fa-cloud */
-  color: #7F7F7D
+  color: $caution-border
 
 aside[class~="caution"] > div[class~="content"]
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%)
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%)
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, $caution-border 45%, $caution-border 55%, rgba(255,255,255,0) 57.5%)
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, $caution-border 45%, $caution-border 55%, rgba(255,255,255,0) 57.5%)
 
 aside.warning::before
   content: "\f0e7"
   /* fa-bolt */
-  color: #C83737
+  color: $warning-border
 
 aside[class~="warning"] > div[class~="content"]
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #C83737 45%, #C83737 55%, rgba(255,255,255,0) 57.5%)
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #C83737 45%, #C83737 55%, rgba(255,255,255,0) 57.5%)
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, $warning-border 45%, $warning-border 55%, rgba(255,255,255,0) 57.5%)
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, $warning-border 45%, $warning-border 55%, rgba(255,255,255,0) 57.5%)
 
 aside.important::before
   content: "\f12a"
   /* fa-exclamation */
-  color: #F2642A
+  color: $important-border
 
 aside[class~="important"] > div[class~="content"]
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%)
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%)
+  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, $important-border 45%, $important-border 55%, rgba(255,255,255,0) 57.5%)
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, $important-border 45%, $important-border 55%, rgba(255,255,255,0) 57.5%)
 
 aside.admonition > h2
   margin-top: 0
@@ -1101,7 +1099,7 @@ table.table th
   font-weight: bold
 
 table.table thead th
-  border-bottom: 1px solid #80807F
+  border-bottom: 1px solid $table-border
 
 table.table td > p,
 table.table div.embed > *
@@ -1118,23 +1116,23 @@ table.table div.embed > * + *
 table.table-framed
   border-width: 1px
   border-style: solid
-  border-color: #80807F
+  border-color: $table-border
 
 table.table-framed-topbot
   border-width: 1px 0
   border-style: solid
-  border-color: #80807F
+  border-color: $table-border
 
 table.table-framed-sides
   border-width: 0 1px
   border-style: solid
-  border-color: #80807F
+  border-color: $table-border
 
 table.table-grid th,
 table.table-grid td
   border-width: 0 1px 1px 0
   border-style: solid
-  border-color: #80807F
+  border-color: $table-border
 
 table.table-grid thead tr > *:last-child
   border-right-width: 0
@@ -1147,13 +1145,13 @@ table.table-grid-rows tbody th,
 table.table-grid-rows tbody td
   border-width: 1px 0 0 0
   border-style: solid
-  border-color: #80807F
+  border-color: $table-border
 
 table.table-grid-cols th,
 table.table-grid-cols td
   border-width: 0 1px 0 0
   border-style: solid
-  border-color: #80807F
+  border-color: $table-border
 
 table.table-grid-cols thead th:last-child
   border-right-width: 0
@@ -1174,11 +1172,11 @@ hr.pagebreak + *
 #_about_the_author
   -webkit-column-break-before: always
   page-break-before: always
-  border-bottom: 1px solid #B3B3B3
+  border-bottom: 1px solid $about-author-border
 
 img.headshot
   float: left
-  border: 1px solid #80807F
+  border: 1px solid $headshot-border
   padding: 1px
   margin: 0.35em 1em 0.15em 0
   height: 5em !important
