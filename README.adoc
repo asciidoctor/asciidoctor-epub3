@@ -503,6 +503,18 @@ Amazon continues to use the _.mobi_ file extension for KF8 archives, despite the
 That's why we refer to the format in this project as KF8/MOBI.
 ****
 
+=== Tuning Listing Captions
+
+Unlike the built-in converters, the EPUB3 converter is configured to add a signifier (e.g., `Listing`) at the start the caption for all listing and source blocks that have a title.
+This behavior is triggered because the `listing-caption` attribute is set by default.
+
+If you don't want the signifier to be included at the beginning of the caption on listing and source blocks, simply unset the `listing-caption` when invoking Asciidoctor EPUB3.
+
+ $ asciidoctor-epub3 -a listing-caption! book.adoc
+
+Now the behavior will match that of the built-in converters.
+For more information about this attribute and other related attributes, see http://asciidoctor.org/docs/user-manual/#builtin-attributes-i18n[internationalization and numbering].
+
 === Command Arguments
 
 *-h, --help* ::
