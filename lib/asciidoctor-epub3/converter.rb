@@ -691,8 +691,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         id_attr = nil unless @xrefs_seen.add? refid
         refdoc = doc.references[:spine_items].find {|it| refdoc_id == (it.id || (it.attr 'docname')) }
         if refdoc
-          if (reftext = refdoc.references[:ids][refdoc_refid])
-            text ||= reftext
+          if (xreftext = refdoc.references[:ids][refdoc_refid])
+            text ||= xreftext
           else
             warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: invalid reference to unknown anchor in #{refdoc_id} chapter: #{refdoc_refid})
           end
@@ -701,10 +701,18 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       else
         id_attr = (@xrefs_seen.add? refid) ? %( id="xref-#{refid}") : nil
-        if (reftext = doc.references[:ids][refid])
-          text ||= reftext
+        if (refs = doc.references[:refs])
+          if ::Asciidoctor::AbstractNode === (ref = refs[refid])
+            xreftext = text || ref.xreftext((@xrefstyle ||= (doc.attr 'xrefstyle')))
+          end
         else
-          # FIXME we get false negatives for reference to bibref
+          xreftext = doc.references[:ids][refid]
+        end
+
+        if xreftext
+          text ||= xreftext
+        else
+          # FIXME we get false negatives for reference to bibref when using Asciidoctor < 1.5.6
           warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: invalid reference to unknown local anchor (or valid bibref): #{refid})
         end
       end
