@@ -9,6 +9,9 @@ rvm:
 - &release_ruby 2.4.1
 - 2.0.0-p648
 - 1.9.3-p551
+before_install:
+- gem update bundler
+- gem cleanup bundler
 script: bundle exec asciidoctor-epub3 -D . data/samples/sample-book.adoc
 deploy:
   provider: rubygems
