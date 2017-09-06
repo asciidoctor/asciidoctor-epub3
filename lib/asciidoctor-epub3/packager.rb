@@ -135,7 +135,7 @@ module GepubBuilderMixin
           width, height = 1050, 1600
         end
       else
-        warn %(asciidoctor: ERROR: front cover image not found or readable: #{image_path})
+        warn %(asciidoctor: ERROR: #{::File.basename(doc.attr 'docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
         image_path = nil
       end
     end
@@ -238,7 +238,7 @@ body > svg {
         elsif ::File.readable? image_path
           file image_path
         else
-          warn %(asciidoctor: ERROR: image not found or not readable: #{image_path})
+          warn %(asciidoctor: ERROR: #{::File.basename(image.document.attr 'docfile')}: image not found or not readable: #{::File.expand_path image_path, workdir})
         end
       end
     end
