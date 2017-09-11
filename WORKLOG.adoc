@@ -2,6 +2,9 @@
 
 == TODO
 
+* use overflow-wrap consistently
+* use same logic for chapter title in document header as in TOC (level-1 section title should not be detected)
+* when chapter for xref is unknown, don't emit a link (we can't be so sure for refids atm)
 * make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
  ** I believe this is already true; just remove hack
 * allow imagesdir to be outside of docdir (#22)
