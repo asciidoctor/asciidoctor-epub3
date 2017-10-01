@@ -102,9 +102,8 @@ class ContentConverter
       title = doctitle.main
       subtitle = doctitle.subtitle
     else
-      # HACK until we get proper handling of title-only in CSS
-      title = ''
-      subtitle = doctitle.combined
+      title = doctitle.combined
+      subtitle = nil
     end
 
     doctitle_sanitized = doctitle.combined
