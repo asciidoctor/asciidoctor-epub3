@@ -624,7 +624,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def image node
     target = node.attr 'target'
     type = (::File.extname target)[1..-1]
-    img_attrs = [%(alt="#{node.attr 'alt'}")]
+
+    img_attrs = []
+    img_attrs << %( id="#{node.attr 'id'}") if node.attr? 'id'
+    img_attrs << %( class="#{node.attr 'role'}") if node.attr? 'role'
+    img_attrs << %( alt="#{node.attr 'alt'}") if node.attr? 'alt'
+
     case type
     when 'svg'
       img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'}")
