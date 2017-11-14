@@ -624,6 +624,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def image node
     target = node.attr 'target'
     type = (::File.extname target)[1..-1]
+    id_attr = node.id ? %( id="#{node.id}") : ''
     img_attrs = [%(alt="#{node.attr 'alt'}")]
     case type
     when 'svg'
@@ -656,7 +657,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
     end
 =end
-    %(<figure class="image">
+    %(<figure class="image"#{id_attr}>
 <div class="content">
 <img src="#{node.image_uri node.attr('target')}" #{img_attrs * ' '}/>
 </div>#{node.title? ? %[
