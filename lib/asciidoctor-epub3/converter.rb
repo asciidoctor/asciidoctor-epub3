@@ -657,7 +657,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
     end
 =end
-    %(<figure class="image"#{id_attr}>
+    %(<figure#{id_attr} class="image#{prepend_space node.role}">
 <div class="content">
 <img src="#{node.image_uri node.attr('target')}" #{img_attrs * ' '}/>
 </div>#{node.title? ? %[
@@ -846,6 +846,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       last_block.attributes['role'] = last_block.role? ? %(#{last_block.role} last) : 'last'
     end
     nil
+  end
+
+  # Prepend a space to the value if it's non-nil, otherwise return empty string.
+  def prepend_space value
+    value ? %( #{value}) : ''
   end
 end
 
