@@ -295,9 +295,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def example node
+    id_attr = node.id ? %( id="#{node.id}") : nil
     title_div = node.title? ? %(<div class="example-title">#{node.title}</div>
 ) : nil
-    %(<div class="example">
+    %(<div#{id_attr} class="example">
 #{title_div}<div class="example-content">
 #{convert_content node}
 </div>
