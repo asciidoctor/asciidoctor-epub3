@@ -267,6 +267,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def admonition node
+    id_attr = node.id ? %( id="#{node.id}") : nil
     if node.title?
       title = node.title
       title_sanitized = xml_sanitize title
@@ -287,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     when 'important', 'warning', 'caution'
       'warning'
     end
-    %(<aside class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
+    %(<aside#{id_attr} class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
 #{title_el}<div class="content">
 #{convert_content node}
 </div>
