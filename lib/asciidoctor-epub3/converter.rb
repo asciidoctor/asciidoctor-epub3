@@ -191,6 +191,22 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     lines * EOL
   end
 
+  def self.method_added(m)
+    old_method = instance_method(m)
+    params = old_method.parameters
+    new_sym = "new_#{m}".to_sym
+    unless (params.length != 1) || (params[0][1] != :node) || (self.method_defined? new_sym) || ("#{m}".start_with? "new_")
+      alias_method new_sym, m
+      define_method(m) do |node|
+        out = old_method.bind(self).call(node)
+        if node.id then
+          out.sub!(/^<([^ >\/]+)/) {|match| "#{match} id=\"#{node.id}\""}
+        end
+        out
+      end
+    end
+  end
+
   # NOTE embedded is used for AsciiDoc table cell content
   def embedded node
     node.content
@@ -204,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     title_sanitized = xml_sanitize title
     if node.document.header? || node.level != 1 || node != node.document.first_section
       %(<section class="#{div_classes * ' '}" title="#{title_sanitized}"#{epub_type_attr}>
-<h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? nil : %[
+<h#{hlevel}>#{title}</h#{hlevel}>#{(content = node.content).empty? ? nil : %[
 #{content}]}
 </section>)
     else
@@ -226,10 +242,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def open node
-    id_attr = node.id ? %( id="#{node.id}") : nil
     class_attr = node.role ? %( class="#{node.role}") : nil
     if id_attr || class_attr
-      %(<div#{id_attr}#{class_attr}>
+      %(<div#{class_attr}>
 #{convert_content node}
 </div>)
     else
@@ -267,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def admonition node
-    id_attr = node.id ? %( id="#{node.id}") : nil
     if node.title?
       title = node.title
       title_sanitized = xml_sanitize title
@@ -288,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     when 'important', 'warning', 'caution'
       'warning'
     end
-    %(<aside#{id_attr} class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
+    %(<aside class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
 #{title_el}<div class="content">
 #{convert_content node}
 </div>
@@ -296,10 +310,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def example node
-    id_attr = node.id ? %( id="#{node.id}") : nil
     title_div = node.title? ? %(<div class="example-title">#{node.title}</div>
 ) : nil
-    %(<div#{id_attr} class="example">
+    %(<div class="example">
 #{title_div}<div class="example-content">
 #{convert_content node}
 </div>
@@ -308,8 +321,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
   def floating_title node
     tag_name = %(h#{node.level + 1})
-    id_attribute = node.id ? %( id="#{node.id}") : nil
-    %(<#{tag_name}#{id_attribute} class="#{['discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
+    %(<#{tag_name} class="#{['discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
   end
 
   def listing node
@@ -339,7 +351,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def quote node
-    id_attr = %( id="#{node.id}") if node.id
     class_attr = (role = node.role) ? %( class="blockquote #{role}") : ' class="blockquote"'
 
     footer_content = []
@@ -361,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     content = (convert_content node).strip.
       sub(OpenParagraphTagRx, '<p><span class="open-quote">“</span>').
       sub(CloseParagraphTagRx, '<span class="close-quote">”</span></p>')
-    %(<div#{id_attr}#{class_attr}>
+    %(<div#{class_attr}>
 <blockquote>
 #{content}#{footer_tag}
 </blockquote>
@@ -369,7 +380,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def verse node
-    id_attr = %( id="#{node.id}") if node.id
     class_attr = (role = node.role) ? %( class="verse #{role}") : ' class="verse"'
 
     footer_content = []
@@ -384,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
     footer_tag = footer_content.size > 0 ? %(
 <span class="attribution">~ #{footer_content * ', '}</span>) : nil
-    %(<div#{id_attr}#{class_attr}>
+    %(<div#{class_attr}>
 <pre>#{node.content}#{footer_tag}</pre>
 </div>)
   end
@@ -413,7 +423,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def table node
     lines = [%(<div class="table">)]
     lines << %(<div class="content">)
-    table_id_attr = node.id ? %( id="#{node.id}") : nil
     frame_class = {
       'all' => 'table-framed',
       'topbot' => 'table-framed-topbot',
@@ -437,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     end
     table_style_attr = table_styles.size > 0 ? %( style="#{table_styles * '; '}") : nil
 
-    lines << %(<table#{table_id_attr}#{table_class_attr}#{table_style_attr}>)
+    lines << %(<table#{table_class_attr}#{table_style_attr}>)
     lines << %(<caption>#{node.captioned_title}</caption>) if node.title?
     if (node.attr 'rowcount') > 0
       lines << '<colgroup>'
@@ -574,8 +583,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     div_classes = ['ordered-list', node.style, node.role].compact
     ol_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
     ol_class_attr = ol_classes.empty? ? nil : %( class="#{ol_classes * ' '}")
-    id_attribute = node.id ? %( id="#{node.id}") : nil
-    lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
+    lines = [%(<div class="#{div_classes * ' '}">)]
     lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
     lines << %(<ol#{ol_class_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : nil}>)
     node.items.each do |item|
@@ -601,8 +609,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     div_classes = ['itemized-list', node.style, node.role].compact
     ul_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
     ul_class_attr = ul_classes.empty? ? nil : %( class="#{ul_classes * ' '}")
-    id_attribute = node.id ? %( id="#{node.id}") : nil
-    lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
+    lines = [%(<div class="#{div_classes * ' '}">)]
     lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
     lines << %(<ul#{ul_class_attr}>)
     node.items.each do |item|
@@ -626,7 +633,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def image node
     target = node.attr 'target'
     type = (::File.extname target)[1..-1]
-    id_attr = node.id ? %( id="#{node.id}") : ''
     img_attrs = [%(alt="#{node.attr 'alt'}")]
     case type
     when 'svg'
@@ -659,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
     end
 =end
-    %(<figure#{id_attr} class="image#{prepend_space node.role}">
+    %(<figure class="image#{prepend_space node.role}">
 <div class="content">
 <img src="#{node.image_uri node.attr('target')}" #{img_attrs * ' '}/>
 </div>#{node.title? ? %[
