@@ -184,7 +184,7 @@ The rules for generating a chapter ID from the document title are as follows:
 * prepend an underscore if the ID begins with a number
 
 You can think of the master document as the spine of the book and the include directives the individual items being bound together.
-The target of each include directive in the master document is parsed and rendered as a separate AsciiDoc document, with certain options and attributes passed down from the master to ensure consistent behavior.
+The target of each include directive in the master document is parsed and converted as a separate AsciiDoc document, with certain options and attributes passed down from the master to ensure consistent behavior.
 Each resulting XHTML document is then added to the EPUB3 archive as a chapter document and the master document becomes the navigation file (i.e, the table of contents).
 
 Here's an example showing the structure of a spine document:
