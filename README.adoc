@@ -35,6 +35,16 @@ endif::[]
 :uri-idpf: http://www.idpf.org/
 :uri-epub: http://www.idpf.org/epub/31/spec/epub-spec.html
 :uri-epubcheck: https://github.com/idpf/epubcheck
+:uri-kindlegen: http://www.amazon.com/gp/feature.html?docId=1000765211
+:uri-kf8: http://www.amazon.com/gp/feature.html?docId=1000729511
+:uri-send-to-kindle: https://www.amazon.com/gp/sendtokindle/
+:uri-metadata-elem: http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-metadata-elem
+:uri-dc: http://dublincore.org/documents/2004/12/20/dces
+:uri-github-guides: https://guides.github.com
+:uri-github-guides-fork: https://github.com/opendevise/github-guides-asciidoc
+:uri-asciidoctor-i18n: http://asciidoctor.org/docs/user-manual/#builtin-attributes-i18n
+:uri-epubreadingsystem: http://www.idpf.org/epub/301/spec/epub-contentdocs.html#app-epubReadingSystem
+:uri-android-sdk: http://developer.android.com/sdk/index.html
 
 ifdef::status[]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
@@ -117,7 +127,7 @@ endif::[]
 {project-name} takes an aggregate AsciiDoc document and any assets it references as input and produces an EPUB3 publication archive (often described as a “website in a box”).
 
 {project-name} can also produce KF8/MOBI files, the format required for viewing on Amazon Kindle.
-The conversion to KF8/MOBI is performed by generating a slightly modified EPUB3 publication, then passing it through the http://www.amazon.com/gp/feature.html?docId=1000765211[KindleGen] application.
+The conversion to KF8/MOBI is performed by generating a slightly modified EPUB3 publication, then passing it through the {uri-kindlegen}[KindleGen] application.
 The EPUB3 publication, which can be thought of as the “digital master”, is altered to adhere to certain Amazon Kindle requirements.
 
 == Structuring your Manuscript
@@ -317,8 +327,8 @@ v1.0, 2014-04-15
 The metadata in the generated EPUB3 file is populated from attributes in the AsciiDoc document.
 The names of the attributes and the metadata elements to which they map are documented in this section.
 
-The term [term]_package metadata_ in Table 1 is in reference to the http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-metadata-elem[<metadata> element] in the EPUB3 package document (e.g., [file]_package.opf_).
-The `dc` namespace prefix is in reference to the http://dublincore.org/documents/2004/12/20/dces[Dublin Core Metadata Element Set].
+The term [term]_package metadata_ in Table 1 is in reference to the {uri-metadata-elem}[<metadata> element] in the EPUB3 package document (e.g., [file]_package.opf_).
+The `dc` namespace prefix is in reference to the {uri-dc}[Dublin Core Metadata Element Set].
 
 .AsciiDoc attributes that control the EPUB3 metadata (i.e., package.opf)
 [cols="1m,3"]
@@ -444,7 +454,7 @@ image::screenshots/table.png[]
 NOTE: The `asciidoctor-epub3` command is a temporary solution for invoking the {project-name} converter.
 We plan to remove this script once we have completed proper integration with the `asciidoctor` command.
 
-TIP: As another example, point `asciidoctor-epub3` at the https://github.com/opendevise/github-guides-asciidoc[GitHub Guides] that we've ported to AsciiDoc, then compare the output to the real https://guides.github.com[GitHub Guides].
+TIP: As another example, point `asciidoctor-epub3` at the {uri-github-guides-fork}[GitHub Guides] that we've ported to AsciiDoc, then compare the output to the real {uri-github-guides}[GitHub Guides].
 
 === Validate the EPUB3 Archive
 
@@ -502,7 +512,7 @@ KindleGen does mandatory validation so you don't need to run the `validate` comm
 ****
 Kindle Format 8 (KF8) is Amazon's next generation file format offering a wide range of new features and enhancements--including HTML5 and CSS3 support--that publishers can use to create a broad range of books.
 The format is close enough to EPUB3 that it's safe to think of it simply as an EPUB3 implementation under most circumstances.
-You can read more about the format on the http://www.amazon.com/gp/feature.html?docId=1000729511[Kindle Format 8 page].
+You can read more about the format on the {uri-kf8}[Kindle Format 8 page].
 
 Amazon continues to use the _.mobi_ file extension for KF8 archives, despite the fact that they've switched from the Mobipocket format to the EPUB3-like KF8 format.
 That's why we refer to the format in this project as KF8/MOBI.
@@ -518,7 +528,7 @@ If you don't want the signifier to be included at the beginning of the caption o
  $ asciidoctor-epub3 -a listing-caption! book.adoc
 
 Now the behavior will match that of the built-in converters.
-For more information about this attribute and other related attributes, see http://asciidoctor.org/docs/user-manual/#builtin-attributes-i18n[internationalization and numbering].
+For more information about this attribute and other related attributes, see {uri-asciidoctor-i18n}[internationalization and numbering].
 
 === Command Arguments
 
@@ -666,7 +676,7 @@ Refer to the <<NOTICE#,NOTICE>> file for further information about the fonts.
 
 === Device-specific Styles
 
-For readers that support JavaScript, {project-name} adds a CSS class to the body element of each chapter that corresponds to the name of the reader as reported by the http://www.idpf.org/epub/301/spec/epub-contentdocs.html#app-epubReadingSystem[epubReadingSystem] JavaScript object.
+For readers that support JavaScript, {project-name} adds a CSS class to the body element of each chapter that corresponds to the name of the reader as reported by the {uri-epubreadingsystem}[epubReadingSystem] JavaScript object.
 This enhancement allows you to use styles targeted specifically at that reader.
 
 Below you can find the readers that are known to support this feature and the CSS class name that gets added to the body element.
@@ -692,7 +702,7 @@ Assuming you have an Android device available, transferring the EPUB3 to the dev
 You transfer files from your computer to an Android phone over a USB connection using a command from the Android SDK Tools called `adb`.
 Follow these steps to get it setup:
 
-. Download the Android SDK Tools zip from the table labeled *SDK Tools Only* on the http://developer.android.com/sdk/index.html[Get the Android SDK] page
+. Download the Android SDK Tools zip from the table labeled *SDK Tools Only* on the {uri-android-sdk}[Get the Android SDK] page
 . Extract the archive
 . Locate the path to the `adb` command (Hint: Look in the platform-tools folder)
 . Set the environment variable named ADB to the path of the `adb` command
@@ -770,7 +780,7 @@ To see all of the workarounds and why we chose certain style options, check out 
 
 WARNING: Don't use it!
 
-https://www.amazon.com/gp/sendtokindle/[“Send to Kindle”] is a tempting choice for transferring MOBI files to a Kindle device.
+{uri-send-to-kindle}[“Send to Kindle”] is a tempting choice for transferring MOBI files to a Kindle device.
 However, it's utterly broken.
 If you use this tool, don't be surprised if you see missing font-based icons, default fonts, and other font and style errors in your manuscript.
 It's known to strip out all the font files and break the encoding of the document.
