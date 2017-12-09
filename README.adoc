@@ -4,7 +4,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://g
 :experimental:
 :idprefix:
 :idseparator: -
-ifndef::imagesdir[:imagesdir: data/samples/images]
+:imagesdir: data/samples/images
 ifdef::env-github,env-browser[]
 :toc: preamble
 :toclevels: 1
@@ -45,9 +45,10 @@ endif::[]
 
 == Introduction
 
-{project-name} is not merely a converter from AsciiDoc to EPUB3 and KF8/MOBI, but rather a tool to help you create aesthetic, professional, _easy-to-read_ e-books.
+{project-name} is not merely a converter from AsciiDoc to EPUB3 and KF8/MOBI.
+Rather, it's a tool for creating highly aesthetic, professional, _easy-to-read_ e-books.
 Let's face it, many of the technical e-books out there--especially those produced from software documentation--are *_hideous_*.
-The Asciidoctor project wants to disrupt the status quo.
+{project-name} is on a mission to disrupt the status quo.
 
 ifdef::env-github[]
 .An excerpt from an e-book produced by {project-name} shown in Day, Night and Sepia mode.
@@ -63,7 +64,7 @@ Fully Semantic::
   Produce deeply semantic XHTML5 documents, including use of the recommended `epub:type` attribute.
 Exceptional Readability::
   Readers should be drawn into the text so that they read and absorb it.
-  Maximize the readability of the text using carefully crafted styles, focusing on:
+  Maximize the readability of the text using carefully crafted styles that are focused on:
   - Custom, readable fonts with strong UTF-8 character support
   - Sufficient line spacing and margins
   - Modular font size scale
@@ -105,16 +106,19 @@ Although the bulk of AsciiDoc content is converted, there's still work needed to
 NOTE: {project-name} only produces variable layout (i.e., reflowable) EPUB3 documents since this layout is best suited for the types of documents typically written in AsciiDoc.
 We may explore the use of fixed layout documents in the future if the need arises.
 
+ifdef::env-github[]
 === Planned Features and Work In Progress
 
 See <<WORKLOG#,WORKLOG.adoc>>.
+endif::[]
 
 == Converter Workflow
 
-{project-name} takes an aggregate AsciiDoc document and any assets it references as input and produces to an EPUB3 publication archive (often described as a “website in a box”).
+{project-name} takes an aggregate AsciiDoc document and any assets it references as input and produces an EPUB3 publication archive (often described as a “website in a box”).
 
-{project-name} can also produce a KF8/MOBI file, the format required for viewing on Amazon Kindle, using the EPUB3 publication as the “digital master”.
-The conversion to KF8/MOBI is performed by generating a slightly modified EPUB3 publication (necessary to adhere to Amazon Kindle requirements) and passing it through the http://www.amazon.com/gp/feature.html?docId=1000765211[KindleGen] application.
+{project-name} can also produce KF8/MOBI files, the format required for viewing on Amazon Kindle.
+The conversion to KF8/MOBI is performed by generating a slightly modified EPUB3 publication, then passing it through the http://www.amazon.com/gp/feature.html?docId=1000765211[KindleGen] application.
+The EPUB3 publication, which can be thought of as the “digital master”, is altered to adhere to certain Amazon Kindle requirements.
 
 == Structuring your Manuscript
 
@@ -242,7 +246,8 @@ To check if you have Ruby available, use the `ruby` command to query the install
 
 == Getting Started
 
-You can get {project-name} by <<Install the Published Gem,installing the published gem>> or <<Development,running the code from source>>.
+You can get {project-name} by <<Install the Published Gem,installing the published gem>>.
+ifndef::env-site[You can also <<Development,run the code from source>> if you want to use the development version or participate in development.]
 
 === Install the Published Gem
 
@@ -724,7 +729,7 @@ Here's a list of some of the e-readers we know to have good EPUB3 support and th
 * https://chrome.google.com/webstore/detail/readium/fepbnnnkkadjhjahcafoaglimekefifl?hl=en-US[Readium] (Chrome)
 * http://www.kobo.com/apps[Kobo] (Android, iOS, OSX and Windows)
 * http://www.namo.com/site/namo/menu/5074.do[Namo PubTreeViewer] (Android, iOS and Windows)
-* http://calibre-ebook.com[Calibre (ebook viewer)] (Linux, OSX, Windows)
+* http://calibre-ebook.com[Calibre (ebook-viewer)] (Linux, OSX, Windows)
 
 IMPORTANT: To get the full experience, *ensure that the e-reader is configured to use the publisher's styles*.
 Different e-readers word this setting in different ways.
@@ -819,6 +824,7 @@ Nexus ,
 
 ////
 
+ifndef::env-site[]
 == Contributing
 
 In the spirit of free software, _everyone_ is encouraged to help improve this project.
@@ -916,6 +922,7 @@ or
 You're now ready to test drive the development version of {project-name}!
 
 Jump back to <<Getting Started>> to learn how to create an AsciiDoc document and convert it to EPUB3.
+endif::[]
 
 == Authors
 
