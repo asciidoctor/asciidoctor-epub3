@@ -694,7 +694,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         id_attr = nil unless @xrefs_seen.add? refid
         refdoc = doc.references[:spine_items].find {|it| refdoc_id == (it.id || (it.attr 'docname')) }
         if refdoc
-          if (xreftext = refdoc.references[:ids][refdoc_refid])
+          # QUESTION should we invoke xreftext for references in other documents?
+          if (refs = refdoc.references[:refs]) && ::Asciidoctor::Document === (ref = refs[refdoc_refid])
+            text ||= (ref.attr 'docreftext') || ref.doctitle
+          elsif (xreftext = refdoc.references[:ids][refdoc_refid])
             text ||= xreftext
           else
             warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: invalid reference to unknown anchor in #{refdoc_id} chapter: #{refdoc_refid})
