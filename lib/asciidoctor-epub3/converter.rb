@@ -98,7 +98,7 @@ class ContentConverter
   def document node
     docid = node.id
 
-    if (doctitle = node.doctitle partition: true, sanitize: true, use_fallback: true).subtitle?
+    if (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
       title = %(#{doctitle.main} )
       subtitle = doctitle.subtitle
     else
@@ -107,7 +107,7 @@ class ContentConverter
       subtitle = doctitle.combined
     end
 
-    doctitle_sanitized = doctitle.combined
+    doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).to_s
     subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
 
     if (node.attr 'publication-type', 'book') == 'book'
