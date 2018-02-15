@@ -583,7 +583,6 @@ h5 code {
 
 /* Kindle strips (or unwraps) <header> tags, so we use an inner div to style */
 .chapter-header {
-  background-color: #333332;
   /* NOTE div must have at least 1px top padding for background to fill */
   padding: 0.75em 1.5em 0.25em 1.5em; /* would like to use 1.5vh 1.5em */
   margin-bottom: 2.5em;
@@ -599,16 +598,16 @@ h1.chapter-title {
   margin-top: 3.5em; /* 4.2rem - would like to use 9vh */
   margin-bottom: 0;
   padding-bottom: 0.8333em; /* 1.2rem */
-  color: #B3B3B1;
+  color: #666665;
   text-transform: uppercase; /* not supported in Adobe Digital Editions */
   word-spacing: -0.075em;
   letter-spacing: -0.01em;
-  border-bottom: 1px solid #DCDCDE;
+  border-bottom: 0.5px solid #666665;
 }
 
 h1.chapter-title .subtitle {
   font-weight: 400;
-  color: #FFFFFF;
+  color: #333332;
   display: block;
   font-size: 1.5em;
   margin: 0 0 0 0.75em; /* would like to use 2vw */
@@ -625,7 +624,7 @@ h1.chapter-title b {
 }
 
 .chapter-header p.byline {
-  color: #DCDCDE;
+  color: #666665;
   /* float left and height 0 takes this line out of the flow */
   float: left;
   height: 0;
