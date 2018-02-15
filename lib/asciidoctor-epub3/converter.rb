@@ -99,7 +99,7 @@ class ContentConverter
     docid = node.id
 
     if (doctitle = node.doctitle partition: true, sanitize: true, use_fallback: true).subtitle?
-      title = doctitle.main
+      title = %(#{doctitle.main} )
       subtitle = doctitle.subtitle
     else
       # HACK until we get proper handling of title-only in CSS
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
 #{icon_css_scoped}<header>
 <div class="chapter-header">
-#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %[ <small class="subtitle">#{subtitle_formatted}</small>] : nil}</h1>
+#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %[<small class="subtitle">#{subtitle_formatted}</small>] : ''}</h1>
 </div>
 </header>
 #{content})]
