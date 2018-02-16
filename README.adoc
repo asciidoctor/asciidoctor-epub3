@@ -786,10 +786,22 @@ If you use this tool, don't be surprised if you see missing font-based icons, de
 It's known to strip out all the font files and break the encoding of the document.
 
 We *strongly* recommend you transfer the file to your device using either a USB cable or a sync service such as Dropbox.
-Whispersync will detect the new file (usually looking in the Books folder) and add it to the “On Device” library.
+Once transferred, Whispersync will detect the new file (usually looking in the Books folder) and add it to the “On Device” library.
 
 It's important to note that “Send to Kindle” is not reflective of the experience readers will have when shopping in the Kindle store.
 If you use Kindle Direct Publishing (KDP) to publish your book, the integrity of your book will be preserved (to the degree that Amazon allows).
+
+=== Look Inside
+
+The Amazon Kindle store has a “Look Inside” feature, which aims to gives readers a glimpse at the contents of the book.
+Sadly, it does no such thing.
+Instead, it shows pages from the legacy MOBI document that kindlegen adds to your e-book file, not the higher fidelity KF8 document.
+Therefore, the preview won't look at all like what the Kindle reader or application will actually show.
+Custom fonts, font-based icons, and most styles will be missing.
+
+This situation is unfortunate for authors.
+What I recommend is to complain loudly to Amazon that they are hurting your sales by displaying a crippled version of your product.
+Another option is to contact Amazon to opt-out of this so-called feature.
 
 ////
 head-stop (default '.')
