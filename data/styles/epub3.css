@@ -584,12 +584,15 @@ h5 code {
 /* Kindle strips (or unwraps) <header> tags, so we use an inner div to style */
 .chapter-header {
   /* NOTE div must have at least 1px top padding for background to fill */
-  padding: 0.75em 1.5em 0.25em 1.5em; /* would like to use 1.5vh 1.5em */
+  /* would like to use vh units for top and bottom padding */
+  /*padding: 0.75em 1.5em 0.25em 1.5em;*/
+  padding: 0.75em 0 0.25em 0;
   margin-bottom: 2.5em;
   /* TODO maybe what we need to get articles to start in left column
   -webkit-column-break-before: left;
   page-break-before: left;
   */
+  border-bottom: 0.5px solid #666665;
 }
 
 h1.chapter-title {
@@ -602,7 +605,6 @@ h1.chapter-title {
   text-transform: uppercase; /* not supported in Adobe Digital Editions */
   word-spacing: -0.075em;
   letter-spacing: -0.01em;
-  border-bottom: 0.5px solid #666665;
 }
 
 h1.chapter-title .subtitle {
@@ -624,7 +626,7 @@ h1.chapter-title b {
 }
 
 .chapter-header p.byline {
-  color: #666665;
+  color: #333332;
   /* float left and height 0 takes this line out of the flow */
   float: left;
   height: 0;

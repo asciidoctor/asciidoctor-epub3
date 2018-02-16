@@ -132,12 +132,9 @@ body code, body kbd, body pre, pre :not(code) {
     border-bottom-color: #191918;
   }
   
-  h1.chapter-title .subtitle {
-    color: #000000;
-  }
-
+  h1.chapter-title .subtitle,
   .chapter-header p.byline {
-    color: #191918;
+    color: #000000;
   }
 }
 
