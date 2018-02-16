@@ -55,6 +55,7 @@ class SpineItemProcessor < Extensions::IncludeProcessor
         backend: 'epub3-xhtml5',
         doctype: :article,
         header_footer: true,
+        catalog_assets: true,
         attributes: inherited_attrs
 
     # restore attributes to those defined in the document header
