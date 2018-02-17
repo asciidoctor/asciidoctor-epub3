@@ -587,13 +587,13 @@ h5 code {
   /* NOTE div must have at least 1px top padding for background to fill */
   /* would like to use vh units for top and bottom padding */
   /*padding: 0.75em 1.5em 0.25em 1.5em;*/
-  padding: 0.75em 0 0.25em 0;
+  padding: 0.25em 0;
   margin-bottom: 2.5em;
+  border-bottom: 1px solid #666665;
   /* TODO maybe what we need to get articles to start in left column
   -webkit-column-break-before: left;
   page-break-before: left;
   */
-  border-bottom: 0.5px solid #666665;
 }
 
 h1.chapter-title {
