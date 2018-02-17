@@ -730,15 +730,8 @@ figure.image {
 }
 
 figure.image img {
-  /* in the event the viewer adds display: block to the image */
-  /*max-width: 95%;*/
-  /* max-width not supported in Kindle, need to use a media query to add */
+  display: block;
   margin: 0 auto;
-}
-
-/* Kindle requires text-align: center on surrounding div to align image to center */
-figure.image div.content {
-  text-align: center;
 }
 
 figure.coalesce {
