@@ -632,11 +632,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     when 'svg'
       img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'}")
       # TODO make this a convenience method on document
-      epub_properties = (node.document.attr 'epub-properties') || []
-      unless epub_properties.include? 'svg'
-        epub_properties << 'svg'
-        node.document.attributes['epub-properties'] = epub_properties
-      end
+      epub_properties = (node.document.attributes['epub-properties'] ||= [])
+      epub_properties << 'svg' unless epub_properties.include? 'svg'
     else
       if node.attr? 'scaledwidth'
         img_attrs << %(style="width: #{node.attr 'scaledwidth'}")
@@ -770,8 +767,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       %(<i class="#{i_classes * ' '}"></i>)
     else
       target = node.image_uri node.target
-      class_attr = %( class="#{node.role}") if node.role?
-      %(<img src="#{target}" alt="#{node.attr 'alt'}"#{class_attr}/>)
+      img_attrs = [%(alt="#{node.attr 'alt'}"), %(class="inline#{node.role? ? " #{node.role}" : ''}")]
+      if target.end_with? '.svg'
+        img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'}")
+        # TODO make this a convenience method on document
+        epub_properties = (node.document.attributes['epub-properties'] ||= [])
+        epub_properties << 'svg' unless epub_properties.include? 'svg'
+      elsif node.attr? 'scaledwidth'
+        img_attrs << %(style="width: #{node.attr 'scaledwidth'}")
+      end
+      %(<img src="#{target}" #{img_attrs * ' '}/>)
     end
   end
 

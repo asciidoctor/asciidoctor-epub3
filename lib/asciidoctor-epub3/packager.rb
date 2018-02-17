@@ -222,7 +222,6 @@ body > svg {
     nil
   end
 
-  # FIXME add inline images
   def add_content_images doc, images
     docimagesdir = (doc.attr 'imagesdir', '.').chomp '/'
     docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
@@ -230,15 +229,12 @@ body > svg {
     workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
     resources workdir: workdir do
       images.each do |image|
-        imagesdir = (image.document.attr 'imagesdir', '.').chomp '/'
-        imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
-        image_path = %(#{imagesdir}#{image.attr 'target'})
-        if image_path.start_with? %(#{docimagesdir}jacket/cover.)
+        if (image_path = image[:path]).start_with? %(#{docimagesdir}jacket/cover.)
           warn %(asciidoctor: WARNING: image path is reserved for cover artwork: #{image_path}; skipping image found in content)
         elsif ::File.readable? image_path
           file image_path
         else
-          warn %(asciidoctor: ERROR: #{::File.basename(image.document.attr 'docfile')}: image not found or not readable: #{::File.expand_path image_path, workdir})
+          warn %(asciidoctor: ERROR: #{::File.basename image[:docfile]}: image not found or not readable: #{::File.expand_path image_path, workdir})
         end
       end
     end
@@ -278,7 +274,7 @@ body > svg {
   end
 
   def add_content doc
-    builder, spine, format = self, @spine, @format
+    builder, spine, format, images = self, @spine, @format, {}
     workdir = (doc.attr 'docdir').nil_or_empty? ? '.' : workdir
     resources workdir: workdir do
       extend GepubResourceBuilderMixin
@@ -289,13 +285,21 @@ body > svg {
         builder.add_cover_page doc, self, @book.manifest unless format == :kf8
         builder.add_front_matter_page doc, self
         spine.each_with_index do |item, i|
+          docfile = item.attr 'docfile'
+          imagesdir = (item.attr 'imagesdir', '.').chomp '/'
+          imagesdir = (imagesdir == '.' ? '' : %(#{imagesdir}/))
           file %(#{item.id || (item.attr 'docname')}.xhtml) => (builder.postprocess_xhtml item.convert, format)
           add_property 'svg' if ((item.attr 'epub-properties') || []).include? 'svg'
+          # QUESTION should we pass the document itself?
+          item.references[:images].each do |target|
+            images[image_path = %(#{imagesdir}#{target})] ||= { docfile: docfile, path: image_path }
+          end
           # QUESTION reenable?
           #linear 'yes' if i == 0
         end
       end
     end
+    add_content_images doc, images.values
     nil
   end
 
@@ -493,8 +497,6 @@ class Packager
     target = options[:target]
     dest = File.dirname target
 
-    images = spine.map {|item| item.find_by context: :image }.compact.flatten
-        .uniq {|img| %(#{(img.document.attr 'imagesdir', '.').chomp '/'}/#{img.attr 'target'}) }
     # FIXME authors should be aggregated already on parent document
     authors = if doc.attr? 'authors'
       (doc.attr 'authors').split(GepubBuilderMixin::CsvDelimiterRx).concat(spine.map {|item| item.attr 'author' }.compact).uniq
@@ -586,8 +588,6 @@ class Packager
         usernames = spine.map {|item| item.attr 'username' }.compact.uniq
         add_profile_images doc, usernames
       end
-      # QUESTION move add_content_images to add_content method?
-      add_content_images doc, images
       add_content doc
     end
 

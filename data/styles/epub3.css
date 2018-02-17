@@ -138,6 +138,7 @@ kbd {
 
 img {
   border: 0;
+  max-width: 100%;
 }
 
 mark {
@@ -729,7 +730,8 @@ figure.image {
 }
 
 figure.image img {
-  max-width: 100%;
+  display: block;
+  margin: 0 auto;
 }
 
 figure.coalesce {
@@ -898,18 +900,6 @@ blockquote footer .context {
   font-size: 0.9em;
   letter-spacing: -0.05em;
   color: #666665;
-}
-
-/* Kindle requires text-align: center on surrounding div to align image to center */
-figure.image div.content {
-  text-align: center;
-}
-
-/* in the event the viewer adds display: block to the image */
-figure.image img {
-  /* max-width not supported in Kindle, need to use a media query to add */
-  /*max-width: 95%;*/
-  margin: 0 auto;
 }
 
 pre {
