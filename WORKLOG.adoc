@@ -2,6 +2,9 @@
 
 == TODO
 
+* emphasize even more clearly that if you want to publish through Amazon, you must use Kindle Direct Publishing
+* add epub3width (or epubwidth) as alternative to scaledwidth for images
+* only use the inverted sizes for chapter title if publication-type is not book
 * use overflow-wrap consistently
 * use same logic for chapter title in document header as in TOC (level-1 section title should not be detected)
 * when chapter for xref is unknown, don't emit a link (we can't be so sure for refids atm)
