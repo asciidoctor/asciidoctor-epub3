@@ -776,11 +776,33 @@ To see all of the workarounds and why we chose certain style options, check out 
 * `text-rendering: optimizeLegibility` causes file to be rejected by KFP (and causes the text to disappear in some previewers)
 * Kindle Direct Publishing (KDP) strips out select font-related CSS rules (e.g., `font-family`) under certain conditions (for reasons that have proved nearly impossible to reverse engineer); the known workaround is to add a layer of indirection by using `@import` to hide the CSS files from the script
 
+=== Kindle Direct Publishing
+
+If you want to publish your book to the Amazon Kindle store, and have your styles and fonts preserved, you must use https://kdp.amazon.com[Kindle Direct Publishing].
+No other method of publishing to the Amazon Kindle store will leave your book intact.
+
+This workflow also allows you to preview the book the way your readers will see it.
+So it's a good way to acceptance test your custom styles to discover which ones are honored and which ones are ignored.
+
+==== Look Inside
+
+The Amazon Kindle store offers a “Look Inside” feature for reader.
+This so-called feature aims to gives readers a glimpse at the contents of the book.
+Sadly, it does no such thing.
+Instead, it shows pages from the legacy MOBI document that kindlegen adds to your e-book file, not the higher fidelity KF8 document.
+This means the preview won't look at all like what the Kindle reader or application will actually show.
+Custom fonts, font-based icons, and most styles will be missing.
+
+This situation is unfortunate for authors.
+What we recommend is to complain loudly to Amazon that they are hurting your sales by displaying a crippled version of your product.
+Tell them that under no circumstances should they show an altered version of your product.
+Another option is to contact Amazon to opt-out of this program.
+
 === Send to Kindle
 
 WARNING: Don't use it!
 
-{uri-send-to-kindle}[“Send to Kindle”] is a tempting choice for transferring MOBI files to a Kindle device.
+{uri-send-to-kindle}[Send to Kindle] is a tempting choice for transferring MOBI files to a Kindle device.
 However, it's utterly broken.
 If you use this tool, don't be surprised if you see missing font-based icons, default fonts, and other font and style errors in your manuscript.
 It's known to strip out all the font files and break the encoding of the document.
@@ -790,18 +812,6 @@ Once transferred, Whispersync will detect the new file (usually looking in the B
 
 It's important to note that “Send to Kindle” is not reflective of the experience readers will have when shopping in the Kindle store.
 If you use Kindle Direct Publishing (KDP) to publish your book, the integrity of your book will be preserved (to the degree that Amazon allows).
-
-=== Look Inside
-
-The Amazon Kindle store has a “Look Inside” feature, which aims to gives readers a glimpse at the contents of the book.
-Sadly, it does no such thing.
-Instead, it shows pages from the legacy MOBI document that kindlegen adds to your e-book file, not the higher fidelity KF8 document.
-Therefore, the preview won't look at all like what the Kindle reader or application will actually show.
-Custom fonts, font-based icons, and most styles will be missing.
-
-This situation is unfortunate for authors.
-What I recommend is to complain loudly to Amazon that they are hurting your sales by displaying a crippled version of your product.
-Another option is to contact Amazon to opt-out of this so-called feature.
 
 ////
 head-stop (default '.')
