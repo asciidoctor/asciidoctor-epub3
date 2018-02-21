@@ -161,7 +161,7 @@ The cross reference (i.e., xref) from one chapter to another must be in the form
 If you want to reference a section in a chapter, update the fragment (i.e., the value that follows the hash) to match the target section ID.
 The reftext is optional since the reftext of the target is used by default.
 +
-TIP: To assign reference text (i.e., reftext) to chapter title, use the document attribute named `docreftext`.
+TIP: To assign reference text (i.e., reftext) for a chapter title, set the document attribute `docreftext` in the header for that chapter.
 +
 TIP: Rule 2 states that the chapter ID must match the basename of the chapter file.
 In truth, the chapter ID can be a _derivative of_ the chapter filename.
