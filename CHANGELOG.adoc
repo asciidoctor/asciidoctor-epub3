@@ -7,19 +7,19 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == 1.5.0.alpha.8 (2018-02-20) - @mojavelinux
 
-* Include inline images in EPUB3 archive (#5)
-* Allow chapter to begin with level-1 section title by adding support for negative leveloffset (#107)
-* Don't transform the chapter title to uppercase (rely on CSS only) (#97)
-* Set correct mimetype for TTF files (#120)
-* Implement support for the custom xrefstyle for references within a chapter (#132)
-* Show correct path of front cover image and the current document when missing (#124)
-* Retain ID of block image (#141)
-* Retain ID of example block (#143)
-* Retain ID of admonition block (#146)
-* Transfer role specified on block image to output (#145)
-* Handle nil response from pygments.rb (#156)
-* Invert the colors for the chapter title (use black on white) (#96)
-* Darken font on Kindle Paperwhite devices (#67)
+* include inline images in EPUB3 archive (#5)
+* allow chapter to begin with level-1 section title by adding support for negative leveloffset (#107)
+* don't transform the chapter title to uppercase (rely on CSS only) (#97)
+* set correct mimetype for TTF files (#120)
+* implement support for the custom xrefstyle for references within a chapter (#132)
+* show correct path of front cover image and the current document when missing (#124)
+* retain ID of block image (#141)
+* retain ID of example block (#143)
+* retain ID of admonition block (#146)
+* transfer role specified on block image to output (#145)
+* handle nil response from pygments.rb (#156)
+* invert the colors for the chapter title (use black on white) (#96)
+* darken font on Kindle Paperwhite devices (#67)
 
 == 1.5.0.alpha.7 (2017-04-18) - @mojavelinux
 
