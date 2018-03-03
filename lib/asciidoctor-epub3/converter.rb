@@ -97,6 +97,7 @@ class ContentConverter
 
   def document node
     docid = node.id
+    pubtype = node.attr 'publication-type', 'book'
 
     if (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
       title = %(#{doctitle.main} )
@@ -110,7 +111,7 @@ class ContentConverter
     doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).to_s
     subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
 
-    if (node.attr 'publication-type', 'book') == 'book'
+    if pubtype == 'book'
       byline = nil
     else
       author = node.attr 'author'
@@ -120,7 +121,7 @@ class ContentConverter
       byline = %(<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>#{EOL})
     end
 
-    mark_last_paragraph node
+    mark_last_paragraph node unless pubtype == 'book'
     content = node.content
 
     # NOTE must run after content is resolved
