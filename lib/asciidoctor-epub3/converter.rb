@@ -113,12 +113,12 @@ class ContentConverter
     subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
 
     if pubtype == 'book'
-      byline = nil
+      byline = ''
     else
       author = node.attr 'author'
       username = node.attr 'username', 'default'
       imagesdir = (node.references[:spine].attr 'imagesdir', '.').chomp '/'
-      imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
+      imagesdir = imagesdir == '.' ? '' : %(#{imagesdir}/)
       byline = %(<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>#{EOL})
     end
 
@@ -128,7 +128,7 @@ class ContentConverter
     # NOTE must run after content is resolved
     # TODO perhaps create dynamic CSS file?
     if @icon_names.empty?
-      icon_css_head = icon_css_scoped = nil
+      icon_css_head = icon_css_scoped = ''
     else
       icon_defs = @icon_names.map {|name|
         %(.i-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
@@ -138,7 +138,7 @@ class ContentConverter
 </style>
 )
       # NOTE Namo Pubtree requires icon CSS to be repeated inside <body> (or in a linked stylesheet); wrap in div to hide from Aldiko
-      icon_css_scoped = (node.attr? 'ebook-format', 'kf8') ? nil : %(<div style="display: none" aria-hidden="true"><style scoped="scoped">
+      icon_css_scoped = (node.attr? 'ebook-format', 'kf8') ? '' : %(<div style="display: none" aria-hidden="true"><style scoped="scoped">
 #{icon_defs}
 </style></div>
 )
@@ -200,13 +200,13 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
   def section node
     hlevel = node.level + 1
-    epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : nil
+    epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
     div_classes = [%(sect#{node.level}), node.role].compact
     title = node.title
     title_sanitized = xml_sanitize title
     if node.document.header? || node.level != 1 || node != node.document.first_section
       %(<section class="#{div_classes * ' '}" title="#{title_sanitized}"#{epub_type_attr}>
-<h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? nil : %[
+<h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? '' : %[
 #{content}]}
 </section>)
     else
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     role = node.role
     # stack-head is the alternative to the default, inline-head (where inline means "run-in")
     head_stop = node.attr 'head-stop', (role && (node.has_role? 'stack-head') ? nil : '.')
-    head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ TrailingPunctRx ? head_stop : nil}</strong> ) : nil
+    head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ TrailingPunctRx ? head_stop : ''}</strong> ) : ''
     if role
       node.set_option 'hardbreaks' if node.has_role? 'signature'
       %(<p class="#{role}">#{head}#{node.content}</p>)
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def admonition node
-    id_attr = node.id ? %( id="#{node.id}") : nil
+    id_attr = node.id ? %( id="#{node.id}") : ''
     if node.title?
       title = node.title
       title_sanitized = xml_sanitize title
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 )
     else
       title_attr = %( title="#{node.caption}")
-      title_el = nil
+      title_el = ''
     end
 
     type = node.attr 'name'
@@ -297,9 +297,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   end
 
   def example node
-    id_attr = node.id ? %( id="#{node.id}") : nil
+    id_attr = node.id ? %( id="#{node.id}") : ''
     title_div = node.title? ? %(<div class="example-title">#{node.title}</div>
-) : nil
+) : ''
     %(<div#{id_attr} class="example">
 #{title_div}<div class="example-content">
 #{convert_content node}
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
   def floating_title node
     tag_name = %(h#{node.level + 1})
-    id_attribute = node.id ? %( id="#{node.id}") : nil
+    id_attribute = node.id ? %( id="#{node.id}") : ''
     %(<#{tag_name}#{id_attribute} class="#{['discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
   end
 
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     figure_classes << 'coalesce' if node.option? 'unbreakable'
     pre_classes = node.style == 'source' ? ['source', %(language-#{node.attr 'language'})] : ['screen']
     title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>
-) : nil
+) : ''
     # patches conums to fix extra or missing leading space
     # TODO remove patch once upgrading to Asciidoctor 1.5.6
     %(<figure class="#{figure_classes * ' '}">
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       footer_content << %(<span class="context">#{node.title}</span>)
     end
 
-    footer_tag = footer_content.empty? ? nil : %(
+    footer_tag = footer_content.empty? ? '' : %(
 <footer>~ #{footer_content * ' '}</footer>)
     content = (convert_content node).strip.
       sub(OpenParagraphTagRx, '<p><span class="open-quote">“</span>').
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     end
 
     footer_tag = footer_content.size > 0 ? %(
-<span class="attribution">~ #{footer_content * ', '}</span>) : nil
+<span class="attribution">~ #{footer_content * ', '}</span>) : ''
     %(<div#{id_attr}#{class_attr}>
 <pre>#{node.content}#{footer_tag}</pre>
 </div>)
@@ -400,8 +400,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       title_el = %(<h2>#{title}</h2>
 )
     else
-      title_attr = nil
-      title_el = nil
+      title_attr = title_el = ''
     end
 
     %(<aside class="#{classes * ' '}"#{title_attr} epub:type="sidebar">
@@ -414,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   def table node
     lines = [%(<div class="table">)]
     lines << %(<div class="content">)
-    table_id_attr = node.id ? %( id="#{node.id}") : nil
+    table_id_attr = node.id ? %( id="#{node.id}") : ''
     frame_class = {
       'all' => 'table-framed',
       'topbot' => 'table-framed-topbot',
@@ -436,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     unless (node.option? 'autowidth') && !(node.attr? 'width', nil, false)
       table_styles << %(width: #{node.attr 'tablepcwidth'}%)
     end
-    table_style_attr = table_styles.size > 0 ? %( style="#{table_styles * '; '}") : nil
+    table_style_attr = table_styles.size > 0 ? %( style="#{table_styles * '; '}") : ''
 
     lines << %(<table#{table_id_attr}#{table_class_attr}#{table_style_attr}>)
     lines << %(<caption>#{node.captioned_title}</caption>) if node.title?
@@ -484,10 +483,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             if (halign = cell.attr 'valign') && halign != 'top'
               cell_classes << 'valign-top'
             end
-            cell_class_attr = cell_classes.size > 0 ? %( class="#{cell_classes * ' '}") : nil
-            cell_colspan_attr = cell.colspan ? %( colspan="#{cell.colspan}") : nil
-            cell_rowspan_attr = cell.rowspan ? %( rowspan="#{cell.rowspan}") : nil
-            cell_style_attr = (node.document.attr? 'cellbgcolor') ? %( style="background-color: #{node.document.attr 'cellbgcolor'}") : nil
+            cell_class_attr = cell_classes.size > 0 ? %( class="#{cell_classes * ' '}") : ''
+            cell_colspan_attr = cell.colspan ? %( colspan="#{cell.colspan}") : ''
+            cell_rowspan_attr = cell.rowspan ? %( rowspan="#{cell.rowspan}") : ''
+            cell_style_attr = (node.document.attr? 'cellbgcolor') ? %( style="background-color: #{node.document.attr 'cellbgcolor'}") : ''
             lines << %(<#{cell_tag_name}#{cell_class_attr}#{cell_colspan_attr}#{cell_rowspan_attr}#{cell_style_attr}>#{cell_content}</#{cell_tag_name}>)
           end
           lines << '</tr>'
@@ -523,18 +522,18 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       subject_stop = node.attr 'subject-stop', (role && (node.has_role? 'stack') ? nil : ':')
       # QUESTION should we just use itemized-list and ordered-list as the class here? or just list?
       div_classes = [%(#{style}-list), role].compact
-      list_class_attr = (node.option? 'brief') ? ' class="brief"' : nil
+      list_class_attr = (node.option? 'brief') ? ' class="brief"' : ''
       lines << %(<div class="#{div_classes * ' '}">
-<#{list_tag_name}#{list_class_attr}#{list_tag_name == 'ol' && (node.option? 'reversed') ? ' reversed="reversed"' : nil}>)
+<#{list_tag_name}#{list_class_attr}#{list_tag_name == 'ol' && (node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
       node.items.each do |subjects, dd|
         # consists of one term (a subject) and supporting content
         subject = [*subjects].first.text
         subject_plain = xml_sanitize subject, :plain
-        subject_element = %(<strong class="subject">#{subject}#{subject_stop && subject_plain !~ TrailingPunctRx ? subject_stop : nil}</strong>)
+        subject_element = %(<strong class="subject">#{subject}#{subject_stop && subject_plain !~ TrailingPunctRx ? subject_stop : ''}</strong>)
         lines << '<li>'
         if dd
           # NOTE: must wrap remaining text in a span to help webkit justify the text properly
-          lines << %(<span class="principal">#{subject_element}#{dd.text? ? %[ <span class="supporting">#{dd.text}</span>] : nil}</span>)
+          lines << %(<span class="principal">#{subject_element}#{dd.text? ? %[ <span class="supporting">#{dd.text}</span>] : ''}</span>)
           lines << dd.content if dd.blocks?
         else
           lines << %(<span class="principal">#{subject_element}</span>)
@@ -574,11 +573,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     complex = false
     div_classes = ['ordered-list', node.style, node.role].compact
     ol_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
-    ol_class_attr = ol_classes.empty? ? nil : %( class="#{ol_classes * ' '}")
-    id_attribute = node.id ? %( id="#{node.id}") : nil
+    ol_class_attr = ol_classes.empty? ? '' : %( class="#{ol_classes * ' '}")
+    id_attribute = node.id ? %( id="#{node.id}") : ''
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
     lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
-    lines << %(<ol#{ol_class_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : nil}>)
+    lines << %(<ol#{ol_class_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
     node.items.each do |item|
       lines << %(<li>
 <span class="principal">#{item.text}</span>)
@@ -601,8 +600,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     complex = false
     div_classes = ['itemized-list', node.style, node.role].compact
     ul_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
-    ul_class_attr = ul_classes.empty? ? nil : %( class="#{ul_classes * ' '}")
-    id_attribute = node.id ? %( id="#{node.id}") : nil
+    ul_class_attr = ul_classes.empty? ? '' : %( class="#{ul_classes * ' '}")
+    id_attribute = node.id ? %( id="#{node.id}") : ''
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
     lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
     lines << %(<ul#{ul_class_attr}>)
@@ -661,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <div class="content">
 <img src="#{node.image_uri node.attr('target')}" #{img_attrs * ' '}/>
 </div>#{node.title? ? %[
-<figcaption>#{node.captioned_title}</figcaption>] : nil}
+<figcaption>#{node.captioned_title}</figcaption>] : ''}
 </figure>)
   end
 
@@ -689,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           refid = %(#{refid}##{refid})
           id_attr = %( id="xref--#{refdoc_id}")
         end
-        id_attr = nil unless @xrefs_seen.add? refid
+        id_attr = '' unless @xrefs_seen.add? refid
         refdoc = doc.references[:spine_items].find {|it| refdoc_id == (it.id || (it.attr 'docname')) }
         if refdoc
           # QUESTION should we invoke xreftext for references in other documents?
@@ -704,7 +703,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: invalid reference to anchor in unknown chapter: #{refdoc_id})
         end
       else
-        id_attr = (@xrefs_seen.add? refid) ? %( id="xref-#{refid}") : nil
+        id_attr = (@xrefs_seen.add? refid) ? %( id="xref-#{refid}") : ''
         if (refs = doc.references[:refs])
           if ::Asciidoctor::AbstractNode === (ref = refs[refid])
             xreftext = text || ref.xreftext((@xrefstyle ||= (doc.attr 'xrefstyle')))
