@@ -56,8 +56,9 @@ class ContentConverter
   RightAngleQuote = '&#x203a;'
   CalloutStartNum = %(\u2460)
 
-  XmlElementRx = /<\/?.+?>/
   CharEntityRx = /&#(\d{2,6});/
+  XmlElementRx = /<\/?.+?>/
+  TrailingPunctRx = /[[:punct:]]$/
 
   FromHtmlSpecialCharsMap = {
     '&lt;' => '<',
@@ -248,8 +249,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     role = node.role
     # stack-head is the alternative to the default, inline-head (where inline means "run-in")
     head_stop = node.attr 'head-stop', (role && (node.has_role? 'stack-head') ? nil : '.')
-    # FIXME promote regexp to constant
-    head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ /[[:punct:]]$/ ? head_stop : nil}</strong> ) : nil
+    head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ TrailingPunctRx ? head_stop : nil}</strong> ) : nil
     if role
       node.set_option 'hardbreaks' if node.has_role? 'signature'
       %(<p class="#{role}">#{head}#{node.content}</p>)
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         # consists of one term (a subject) and supporting content
         subject = [*subjects].first.text
         subject_plain = xml_sanitize subject, :plain
-        subject_element = %(<strong class="subject">#{subject}#{subject_stop && subject_plain !~ /[[:punct:]]$/ ? subject_stop : nil}</strong>)
+        subject_element = %(<strong class="subject">#{subject}#{subject_stop && subject_plain !~ TrailingPunctRx ? subject_stop : nil}</strong>)
         lines << '<li>'
         if dd
           # NOTE: must wrap remaining text in a span to help webkit justify the text properly
