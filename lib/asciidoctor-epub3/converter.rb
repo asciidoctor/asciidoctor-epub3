@@ -761,16 +761,30 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       # TODO: add complex class if list has nested blocks
       def convert_dlist node
         lines = []
+        id_attribute = node.id ? %( id="#{node.id}") : ''
+
+        classes = case node.style
+                  when 'horizontal'
+                    ['hdlist', node.role]
+                  when 'itemized', 'ordered'
+                    # QUESTION should we just use itemized-list and ordered-list as the class here? or just list?
+                    ['dlist', %(#{node.style}-list), node.role]
+                  else
+                    ['description-list']
+                  end.compact
+
+        class_attribute = %( class="#{classes.join ' '}")
+
+        lines << %(<div#{id_attribute}#{class_attribute}>)
+        lines << %(<div class="title">#{node.title}</div>) if node.title?
+
         case (style = node.style)
         when 'itemized', 'ordered'
           list_tag_name = style == 'itemized' ? 'ul' : 'ol'
           role = node.role
           subject_stop = node.attr 'subject-stop', (role && (node.has_role? 'stack') ? nil : ':')
-          # QUESTION should we just use itemized-list and ordered-list as the class here? or just list?
-          div_classes = [%(#{style}-list), role].compact
           list_class_attr = (node.option? 'brief') ? ' class="brief"' : ''
-          lines << %(<div class="#{div_classes * ' '}">
-<#{list_tag_name}#{list_class_attr}#{list_tag_name == 'ol' && (node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
+          lines << %(<#{list_tag_name}#{list_class_attr}#{list_tag_name == 'ol' && (node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
           node.items.each do |subjects, dd|
             # consists of one term (a subject) and supporting content
             subject = [*subjects].first.text
@@ -786,11 +800,40 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             end
             lines << '</li>'
           end
-          lines << %(</#{list_tag_name}>
-</div>)
+          lines << %(</#{list_tag_name}>)
+        when 'horizontal'
+          lines << '<table>'
+          if (node.attr? 'labelwidth') || (node.attr? 'itemwidth')
+            lines << '<colgroup>'
+            col_style_attribute = (node.attr? 'labelwidth') ? %( style="width: #{(node.attr 'labelwidth').chomp '%'}%;") : ''
+            lines << %(<col#{col_style_attribute} />)
+            col_style_attribute = (node.attr? 'itemwidth') ? %( style="width: #{(node.attr 'itemwidth').chomp '%'}%;") : ''
+            lines << %(<col#{col_style_attribute} />)
+            lines << '</colgroup>'
+          end
+          node.items.each do |terms, dd|
+            lines << '<tr>'
+            lines << %(<td class="hdlist1#{(node.option? 'strong') ? ' strong' : ''}">)
+            first_term = true
+            terms.each do |dt|
+              lines << %(<br />) unless first_term
+              lines << '<p>'
+              lines << dt.text
+              lines << '</p>'
+              first_term = nil
+            end
+            lines << '</td>'
+            lines << '<td class="hdlist2">'
+            if dd
+              lines << %(<p>#{dd.text}</p>) if dd.text?
+              lines << dd.content if dd.blocks?
+            end
+            lines << '</td>'
+            lines << '</tr>'
+          end
+          lines << '</table>'
         else
-          lines << '<div class="description-list">
-<dl>'
+          lines << '<dl>'
           node.items.each do |terms, dd|
             [*terms].each do |dt|
               lines << %(<dt>
@@ -807,9 +850,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             end
             lines << '</dd>'
           end
-          lines << '</dl>
-</div>'
+          lines << '</dl>'
         end
+
+        lines << '</div>'
         lines * LF
       end
 

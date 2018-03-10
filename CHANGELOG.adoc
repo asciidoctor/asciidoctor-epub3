@@ -8,6 +8,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 == Unreleased
 
 * add basic audio and video support (#9)
+* add support for `[horizontal]` definition list (#165)
 
 == 1.5.0.alpha.15 (2020-03-11) - @slonopotamus
 
