@@ -269,6 +269,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
   def admonition node
     id_attr = node.id ? %( id="#{node.id}") : ''
+    name = node.attr 'name'
+    if node.document.attr? 'icons'
+        if node.document.attr? 'icons', 'font') && !(node.attr? 'icon')
+            label = %(<i class="fa icon=#{name}" title=#{node.attr 'textlabel'}"></i>)
     if node.title?
       title = node.title
       title_sanitized = xml_sanitize title
