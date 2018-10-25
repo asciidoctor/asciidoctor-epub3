@@ -568,16 +568,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     lines * EOL
   end
 
-  # TODO support start attribute
   def olist node
     complex = false
     div_classes = ['ordered-list', node.style, node.role].compact
     ol_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
     ol_class_attr = ol_classes.empty? ? '' : %( class="#{ol_classes * ' '}")
+    ol_start_attr = (node.attr? 'start') ? %( start="#{node.attr 'start'}") : ''
     id_attribute = node.id ? %( id="#{node.id}") : ''
     lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
     lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
-    lines << %(<ol#{ol_class_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
+    lines << %(<ol#{ol_class_attr}#{ol_start_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
     node.items.each do |item|
       lines << %(<li>
 <span class="principal">#{item.text}</span>)
