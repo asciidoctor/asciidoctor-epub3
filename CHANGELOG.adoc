@@ -5,6 +5,11 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== Unreleased
+
+* add support for start attribute on ordered list
+* don't add end mark to chapter when publication-type is book (#163)
+
 == 1.5.0.alpha.8 (2018-02-20) - @mojavelinux
 
 * include inline images in EPUB3 archive (#5)
