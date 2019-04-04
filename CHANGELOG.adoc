@@ -7,6 +7,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+* allow converter to be used with Asciidoctor 2 (#185)
 * add support for start attribute on ordered list
 * don't add end mark to chapter when publication-type is book (#163)
 * drop unsupported versions of Ruby from CI matrix

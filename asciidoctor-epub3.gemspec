@@ -16,7 +16,8 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.homepage = 'https://github.com/asciidoctor/asciidoctor-epub3'
   s.license = 'MIT'
 
-  s.required_ruby_version = '>= 1.9.3'
+  # NOTE required ruby version is informational only; it's not enforced since it can't be overridden and can cause builds to break
+  #s.required_ruby_version = '>= 2.3.0'
 
   files = begin
     (result = Open3.popen3('git ls-files -z') {|_, out| out.read }.split %(\0)).empty? ? Dir['**/*'] : result
@@ -31,7 +32,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
 
   s.add_development_dependency 'rake', '~> 12.3.2'
 
-  s.add_runtime_dependency 'asciidoctor', '~> 1.5.0'
+  s.add_runtime_dependency 'asciidoctor', '>= 1.5.0', '< 3.0.0'
   s.add_runtime_dependency 'gepub', '~> 0.6.9.2'
   s.add_runtime_dependency 'thread_safe', '~> 0.3.6'
   s.add_runtime_dependency 'concurrent-ruby', '~> 1.1.5'

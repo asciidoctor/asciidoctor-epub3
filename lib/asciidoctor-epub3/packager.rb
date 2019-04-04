@@ -8,6 +8,7 @@ module Epub3
 module GepubBuilderMixin
   DATA_DIR = ::File.expand_path(::File.join ::File.dirname(__FILE__), '..', '..', 'data')
   SAMPLES_DIR = ::File.join DATA_DIR, 'samples'
+  LF = ?\n
   CharEntityRx = ContentConverter::CharEntityRx
   XmlElementRx = ContentConverter::XmlElementRx
   FromHtmlSpecialCharsMap = ContentConverter::FromHtmlSpecialCharsMap
@@ -327,7 +328,7 @@ body > svg {
     lines << %(</nav>
 </body>
 </html>)
-    lines * EOL
+    lines * LF
   end
 
   def nav_level items, depth, state = {}
@@ -353,7 +354,7 @@ body > svg {
       state.delete :content_doc_href if item.context == :document
     end
     lines << '</ol>'
-    lines * EOL
+    lines * LF
   end
 
   # NOTE gepub doesn't support building a ncx TOC with depth > 1, so do it ourselves
@@ -379,7 +380,7 @@ body > svg {
     lines[0] = lines[0].sub '%{depth}', %(<meta name="dtb:depth" content="#{state[:max_depth]}"/>)
     lines << %(</navMap>
 </ncx>)
-    lines * EOL
+    lines * LF
   end
 
   def ncx_level items, depth, state = {}
@@ -405,7 +406,7 @@ body > svg {
       lines << %(</navPoint>)
       state.delete :content_doc_href if item.context == :document
     end
-    lines * EOL
+    lines * LF
   end
 
   def collect_keywords doc, spine

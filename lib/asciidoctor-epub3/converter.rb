@@ -50,7 +50,7 @@ class ContentConverter
 
   register_for 'epub3-xhtml5'
 
-  EOL = %(\n)
+  LF = ?\n
   NoBreakSpace = '&#xa0;'
   ThinNoBreakSpace = '&#x202f;'
   RightAngleQuote = '&#x203a;'
@@ -119,7 +119,7 @@ class ContentConverter
       username = node.attr 'username', 'default'
       imagesdir = (node.references[:spine].attr 'imagesdir', '.').chomp '/'
       imagesdir = imagesdir == '.' ? '' : %(#{imagesdir}/)
-      byline = %(<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>#{EOL})
+      byline = %(<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>#{LF})
     end
 
     mark_last_paragraph node unless pubtype == 'book'
@@ -132,7 +132,7 @@ class ContentConverter
     else
       icon_defs = @icon_names.map {|name|
         %(.i-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
-      } * EOL
+      } * LF
       icon_css_head = %(<style>
 #{icon_defs}
 </style>
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </body>
 </html>'
 
-    lines * EOL
+    lines * LF
   end
 
   # NOTE embedded is used for AsciiDoc table cell content
@@ -497,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     lines << '</table>
 </div>
 </div>'
-    lines * EOL
+    lines * LF
   end
 
   def colist node
@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       lines << '</dl>
 </div>'
     end
-    lines * EOL
+    lines * LF
   end
 
   def olist node
@@ -593,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     end
     lines << '</ol>
 </div>'
-    lines * EOL
+    lines * LF
   end
 
   def ulist node
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
     end
     lines << '</ul>
 </div>'
-    lines * EOL
+    lines * LF
   end
 
   def image node
