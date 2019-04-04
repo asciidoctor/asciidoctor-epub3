@@ -9,6 +9,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 * add support for start attribute on ordered list
 * don't add end mark to chapter when publication-type is book (#163)
+* drop unsupported versions of Ruby from CI matrix
 
 == 1.5.0.alpha.8 (2018-02-20) - @mojavelinux
 

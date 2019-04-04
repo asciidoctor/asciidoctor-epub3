@@ -6,18 +6,22 @@ language: ruby
 cache: bundler
 bundler_args: --path=.bundle/gems
 rvm:
-- &release_rvm 2.4.1
-- 2.0.0-p648
-- 1.9.3-p551
-#before_install:
-#- gem update bundler
-#- gem cleanup bundler
+- &release_ruby 2.6.2
+- 2.5.5
+- 2.4.5
+- 2.3.8
+- jruby-9.2.6.0
+- jruby-9.1.17.0
+env:
+  global:
+  # use system libraries to speed up installation of nokogiri
+  - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 script: bundle exec asciidoctor-epub3 -D . data/samples/sample-book.adoc
 deploy:
   provider: rubygems
-  api_key: ${RUBYGEMS_API_KEY}
   gem: asciidoctor-epub3
+  api_key: ${RUBYGEMS_API_KEY}
   on:
     tags: true
     repo: asciidoctor/asciidoctor-epub3
-    rvm: *release_rvm
+    rvm: *release_ruby
