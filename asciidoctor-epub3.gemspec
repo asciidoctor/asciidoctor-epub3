@@ -23,15 +23,11 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   rescue
     Dir['**/*']
   end
-  s.files = files.grep %r/^(?:(?:data\/(?:fonts|images|styles)|lib)\/.+|Gemfile|Rakefile|(?:CHANGELOG|LICENSE|NOTICE|README)\.adoc|#{s.name}\.gemspec)$/
+  s.files = files.grep %r/^(?:(?:data\/(?:fonts|images|styles)|lib)\/.+|Gemfile|Rakefile|(?:CHANGELOG|LICENSE|NOTICE|README)\.adoc|\.yardopts|#{s.name}\.gemspec)$/
   s.executables = %w(asciidoctor-epub3 adb-push-ebook)
   s.test_files = s.files.grep(/^(?:test|spec|feature)\/.*$/)
 
   s.require_paths = ['lib']
-
-  s.has_rdoc = true
-  s.rdoc_options = ['--charset=UTF-8', '--title="Asciidoctor EPUB3"', '--main=README.adoc', '-ri']
-  s.extra_rdoc_files = ['CHANGELOG.adoc', 'LICENSE.adoc', 'NOTICE.adoc', 'README.adoc']
 
   s.add_development_dependency 'rake', '~> 12.3.2'
 
