@@ -2,7 +2,9 @@
 
 == TODO
 
-* use empty string in place of nil in interpolated strings
+* remove conum patch for listing block (fixed in Asciidoctor 1.5.6)
+* change has_role? to role?
+* use empty string in place of nil in interpolated strings (few more still to check)
 * add epub3width (or epubwidth) as alternative to scaledwidth for images
 * only use the inverted sizes for chapter title if publication-type is not book
 * use overflow-wrap consistently
