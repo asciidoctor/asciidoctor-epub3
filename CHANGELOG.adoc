@@ -5,7 +5,7 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
-== Unreleased
+== 1.5.0.alpha.9 (2019-04-04) - @mojavelinux
 
 * allow converter to be used with Asciidoctor 2 (#185)
 * upgrade gepub (and, indirectly, nokogiri) (#177)
