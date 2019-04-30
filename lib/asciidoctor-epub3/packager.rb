@@ -131,25 +131,25 @@ module GepubBuilderMixin
         (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
       end
       workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
-      if ::File.readable?(::File.join workdir, image_path)
-        unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
-          width, height = 1050, 1600
-        end
-      else
+      if image_path == ''
+        image_path = nil
+      elsif !::File.readable?(::File.join workdir, image_path)
         warn %(asciidoctor: ERROR: #{::File.basename(doc.attr 'docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
         image_path = nil
+      elsif image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
+        width, height = 1050, 1600
       end
-    end
 
-    unless image_path
-      image_path, workdir, width, height = DefaultCoverImage, DATA_DIR, 1050, 1600
-    end
+      unless image_path
+        image_path, workdir, width, height = DefaultCoverImage, DATA_DIR, 1050, 1600
+      end
 
-    resources do
-      cover_image %(#{imagesdir}jacket/cover#{::File.extname image_path}) => (::File.join workdir, image_path)
-      @last_defined_item.tap do |last_item|
-        last_item['width'] = width
-        last_item['height'] = height
+      resources do
+        cover_image %(#{imagesdir}jacket/cover#{::File.extname image_path}) => (::File.join workdir, image_path)
+        @last_defined_item.tap do |last_item|
+          last_item['width'] = width
+          last_item['height'] = height
+        end
       end
     end
     nil
@@ -158,6 +158,9 @@ module GepubBuilderMixin
   # NOTE must be called within the ordered block
   def add_cover_page doc, spine_builder, manifest
     cover_item_attrs = manifest.items['item_cover'].instance_variable_get :@attributes
+    if cover_item_attrs == nil
+      return nil
+    end
     href = cover_item_attrs['href']
     # NOTE we only store width and height temporarily to pass through the values
     width = cover_item_attrs.delete 'width'

@@ -928,6 +928,8 @@ Extensions.register do
   if (document = @document).backend == 'epub3'
     document.attributes['spine'] = ''
     document.set_attribute 'listing-caption', 'Listing'
+    document.set_attribute 'front-cover-image', ''
+
     if !(defined? ::AsciidoctorJ) && (::Gem::try_activate 'pygments.rb')
       if document.set_attribute 'source-highlighter', 'pygments'
         document.set_attribute 'pygments-css', 'style'
