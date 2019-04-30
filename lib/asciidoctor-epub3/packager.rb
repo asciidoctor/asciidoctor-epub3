@@ -151,6 +151,8 @@ module GepubBuilderMixin
           last_item['height'] = height
         end
       end
+    else
+      warn %(asciidoctor: WARNING: #{::File.basename(doc.attr 'docfile')}: front cover image not set)
     end
     nil
   end
