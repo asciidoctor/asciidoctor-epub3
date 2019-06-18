@@ -146,7 +146,7 @@ module GepubBuilderMixin
     end
 
     resources do
-      cover_image %(#{imagesdir}jacket/cover#{::File.extname image_path}) => (::File.join workdir, image_path)
+      cover_image %(#{imagesdir}jacket/cover#{::File.extname image_path}) => (::File.expand_path image_path, workdir)
       @last_defined_item.tap do |last_item|
         last_item['width'] = width
         last_item['height'] = height
