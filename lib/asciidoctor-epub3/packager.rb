@@ -131,7 +131,7 @@ module GepubBuilderMixin
         (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
       end
       workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
-      if ::File.readable?(::File.join workdir, image_path)
+      if ::File.readable?(::File.expand_path image_path, workdir)
         unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
           width, height = 1050, 1600
         end
