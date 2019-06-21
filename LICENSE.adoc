@@ -1,3 +1,6 @@
+[[LICENSE]]
+= LICENSE
+
 .The MIT License
 ....
 Copyright (C) 2014-2019 OpenDevise Inc. and the Asciidoctor Project

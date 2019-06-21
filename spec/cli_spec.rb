@@ -21,8 +21,8 @@ describe 'asciidoctor-epub3' do
 
     _, err, res = run_command asciidoctor_epub3_bin, '-a', 'ebook-validate', infile, '-o', outfile
     expect(res.exitstatus).to eq(0)
-    # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/196
-    expect(err).to include 'invalid reference to anchor in unknown chapter: NOTICE'
+    expect(err).not_to include 'ERROR'
+    expect(err).not_to include 'invalid reference'
     expect(File).to exist(outfile)
   end
 
@@ -34,8 +34,8 @@ describe 'asciidoctor-epub3' do
 
     _, err, res = run_command asciidoctor_epub3_bin, '-a', 'ebook-format=mobi', infile, '-o', outfile
     expect(res.exitstatus).to eq(0)
-    # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/196
-    expect(err).to include 'invalid reference to anchor in unknown chapter: NOTICE'
+    expect(err).not_to include 'ERROR'
+    expect(err).not_to include 'invalid reference'
     expect(File).to exist(outfile)
   end
 end

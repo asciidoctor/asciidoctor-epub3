@@ -53,6 +53,7 @@ For instance, in an HTML page, add these two `<script>` tags (ideally at the bot
 
 You can see these scripts in action by running the examples, described in the https://github.com/asciidoctor/asciidoctor.js#readme[README].
 
+[#usage]
 == Usage
 
 To interact with the generated code, you either:
