@@ -1,0 +1,8 @@
+= Chapter
+
+Try to refer to <<item1>>.
+
+[bibliography]
+
+* [[[item1]]] foo::bar
+* [[[item2]]] baz::qux

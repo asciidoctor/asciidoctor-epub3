@@ -1,0 +1,5 @@
+= Book title
+:doctype: book
+:idprefix:
+
+include::chapter.adoc[leveloffset=+1]
