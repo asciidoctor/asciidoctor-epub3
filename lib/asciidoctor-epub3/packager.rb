@@ -292,8 +292,9 @@ body > svg {
           file %(#{item.id || (item.attr 'docname')}.xhtml) => (builder.postprocess_xhtml item.convert, format)
           add_property 'svg' if ((item.attr 'epub-properties') || []).include? 'svg'
           # QUESTION should we pass the document itself?
-          item.references[:images].each do |target|
-            images[image_path = %(#{imagesdir}#{target})] ||= { docfile: docfile, path: image_path }
+          item.references[:images].each do |imageref|
+            image_path = File.join(imageref.imagesdir, imageref.target)
+            images[image_path] ||= { docfile: docfile, path: image_path }
           end
           # QUESTION reenable?
           #linear 'yes' if i == 0
