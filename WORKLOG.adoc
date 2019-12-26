@@ -34,10 +34,6 @@
 * allow role to be applied to chapter (which means the role must be on the document)
 * should we enable hyphens in non-Kindle?
  ** we can reenable once we confirm it doesn't crash Kindle for Mac
-* switch to epubcheck-ruby
- ** epubcheck-ruby 4.0.2
- ** supports options such as -q
- ** add -w option by default (perhaps allow additional options to be passed via the ebook-validate attribute)
 * document KINDLEGEN and EPUBCHECK env vars
 * part vs chapter? a difference?
 

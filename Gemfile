@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :optional do
-  gem 'epubcheck', '3.0.1'
+  gem 'epubcheck-ruby', '4.1.1.0'
 
   if (ruby_version = Gem::Version.new RUBY_VERSION) < (Gem::Version.new '2.0.0')
     gem 'kindlegen', '2.9.4'
