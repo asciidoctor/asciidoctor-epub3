@@ -11,6 +11,6 @@ group :optional do
     gem 'pygments.rb', '0.6.3'
   else
     gem 'kindlegen', (ruby_version < (Gem::Version.new '2.4.0') ? '3.0.3' : '3.0.5')
-    gem 'pygments.rb', '1.1.2'
+    gem 'pygments.rb', '1.2.1'
   end
 end
