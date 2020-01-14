@@ -29,6 +29,7 @@ endif::[]
 :uri-gem: http://rubygems.org/gems/asciidoctor-epub3
 :uri-repo: {uri-project}
 :uri-issues: {uri-repo}/issues
+:uri-ci: {uri-repo}/actions?query=workflow%3ACI
 :uri-discuss: http://discuss.asciidoctor.org
 :uri-rvm: https://rvm.io
 :uri-asciidoctor: http://asciidoctor.org
@@ -49,6 +50,7 @@ endif::[]
 ifdef::status[]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
 image:https://img.shields.io/badge/license-MIT-blue.svg[MIT License,link=#copyright]
+image:{uri-repo}/workflows/CI/badge.svg[GitHub Actions,link={uri-ci}]
 endif::[]
 
 {project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 and KF8/MOBI e-book formats.
