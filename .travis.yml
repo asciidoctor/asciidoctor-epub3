@@ -16,7 +16,7 @@ env:
   global:
   # use system libraries to speed up installation of nokogiri
   - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-script: bundle exec asciidoctor-epub3 -D . data/samples/sample-book.adoc
+script: bundle exec rake spec
 deploy:
   provider: rubygems
   gem: asciidoctor-epub3
