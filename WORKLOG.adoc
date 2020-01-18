@@ -2,6 +2,8 @@
 
 == TODO
 
+* route messages through the logger (#198)
+* use ImageReference if available to locate image
 * remove conum patch for listing block (fixed in Asciidoctor 1.5.6)
 * change has_role? to role?
 * use empty string in place of nil in interpolated strings (few more still to check)
