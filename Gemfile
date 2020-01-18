@@ -14,3 +14,7 @@ group :optional do
     gem 'pygments.rb', '1.2.1'
   end
 end
+
+group :docs do
+  gem 'yard', require: false
+end
