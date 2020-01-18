@@ -691,9 +691,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         id_attr = '' unless @xrefs_seen.add? refid
         refdoc = doc.references[:spine_items].find {|it| refdoc_id == (it.id || (it.attr 'docname')) }
         if refdoc
-          # QUESTION should we invoke xreftext for references in other documents?
-          if (refs = refdoc.references[:refs]) && ::Asciidoctor::Document === (ref = refs[refdoc_refid])
-            text ||= (ref.attr 'docreftext') || ref.doctitle
+          if (refs = refdoc.references[:refs]) && ::Asciidoctor::AbstractNode === (ref = refs[refdoc_refid])
+            text ||= ::Asciidoctor::Document === ref ? ((ref.attr 'docreftext') || ref.doctitle) :ref.xreftext((@xrefstyle ||= (doc.attr 'xrefstyle')))
           elsif (xreftext = refdoc.references[:ids][refdoc_refid])
             text ||= xreftext
           else
