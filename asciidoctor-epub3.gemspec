@@ -1,4 +1,5 @@
-# -*- encoding: utf-8 -*-
+# frozen_string_literal: true
+
 require File.expand_path('lib/asciidoctor-epub3/version', File.dirname(__FILE__))
 require 'open3' unless defined? Open3
 
@@ -32,9 +33,11 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
 
   s.add_development_dependency 'rake', '~> 12.3.0'
   s.add_development_dependency 'rspec', '~> 3.9.0'
+  s.add_development_dependency 'rubocop', '~> 0.78.0'
+  s.add_development_dependency 'rubocop-rspec', '~> 1.37.0'
 
   s.add_runtime_dependency 'asciidoctor', '>= 1.5.0', '< 3.0.0'
+  s.add_runtime_dependency 'concurrent-ruby', '~> 1.1.0'
   s.add_runtime_dependency 'gepub', '~> 1.0.0'
   s.add_runtime_dependency 'thread_safe', '~> 0.3.0'
-  s.add_runtime_dependency 'concurrent-ruby', '~> 1.1.0'
 end

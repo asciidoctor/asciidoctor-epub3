@@ -24,6 +24,7 @@ env:
   # use system libraries to speed up installation of nokogiri
   - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 script:
+- bundle exec rake lint
 - bundle exec ruby -w $(bundle exec ruby -e "print Gem.bin_path 'rake', 'rake'") spec
 deploy:
   provider: rubygems

@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 ADB = ENV['ADB'] || 'adb'
 TARGETS = {
   '.epub' => '/sdcard/',
-  '.mobi' => '/sdcard/Android/data/com.amazon.kindle/files/'
+  '.mobi' => '/sdcard/Android/data/com.amazon.kindle/files/',
 }
 
 unless ::File.executable? ADB
@@ -20,7 +21,7 @@ if (payload_file_ext = File.extname payload_file).empty?
   transfers = TARGETS.map do |(ext, target_dir)|
     {
       src: %(#{payload_file}#{ext}),
-      dest: target_dir
+      dest: target_dir,
     }
   end
 else
@@ -28,7 +29,7 @@ else
 end
 
 transfers.each do |transfer|
-  Open3.popen2e(Shellwords.join [ADB, 'push', transfer[:src], transfer[:dest]]) do |input, output, wait_thr|
+  Open3.popen2e Shellwords.join([ADB, 'push', transfer[:src], transfer[:dest]]) do |_input, output, _wait_thr|
     output.each {|line| puts line }
   end if File.file? transfer[:src]
 end

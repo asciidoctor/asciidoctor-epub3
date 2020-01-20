@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'asciidoctor-epub3'
 
 RSpec.configure do |config|
