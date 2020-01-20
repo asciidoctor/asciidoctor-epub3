@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require_relative 'spec_helper.rb'
+require_relative 'spec_helper'
 
-describe 'Executable' do
+describe 'asciidoctor-epub3' do
   it 'exits with 0 when prints version' do
     system 'bundle', 'exec', 'asciidoctor-epub3', '--version', out: File::NULL, err: File::NULL
     expect($?.exitstatus).to eq(0)
   end
 
-  it 'it exits with 1 when given nonexistent path' do
+  it 'exits with 1 when given nonexistent path' do
     system 'bundle', 'exec', 'asciidoctor-epub3', '/nonexistent', out: File::NULL, err: File::NULL
     expect($?.exitstatus).to eq(1)
   end
