@@ -146,7 +146,7 @@ module Asciidoctor
 
         # NOTE kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = (node.attr 'lang', 'en')}" lang="#{lang}">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = node.attr 'lang', 'en'}" lang="#{lang}">
 <head>
 <meta charset="UTF-8"/>
 <title>#{doctitle_sanitized}</title>
@@ -357,9 +357,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         footer_tag = footer_content.empty? ? '' : %(
 <footer>~ #{footer_content * ' '}</footer>)
-        content = (convert_content node).strip
-                                        .sub(OpenParagraphTagRx, '<p><span class="open-quote">“</span>')
-                                        .sub CloseParagraphTagRx, '<span class="close-quote">”</span></p>'
+        content = ((convert_content node).strip.sub OpenParagraphTagRx, '<p><span class="open-quote">“</span>').sub CloseParagraphTagRx, '<span class="close-quote">”</span></p>'
         %(<div#{id_attr}#{class_attr}>
 <blockquote>
 #{content}#{footer_tag}
@@ -471,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                   end
                 end
 
-                cell_tag_name = (tsec == :head || cell.style == :header ? 'th' : 'td')
+                cell_tag_name = tsec == :head || cell.style == :header ? 'th' : 'td'
                 cell_classes = []
                 if (halign = cell.attr 'halign') && halign != 'left'
                   cell_classes << 'halign-left'
@@ -513,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines = []
         case (style = node.style)
         when 'itemized', 'ordered'
-          list_tag_name = (style == 'itemized' ? 'ul' : 'ol')
+          list_tag_name = style == 'itemized' ? 'ul' : 'ol'
           role = node.role
           subject_stop = node.attr 'subject-stop', (role && (node.has_role? 'stack') ? nil : ':')
           # QUESTION should we just use itemized-list and ordered-list as the class here? or just list?

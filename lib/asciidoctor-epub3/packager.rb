@@ -251,7 +251,7 @@ body > svg {
         resources do
           usernames.each do |username|
             avatar = %(#{imagesdir}avatars/#{username}.jpg)
-            if ::File.readable? resolved_avatar = (::File.join workdir, avatar)
+            if ::File.readable? (resolved_avatar = (::File.join workdir, avatar))
               file avatar => resolved_avatar
             else
               warn %(asciidoctor: ERROR: avatar for #{username} not found or readable: #{avatar}; falling back to default avatar)
@@ -259,7 +259,7 @@ body > svg {
             end
 
             headshot = %(#{imagesdir}headshots/#{username}.jpg)
-            if ::File.readable? resolved_headshot = (::File.join workdir, headshot)
+            if ::File.readable? (resolved_headshot = (::File.join workdir, headshot))
               file headshot => resolved_headshot
             elsif doc.attr? 'builder', 'editions'
               warn %(asciidoctor: ERROR: headshot for #{username} not found or readable: #{headshot}; falling back to default headshot)
@@ -309,7 +309,7 @@ body > svg {
       # TODO: aggregate authors of spine document into authors attribute(s) on main document
       def nav_doc doc, spine
         lines = [%(<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = (doc.attr 'lang', 'en')}" lang="#{lang}">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = doc.attr 'lang', 'en'}" lang="#{lang}">
 <head>
 <meta charset="UTF-8"/>
 <title>#{sanitize_doctitle_xml doc, :cdata}</title>
@@ -505,7 +505,7 @@ body > svg {
           @document = doc
           @spine = spine
           @format = fmt
-          @book.epub_backward_compat = (fmt != :kf8)
+          @book.epub_backward_compat = fmt != :kf8
 
           language doc.attr('lang', 'en')
           id 'pub-language'
@@ -524,9 +524,9 @@ body > svg {
 
           # FIXME: this logic needs some work
           if doc.attr? 'publisher'
-            publisher publisher_name = (doc.attr 'publisher')
+            publisher (publisher_name = (doc.attr 'publisher'))
             # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
-            creator doc.attr('producer', publisher_name), 'bkp'
+            creator (doc.attr 'producer', publisher_name), 'bkp'
           elsif doc.attr? 'producer'
             # NOTE Use producer as both publisher and producer if publisher isn't specified
             producer_name = doc.attr 'producer'

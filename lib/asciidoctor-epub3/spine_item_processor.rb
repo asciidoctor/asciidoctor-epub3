@@ -11,7 +11,7 @@ module Asciidoctor
       def process doc, reader, target, _attributes
         spine_doc = doc
         # TODO: allow URI value
-        unless ::File.file? include_file = (spine_doc.normalize_system_path target, reader.dir, nil, target_name: 'include file')
+        unless ::File.file? (include_file = (spine_doc.normalize_system_path target, reader.dir, nil, target_name: 'include file'))
           warn %(asciidoctor: WARNING: #{reader.line_info}: include file not found: #{include_file})
           return
         end
