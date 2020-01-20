@@ -248,7 +248,7 @@ However, for the time being, the include directive fills this role.
 
 == Prerequisites
 
-All that's needed to use {project-name} is Ruby (1.9.3 or above; 2.2.x recommended) and a few Ruby gems, which we'll explain how to install in the next section.
+All that's needed to use {project-name} is Ruby 2.3 or newer and a few Ruby gems, which we'll explain how to install in the next section.
 
 To check if you have Ruby available, use the `ruby` command to query the installed version:
 
