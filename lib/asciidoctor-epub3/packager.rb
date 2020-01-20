@@ -626,10 +626,12 @@ body > svg {
       end
 
       def validate_epub epub_file
-        epubcheck_cmd = EPUBCHECK
-        epubcheck_cmd = ::Gem.bin_path 'epubcheck-ruby', 'epubcheck' unless ::File.executable? epubcheck_cmd
+        if ::File.executable? EPUBCHECK
+          argv = [EPUBCHECK]
+        else
+          argv = [::Gem.ruby, ::Gem.bin_path('epubcheck-ruby', 'epubcheck')]
+        end
 
-        argv = [epubcheck_cmd]
         if $VERBOSE.nil?
           argv << '-q'
         else
