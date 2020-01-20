@@ -15,11 +15,11 @@ describe 'asciidoctor-epub3' do
     expect(err).to match(/input file \/nonexistent( is)? missing/)
   end
 
-  it 'converts sample book' do
+  it 'converts and validates sample book' do
     infile = example_file 'sample-book.adoc'
     outfile = temp_file 'sample-book.epub'
 
-    _, _, res = run_command asciidoctor_epub3_bin, infile, '-o', outfile
+    _, _, res = run_command asciidoctor_epub3_bin, '-a', 'ebook-validate', infile, '-o', outfile
     expect(res.exitstatus).to eq(0)
     expect(File).to exist(outfile)
   end
