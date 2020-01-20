@@ -5,6 +5,13 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== Unreleased
+
+* fix deep xrefs between chapters when using Asciidoctor 2 (#210)
+* switch from epubcheck to epubcheck-ruby (#224)
+* set up a test suite (#11)
+* set up rubocop to enforce a consistent code style (#223)
+
 == 1.5.0.alpha.9 (2019-04-04) - @mojavelinux
 
 * allow converter to be used with Asciidoctor 2 (#185)
