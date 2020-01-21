@@ -27,7 +27,12 @@ module Asciidoctor
           @validate = node.attr? 'ebook-validate'
           @extract = node.attr? 'ebook-extract'
           @compress = node.attr 'ebook-compress'
-          Packager.new node, (node.references[:spine_items] || [node]), node.attributes['ebook-format'].to_sym
+          spine_items = node.references[:spine_items]
+          if spine_items.nil?
+            warn %(asciidoctor: ERROR: #{::File.basename node.document.attr('docfile')}: failed to find spine items, produced file will be invalid)
+            spine_items = []
+          end
+          Packager.new node, spine_items, node.attributes['ebook-format'].to_sym
           # converting an element from the spine document, such as an inline node in the doctitle
         elsif name.start_with? 'inline_'
           (@content_converter ||= ::Asciidoctor::Converter::Factory.default.create 'epub3-xhtml5').convert node, name

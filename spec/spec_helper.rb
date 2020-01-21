@@ -43,6 +43,14 @@ RSpec.configure do |config|
     File.join temp_dir, path
   end
 
+  def fixtures_dir
+    File.join __dir__, 'fixtures'
+  end
+
+  def fixture_file path
+    File.join fixtures_dir, path
+  end
+
   def examples_dir
     File.join __dir__, '..', 'data', 'samples'
   end
@@ -53,6 +61,11 @@ RSpec.configure do |config|
 
   def darwin_platform?
     RbConfig::CONFIG['host_os'] =~ /darwin/
+  end
+
+  def skip_if_darwin
+    # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/236
+    skip '#236: Kindlegen is unavailable for-bit MacOS' if darwin_platform?
   end
 end
 
