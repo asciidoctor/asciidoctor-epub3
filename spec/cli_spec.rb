@@ -25,8 +25,7 @@ describe 'asciidoctor-epub3' do
   end
 
   it 'converts sample book to mobi' do
-    # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/236
-    skip '#236: Kindlegen is unavailable for-bit MacOS' if darwin_platform?
+    skip_if_darwin
 
     infile = example_file 'sample-book.adoc'
     outfile = temp_file 'sample-book.mobi'
