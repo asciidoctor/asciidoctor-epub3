@@ -9,6 +9,7 @@ module Asciidoctor
     # EPUB3 or KF8 publication file.
     class Converter
       include ::Asciidoctor::Converter
+      include ::Asciidoctor::Logging
       include ::Asciidoctor::Writer
 
       register_for 'epub3'
@@ -29,7 +30,7 @@ module Asciidoctor
           @compress = node.attr 'ebook-compress'
           spine_items = node.references[:spine_items]
           if spine_items.nil?
-            warn %(asciidoctor: ERROR: #{::File.basename node.document.attr('docfile')}: failed to find spine items, produced file will be invalid)
+            logger.error %(#{::File.basename node.document.attr('docfile')}: failed to find spine items, produced file will be invalid)
             spine_items = []
           end
           Packager.new node, spine_items, node.attributes['ebook-format'].to_sym
@@ -97,7 +98,7 @@ module Asciidoctor
         if respond_to? name ||= node.node_name
           send name, node
         else
-          warn %(asciidoctor: WARNING: conversion missing in epub3 backend for #{name})
+          logger.warn %(conversion missing in epub3 backend for #{name})
         end
       end
 
@@ -692,10 +693,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
               elsif (xreftext = refdoc.references[:ids][refdoc_refid])
                 text ||= xreftext
               else
-                warn %(asciidoctor: WARNING: #{::File.basename doc.attr('docfile')}: invalid reference to unknown anchor in #{refdoc_id} chapter: #{refdoc_refid})
+                logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to unknown anchor in #{refdoc_id} chapter: #{refdoc_refid})
               end
             else
-              warn %(asciidoctor: WARNING: #{::File.basename doc.attr('docfile')}: invalid reference to anchor in unknown chapter: #{refdoc_id})
+              logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to anchor in unknown chapter: #{refdoc_id})
             end
           else
             id_attr = (@xrefs_seen.add? refid) ? %( id="xref-#{refid}") : ''
@@ -711,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
               text ||= xreftext
             else
               # FIXME: we get false negatives for reference to bibref when using Asciidoctor < 1.5.6
-              warn %(asciidoctor: WARNING: #{::File.basename doc.attr('docfile')}: invalid reference to unknown local anchor (or valid bibref): #{refid})
+              logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to unknown local anchor (or valid bibref): #{refid})
             end
           end
           %(<a#{id_attr} href="#{target}" class="xref">#{text || "[#{refid}]"}</a>)
@@ -909,7 +910,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             end
             id = %(#{pre}document#{sep}#{doc.object_id}) if synthetic
           end
-          warn %(asciidoctor: ERROR: chapter uses a reserved ID: #{id}) if !synthetic && (ReservedIds.include? id)
+          logger.error %(chapter uses a reserved ID: #{id}) if !synthetic && (ReservedIds.include? id)
           id
         end
       end

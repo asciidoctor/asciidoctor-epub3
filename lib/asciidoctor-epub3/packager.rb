@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'core_ext/string'
 autoload :FileUtils, 'fileutils'
 autoload :Open3, 'open3'
 autoload :Shellwords, 'shellwords'
@@ -8,6 +7,7 @@ autoload :Shellwords, 'shellwords'
 module Asciidoctor
   module Epub3
     module GepubBuilderMixin
+      include ::Asciidoctor::Logging
       DATA_DIR = ::File.expand_path ::File.join(::File.dirname(__FILE__), '..', '..', 'data')
       SAMPLES_DIR = ::File.join DATA_DIR, 'samples'
       LF = ?\n
@@ -126,7 +126,7 @@ module Asciidoctor
         if (image_path = doc.attr 'front-cover-image')
           image_attrs = {}
           if (image_path.include? ':') && image_path =~ ImageMacroRx
-            warn %(asciidoctor: WARNING: deprecated block macro syntax detected in front-cover-image attribute) if image_path.start_with? 'image::'
+            logger.warn %(deprecated block macro syntax detected in front-cover-image attribute) if image_path.start_with? 'image::'
             image_path = %(#{imagesdir}#{$1})
             (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
           end
@@ -136,7 +136,7 @@ module Asciidoctor
               width, height = 1050, 1600
             end
           else
-            warn %(asciidoctor: ERROR: #{::File.basename doc.attr('docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
+            logger.error %(#{::File.basename doc.attr('docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
             image_path = nil
           end
         end
@@ -223,15 +223,16 @@ body > svg {
         docimagesdir = (doc.attr 'imagesdir', '.').chomp '/'
         docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
 
+        self_logger = logger
         workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
         resources workdir: workdir do
           images.each do |image|
             if (image_path = image[:path]).start_with? %(#{docimagesdir}jacket/cover.)
-              warn %(asciidoctor: WARNING: image path is reserved for cover artwork: #{image_path}; skipping image found in content)
+              self_logger.warn %(image path is reserved for cover artwork: #{image_path}; skipping image found in content)
             elsif ::File.readable? image_path
               file image_path
             else
-              warn %(asciidoctor: ERROR: #{::File.basename image[:docfile]}: image not found or not readable: #{::File.expand_path image_path, workdir})
+              self_logger.error %(#{::File.basename image[:docfile]}: image not found or not readable: #{::File.expand_path image_path, workdir})
             end
           end
         end
@@ -247,6 +248,7 @@ body > svg {
           file %(#{imagesdir}headshots/default.jpg) => ::File.join(DATA_DIR, 'images/default-headshot.jpg')
         end
 
+        self_logger = logger
         workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
         resources do
           usernames.each do |username|
@@ -254,7 +256,7 @@ body > svg {
             if ::File.readable? (resolved_avatar = (::File.join workdir, avatar))
               file avatar => resolved_avatar
             else
-              warn %(asciidoctor: ERROR: avatar for #{username} not found or readable: #{avatar}; falling back to default avatar)
+              self_logger.error %(avatar for #{username} not found or readable: #{avatar}; falling back to default avatar)
               file avatar => ::File.join(DATA_DIR, 'images/default-avatar.jpg')
             end
 
@@ -262,7 +264,7 @@ body > svg {
             if ::File.readable? (resolved_headshot = (::File.join workdir, headshot))
               file headshot => resolved_headshot
             elsif doc.attr? 'builder', 'editions'
-              warn %(asciidoctor: ERROR: headshot for #{username} not found or readable: #{headshot}; falling back to default headshot)
+              self_logger.error %(headshot for #{username} not found or readable: #{headshot}; falling back to default headshot)
               file headshot => ::File.join(DATA_DIR, 'images/default-headshot.jpg')
             end
           end
@@ -475,6 +477,8 @@ body > svg {
     end
 
     class Packager
+      include ::Asciidoctor::Logging
+
       KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
       EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
       EpubExtensionRx = /\.epub$/i
@@ -583,7 +587,7 @@ body > svg {
 
         epub_file = fmt == :kf8 ? %(#{::Asciidoctor::Helpers.rootname target}-kf8.epub) : target
         builder.generate_epub epub_file
-        puts %(Wrote #{fmt.upcase} to #{epub_file}) if $VERBOSE
+        logger.debug %(Wrote #{fmt.upcase} to #{epub_file})
         if options[:extract]
           extract_dir = epub_file.sub EpubExtensionRx, ''
           ::FileUtils.remove_dir extract_dir if ::File.directory? extract_dir
@@ -599,7 +603,7 @@ body > svg {
               end
             end
           end
-          puts %(Extracted #{fmt.upcase} to #{extract_dir}) if $VERBOSE
+          logger.debug %(Extracted #{fmt.upcase} to #{extract_dir})
         end
 
         if fmt == :kf8
@@ -619,10 +623,18 @@ body > svg {
         mobi_file = ::File.basename target.sub(EpubExtensionRx, '.mobi')
         compress_flag = KindlegenCompression[compress ? (compress.empty? ? '1' : compress.to_s) : '0']
         cmd = [kindlegen_cmd, '-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
-        ::Open3.popen2e ::Shellwords.join(cmd) do |_input, output, _wait_thr|
-          output.each {|line| puts line } unless $VERBOSE.nil?
+        ::Open3.popen2e ::Shellwords.join(cmd) do |_input, output, wait_thr|
+          output.each do |line|
+            log_line line
+          end
+
+          output_file = ::File.join ::File.dirname(epub_file), mobi_file
+          if wait_thr.value.success?
+            logger.debug %(Wrote MOBI to #{output})
+          else
+            logger.error %(kindlegen failed to write MOBI to #{output_file})
+          end
         end
-        puts %(Wrote MOBI to #{::File.join ::File.dirname(epub_file), mobi_file}) if $VERBOSE
       end
 
       def validate_epub epub_file
@@ -632,15 +644,28 @@ body > svg {
           argv = [::Gem.ruby, ::Gem.bin_path('epubcheck-ruby', 'epubcheck')]
         end
 
-        if $VERBOSE.nil?
-          argv << '-q'
-        else
-          argv << '-w'
-        end
+        argv << '-w'
         argv << epub_file
 
-        ::Open3.popen2e ::Shellwords.join(argv) do |_input, output, _wait_thr|
-          output.each {|line| puts line }
+        ::Open3.popen2e ::Shellwords.join(argv) do |_input, output, wait_thr|
+          output.each do |line|
+            log_line line
+          end
+          logger.error %(EPUB validation failed: #{epub_file}) unless wait_thr.value.success?
+        end
+      end
+
+      def log_line line
+        line = line.strip
+
+        if line =~ /^fatal/i
+          logger.fatal line
+        elsif line =~ /^error/i
+          logger.error line
+        elsif line =~ /^warning/i
+          logger.warn line
+        else
+          logger.info line
         end
       end
     end

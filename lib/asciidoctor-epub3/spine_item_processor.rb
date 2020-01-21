@@ -3,6 +3,8 @@
 module Asciidoctor
   module Epub3
     class SpineItemProcessor < Extensions::IncludeProcessor
+      include ::Asciidoctor::Logging
+
       def initialize document
         @document = document
       end
@@ -12,7 +14,7 @@ module Asciidoctor
         spine_doc = doc
         # TODO: allow URI value
         unless ::File.file? (include_file = (spine_doc.normalize_system_path target, reader.dir, nil, target_name: 'include file'))
-          warn %(asciidoctor: WARNING: #{reader.line_info}: include file not found: #{include_file})
+          logger.warn %(#{reader.line_info}: include file not found: #{include_file})
           return
         end
         inherited_attrs = spine_doc.attributes.dup
