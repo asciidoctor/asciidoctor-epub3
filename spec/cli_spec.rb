@@ -15,11 +15,23 @@ describe 'asciidoctor-epub3' do
     expect(err).to match(/input file \/nonexistent( is)? missing/)
   end
 
-  it 'converts and validates sample book' do
+  it 'converts sample book to epub and validates it' do
     infile = example_file 'sample-book.adoc'
     outfile = temp_file 'sample-book.epub'
 
     _, _, res = run_command asciidoctor_epub3_bin, '-a', 'ebook-validate', infile, '-o', outfile
+    expect(res.exitstatus).to eq(0)
+    expect(File).to exist(outfile)
+  end
+
+  it 'converts sample book to mobi' do
+    # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/236
+    skip '#236: Kindlegen is unavailable for-bit MacOS' if darwin_platform?
+
+    infile = example_file 'sample-book.adoc'
+    outfile = temp_file 'sample-book.mobi'
+
+    _, _, res = run_command asciidoctor_epub3_bin, '-a', 'ebook-format=mobi', infile, '-o', outfile
     expect(res.exitstatus).to eq(0)
     expect(File).to exist(outfile)
   end

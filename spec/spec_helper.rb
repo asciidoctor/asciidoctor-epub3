@@ -50,6 +50,10 @@ RSpec.configure do |config|
   def example_file path
     File.join examples_dir, path
   end
+
+  def darwin_platform?
+    RbConfig::CONFIG['host_os'] =~ /darwin/
+  end
 end
 
 RSpec::Matchers.define :have_size do |expected|
