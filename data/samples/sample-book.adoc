@@ -16,7 +16,7 @@ ifeval::["{scripts}" == "multilingual"]
 include::i18n.adoc[]
 endif::[]
 
-include::asciidoctor-epub3-readme.adoc[]
+include::../../README.adoc[]
 
 include::sample-content.adoc[]
 
