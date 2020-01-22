@@ -250,7 +250,7 @@ However, for the time being, the include directive fills this role.
 
 == Prerequisites
 
-All that's needed to use {project-name} is Ruby 2.3 or newer and a few Ruby gems, which we'll explain how to install in the next section.
+All that's needed to use {project-name} is Ruby 2.3 or newer and a few Ruby gems (including at least Asciidoctor 1.5.3), which we'll explain how to install in the next section.
 
 To check if you have Ruby available, use the `ruby` command to query the installed version:
 
