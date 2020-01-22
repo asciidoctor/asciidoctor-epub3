@@ -1,0 +1,6 @@
+= Unicode book
+:doctype: book
+:idprefix:
+:idseparator: -
+
+include::reference.adoc[]
