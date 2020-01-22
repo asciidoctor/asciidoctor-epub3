@@ -38,9 +38,11 @@ describe 'Asciidoctor::Epub3::Converter - Xref' do
       EOS
 
       doc = Asciidoctor.load_file book_file, backend: 'epub3', header_footer: true
+      # Only convert spine, not the whole book
       doc.convert
       spine_items = doc.references[:spine_items]
       (expect spine_items).to have_size 2
+      # Convert chapter
       chapter_a_content = doc.references[:spine_items][0].content
       (expect chapter_a_content).to include '<a id="xref--chapter-b" href="chapter-b.xhtml" class="xref">Chapter B</a>'
     end
@@ -80,9 +82,11 @@ describe 'Asciidoctor::Epub3::Converter - Xref' do
       EOS
 
       doc = Asciidoctor.load_file book_file, backend: 'epub3', header_footer: true
+      # Only convert spine, not the whole book
       doc.convert
       spine_items = doc.references[:spine_items]
       (expect spine_items).to have_size 2
+      # Convert chapter
       chapter_a_content = doc.references[:spine_items][0].content
       (expect chapter_a_content).to include '<a id="xref--chapter-b--getting-started" href="chapter-b.xhtml#getting-started" class="xref">Getting Started</a>'
     end
