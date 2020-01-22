@@ -9,6 +9,12 @@ Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 [abstract]
 This sample guide describes several Asciidoctor attributes, values, and layout options available for producing a customized and polished document.
 
+== Cross Reference
+
+This is a cross reference to <<asciidoctor-js#usage>> and this is another one xref:asciidoctor-js#usage[].
+
+Referencing a document <<NOTICE#,NOTICE>>.
+
 == Text size and justification
 
 * *http://guides.github.com/overviews/forking[Fork] the repository* and clone it locally.

@@ -1,3 +1,4 @@
+[[NOTICE]]
 = Asciidoctor EPUB3
 
 Copyright (C) 2014-2016 OpenDevise Inc. and the Asciidoctor Project.
