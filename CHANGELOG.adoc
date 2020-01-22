@@ -7,9 +7,9 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
-* Drop unused dependencies: thread_safe, concurrent-ruby (#234)
+* drop unused dependencies: thread_safe, concurrent-ruby (#234)
 * fix sample-book to be a valid book (#196)
-* Fix the (in)famous `undefined method `to_ios'` when given a document that doesn't follow asciidoctor-epub3 rules (#7)
+* fix the (in)famous `undefined method `to_ios'` when given a document that doesn't follow asciidoctor-epub3 rules (#7)
 
 == 1.5.0.alpha.10 (2020-01-20) - @slonopotamus
 
