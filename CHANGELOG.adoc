@@ -14,6 +14,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * remove Namo Reader font-icon quirk that produced invalid markup (#192)
 * fix the (in)famous `undefined method `to_ios'` when given a document that doesn't follow asciidoctor-epub3 rules (#7)
 * route messages through the logger (#176)
+* update EPUBCheck to 4.2.2.0 (#240)
 * handle invalid `revdate` gracefully (#14)
 
 == 1.5.0.alpha.10 (2020-01-20) - @slonopotamus
