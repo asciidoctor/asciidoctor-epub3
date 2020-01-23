@@ -8,6 +8,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 == Unreleased
 
 * drop unused dependencies: thread_safe, concurrent-ruby (#234)
+* add support for Unicode characters in chapter IDs (#217)
 * fix sample-book to be a valid book (#196)
 * require at least Asciidoctor 1.5.3 (#245)
 * fix the (in)famous `undefined method `to_ios'` when given a document that doesn't follow asciidoctor-epub3 rules (#7)
