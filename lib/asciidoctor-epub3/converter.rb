@@ -134,7 +134,7 @@ module Asciidoctor
         # NOTE must run after content is resolved
         # TODO perhaps create dynamic CSS file?
         if @icon_names.empty?
-          icon_css_head = icon_css_scoped = ''
+          icon_css_head = ''
         else
           icon_defs = @icon_names.map {|name|
             %(.i-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
@@ -142,11 +142,6 @@ module Asciidoctor
           icon_css_head = %(<style>
 #{icon_defs}
 </style>
-)
-          # NOTE Namo Pubtree requires icon CSS to be repeated inside <body> (or in a linked stylesheet); wrap in div to hide from Aldiko
-          icon_css_scoped = (node.attr? 'ebook-format', 'kf8') ? '' : %(<div style="display: none" aria-hidden="true"><style scoped="scoped">
-#{icon_defs}
-</style></div>
 )
         end
 
@@ -170,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </head>
 <body>
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
-#{icon_css_scoped}<header>
+<header>
 <div class="chapter-header">
 #{byline}<h1 class="chapter-title">#{title}#{subtitle ? %(<small class="subtitle">#{subtitle_formatted}</small>) : ''}</h1>
 </div>
