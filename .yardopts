@@ -4,7 +4,7 @@
 --hide-api private
 --title "Asciidoctor EPUB3 API Docs"
 --output-dir apidoc
---exclude /core_ext(?:\.rb$|/)
+--exclude /ext(?:\.rb$|/)
 lib/**/*.rb
 -
 CHANGELOG.adoc
