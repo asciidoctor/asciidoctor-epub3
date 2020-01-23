@@ -14,12 +14,7 @@ options = Asciidoctor::Cli::Options.new backend: 'epub3'
 unless ARGV != ['-v'] && (ARGV & ['-V', '--version']).empty?
   require_relative '../lib/asciidoctor-epub3/version'
   $stdout.write %(Asciidoctor EPUB3 #{Asciidoctor::Epub3::VERSION} using )
-  # NOTE the print_version method was added in Asciidoctor 1.5.2
-  if options.respond_to? :print_version
-    options.print_version
-  else
-    puts %(Asciidoctor #{::Asciidoctor::VERSION} [http://asciidoctor.org])
-  end
+  options.print_version
   exit 0
 end
 
