@@ -47,5 +47,21 @@ describe Asciidoctor::Epub3::Converter do
         Zip.force_entry_names_encoding = prev_zip_encoding
       end
     end
+
+    it 'uses current date as fallback when date attributes cannot be parsed' do
+      in_file = fixture_file 'minimal/book.adoc'
+      out_file = temp_file 'garbage.epub'
+
+      # TODO: assert that error log contains 'failed to parse revdate' error when we add test infrastructure for logs
+      Asciidoctor.convert_file in_file,
+          to_file: out_file,
+          backend: 'epub3',
+          header_footer: true,
+          mkdirs: true,
+          attributes: { 'revdate' => 'garbage' }
+
+      book = GEPUB::Book.parse File.open(out_file)
+      expect(book.metadata.date.content).not_to be_nil
+    end
   end
 end

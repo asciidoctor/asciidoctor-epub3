@@ -556,10 +556,14 @@ body > svg {
           contributors(*authors)
 
           if doc.attr? 'revdate'
-            # TODO: ensure this is a real date
-            date doc.attr('revdate')
+            begin
+              date doc.attr('revdate')
+            rescue ArgumentError => e
+              logger.error %(#{::File.basename doc.attr('docfile')}: failed to parse revdate: #{e}, using current time as a fallback)
+              date ::Time.now
+            end
           else
-            date ::Time.now.strftime('%Y-%m-%dT%H:%M:%SZ')
+            date ::Time.now
           end
 
           description doc.attr('description') if doc.attr? 'description'
