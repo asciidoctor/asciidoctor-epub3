@@ -59,6 +59,14 @@ RSpec.configure do |config|
     File.join examples_dir, path
   end
 
+  def has_logger?
+    defined? Asciidoctor::LoggerManager
+  end
+
+  def skip_unless_has_logger
+    skip 'Logger is unavailable on Asciidoctor < 1.5.7' unless has_logger?
+  end
+
   def darwin_platform?
     RbConfig::CONFIG['host_os'] =~ /darwin/
   end

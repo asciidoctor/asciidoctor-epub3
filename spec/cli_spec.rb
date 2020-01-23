@@ -15,6 +15,19 @@ describe 'asciidoctor-epub3' do
     expect(err).to match(/input file \/nonexistent( is)? missing/)
   end
 
+  it 'exits with 1 when epub validation fails on Asciidoctor >= 1.5.7 with --failure-level=ERROR' do
+    skip_unless_has_logger
+
+    _, err, res = run_command asciidoctor_epub3_bin,
+        '--failure-level=ERROR',
+        '-a', 'ebook-validate',
+        fixture_file('empty.adoc'),
+        '-o', temp_file('empty.epub')
+    expect(res.exitstatus).to eq(1)
+    # Error from epubcheck
+    expect(err).to include 'ERROR(RSC-005)'
+  end
+
   it 'converts sample book to epub and validates it' do
     in_file = example_file 'sample-book.adoc'
     out_file = temp_file 'sample-book.epub'
