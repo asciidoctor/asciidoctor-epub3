@@ -21,6 +21,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * disable Pygments on JRuby to prevent hanging (#253)
 * fix ENOENT error when trying to run EPUBcheck on JRuby on Windows (#256)
 * fix ENOENT error when running kindlegen on JRuby on Windows (#154)
+* set up CI for JRuby on Windows (#254)
 
 == 1.5.0.alpha.10 (2020-01-20) - @slonopotamus
 
