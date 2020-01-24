@@ -858,12 +858,6 @@ blockquote > p {
   line-height: 1.75;
 }
 
-/* hide explicit open quote for CSS3-enabled clients */
-blockquote span.open-quote:not(:empty) {
-  display: none;
-}
-
-/* NOTE if we mapped the font icon to "\201c", we could just style the .open-quote */
 blockquote > p:first-of-type::before {
   display: inline-block;
   color: #666665;

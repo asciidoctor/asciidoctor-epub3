@@ -82,9 +82,6 @@ module Asciidoctor
 
       ToHtmlSpecialCharsRx = /[#{ToHtmlSpecialCharsMap.keys.join}]/
 
-      OpenParagraphTagRx = /^<p>/
-      CloseParagraphTagRx = /<\/p>$/
-
       def initialize backend, opts
         super
         basebackend 'html'
@@ -358,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         footer_tag = footer_content.empty? ? '' : %(
 <footer>~ #{footer_content * ' '}</footer>)
-        content = ((convert_content node).strip.sub OpenParagraphTagRx, '<p><span class="open-quote">“</span>').sub CloseParagraphTagRx, '<span class="close-quote">”</span></p>'
+        content = (convert_content node).strip
         %(<div#{id_attr}#{class_attr}>
 <blockquote>
 #{content}#{footer_tag}
