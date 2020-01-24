@@ -915,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       if (document = @document).backend == 'epub3'
         document.attributes['spine'] = ''
         document.set_attribute 'listing-caption', 'Listing'
-        if !(defined? ::AsciidoctorJ) && (::Gem.try_activate 'pygments.rb')
+        if !(defined? ::JRuby) && (::Gem.try_activate 'pygments.rb')
           if document.set_attribute 'source-highlighter', 'pygments'
             document.set_attribute 'pygments-css', 'style'
             document.set_attribute 'pygments-style', 'bw'
