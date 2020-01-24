@@ -651,7 +651,7 @@ body > svg {
         argv << '-w'
         argv << epub_file
 
-        ::Open3.popen2e ::Shellwords.join(argv) do |_input, output, wait_thr|
+        ::Open3.popen2e(*argv) do |_input, output, wait_thr|
           output.each do |line|
             log_line line
           end
