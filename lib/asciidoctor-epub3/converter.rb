@@ -53,6 +53,7 @@ module Asciidoctor
     # content documents in an EPUB3 publication.
     class ContentConverter
       include ::Asciidoctor::Converter
+      include ::Asciidoctor::Logging
 
       register_for 'epub3-xhtml5'
 
