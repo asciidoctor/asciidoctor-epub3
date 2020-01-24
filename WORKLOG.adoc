@@ -42,15 +42,12 @@
 
 .Gem
 * Add step in `rake release` to set version back to *.dev
-* enable NOKOGIRI_USE_SYSTEM_LIBRARIES=1 to speed up nokogiri install (in .travis.yml, bundler in general)
-* Don't package sample documents (create separate folder in repo)
 
 //^
 .Converter
 * CRITICAL: put e-book reader class on html instead of body
 * CRITICAL: surround prose in <span> (e.g., simple <dd>) which is not nested in <p> or <div> so iBooks can change the font
 * CRITICAL: don't drop subsequent paragraphs of preamble when abstract is found...need to pass them through
-* CRITICAL: if document doesn't have doctitle, Untitled shows in epub2 TOC (isn't this correct?)
 * CRITICAL: try to pull username from author email field; pull avatar from gravatar
 * CRITICAL: make generated file name strategy configurable (source file vs id)
 * HIGH: revisit the headshot image logic
@@ -69,8 +66,6 @@
 * MEDIUM: create back link in bibliography entry for each reference to it (currently only the first)
 * packager doesn't resolve include files in subdirectory totally correctly
 * implement checklists
-* quiet flag
-* document that to use kindlegen with Ruby 1.9.3, must use kindlegen 2.9.4 gem (or specify KINDLEGEN env var)
 
 //^
 .Packager
@@ -133,7 +128,6 @@
 
 //^
 .Samples
-* move samples out of data (or don't package them in the gem)
 * add example of itemized dlist
 
 //^
