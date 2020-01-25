@@ -653,15 +653,17 @@ body > svg {
           argv = [::Gem.ruby, ::Gem.bin_path('epubcheck-ruby', 'epubcheck')]
         end
 
-        argv << '-w'
-        argv << epub_file
+        argv += ['-w', epub_file]
+        out, err, res = Open3.capture3(*argv)
 
-        ::Open3.popen2e(*argv) do |_input, output, wait_thr|
-          output.each do |line|
-            log_line line
-          end
-          logger.error %(EPUB validation failed: #{epub_file}) unless wait_thr.value.success?
+        out.each_line do |line|
+          logger.info line
         end
+        err.each_line do |line|
+          log_line line
+        end
+
+        logger.error %(EPUB validation failed: #{epub_file}) unless res.success?
       end
 
       def log_line line
