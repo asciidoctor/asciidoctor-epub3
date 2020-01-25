@@ -2,7 +2,6 @@
 
 autoload :FileUtils, 'fileutils'
 autoload :Open3, 'open3'
-autoload :Shellwords, 'shellwords'
 
 module Asciidoctor
   module Epub3
@@ -479,7 +478,6 @@ body > svg {
     class Packager
       include ::Asciidoctor::Logging
 
-      KINDLEGEN = ENV['KINDLEGEN'] || 'kindlegen'
       EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
       EpubExtensionRx = /\.epub$/i
       KindlegenCompression = ::Hash['0', '-c0', '1', '-c1', '2', '-c2', 'none', '-c0', 'standard', '-c1', 'huffdic', '-c2']
@@ -619,25 +617,33 @@ body > svg {
       end
 
       def distill_epub_to_mobi epub_file, target, compress
-        kindlegen_cmd = KINDLEGEN
-        unless ::File.executable? kindlegen_cmd
+        if !(kindlegen_cmd = ENV['kindlegen']).nil?
+          argv = [kindlegen_cmd]
+        else
           require 'kindlegen' unless defined? ::Kindlegen
-          kindlegen_cmd = ::Kindlegen.command
+          argv = [::Kindlegen.command.to_s]
         end
         mobi_file = ::File.basename target.sub(EpubExtensionRx, '.mobi')
         compress_flag = KindlegenCompression[compress ? (compress.empty? ? '1' : compress.to_s) : '0']
-        cmd = [kindlegen_cmd, '-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
-        ::Open3.popen2e ::Shellwords.join(cmd) do |_input, output, wait_thr|
-          output.each do |line|
-            log_line line
-          end
+        argv += ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
 
-          output_file = ::File.join ::File.dirname(epub_file), mobi_file
-          if wait_thr.value.success?
-            logger.debug %(Wrote MOBI to #{out_file})
-          else
-            logger.error %(kindlegen failed to write MOBI to #{output_file})
-          end
+        # This duplicates Kindlegen.run, but we want to override executable
+        out, err, res = Open3.capture3(*argv) do |r|
+          r.force_encoding 'UTF-8' if windows? && r.respond_to?(:force_encoding)
+        end
+
+        out.each_line do |line|
+          logger.info line
+        end
+        err.each_line do |line|
+          log_line line
+        end
+
+        output_file = ::File.join ::File.dirname(epub_file), mobi_file
+        if res.success?
+          logger.debug %(Wrote MOBI to #{output_file})
+        else
+          logger.error %(kindlegen failed to write MOBI to #{output_file})
         end
       end
 
