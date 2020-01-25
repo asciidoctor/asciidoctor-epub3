@@ -20,6 +20,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * do not post-process EPUBCHECK env var, but use it as-is (#258)
 * disable Pygments on JRuby to prevent hanging (#253)
 * fix ENOENT error when trying to run EPUBcheck on JRuby on Windows (#256)
+* fix ENOENT error when running kindlegen on JRuby on Windows (#154)
 
 == 1.5.0.alpha.10 (2020-01-20) - @slonopotamus
 
@@ -33,7 +34,6 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * upgrade pygments.rb to 1.2.1 (#216)
 * gepub dependency is no longer locked to 1.0.2 and will use latest 1.0.x version
 * fix `-a ebook-validate` not working on Windows (#232)
-* fix ENOENT error when running kindlegen on JRuby on Windows (#154)
 
 == 1.5.0.alpha.9 (2019-04-04) - @mojavelinux
 
