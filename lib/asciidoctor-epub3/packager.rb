@@ -634,7 +634,7 @@ body > svg {
 
           output_file = ::File.join ::File.dirname(epub_file), mobi_file
           if wait_thr.value.success?
-            logger.debug %(Wrote MOBI to #{output})
+            logger.debug %(Wrote MOBI to #{out_file})
           else
             logger.error %(kindlegen failed to write MOBI to #{output_file})
           end
