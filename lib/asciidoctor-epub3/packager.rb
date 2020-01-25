@@ -478,7 +478,6 @@ body > svg {
     class Packager
       include ::Asciidoctor::Logging
 
-      EPUBCHECK = ENV['EPUBCHECK'] || %(epubcheck#{::Gem.win_platform? ? '.bat' : '.sh'})
       EpubExtensionRx = /\.epub$/i
       KindlegenCompression = ::Hash['0', '-c0', '1', '-c1', '2', '-c2', 'none', '-c0', 'standard', '-c1', 'huffdic', '-c2']
 
@@ -648,8 +647,8 @@ body > svg {
       end
 
       def validate_epub epub_file
-        if ::File.executable? EPUBCHECK
-          argv = [EPUBCHECK]
+        if !(epubcheck = ENV['EPUBCHECK']).nil?
+          argv = [epubcheck]
         else
           argv = [::Gem.ruby, ::Gem.bin_path('epubcheck-ruby', 'epubcheck')]
         end

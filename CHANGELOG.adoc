@@ -17,6 +17,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * route messages through the logger (#176)
 * update EPUBCheck to 4.2.2.0 (#240)
 * handle invalid `revdate` gracefully (#14)
+* do not post-process EPUBCHECK env var, but use it as-is (#258)
 * disable Pygments on JRuby to prevent hanging (#253)
 * fix ENOENT error when trying to run EPUBcheck on JRuby on Windows (#256)
 
