@@ -616,7 +616,7 @@ body > svg {
       end
 
       def distill_epub_to_mobi epub_file, target, compress
-        if !(kindlegen_cmd = ENV['KINDLEGEN']).nil?
+        if !(kindlegen_cmd = ENV['kindlegen']).nil?
           argv = [kindlegen_cmd]
         else
           require 'kindlegen' unless defined? ::Kindlegen
