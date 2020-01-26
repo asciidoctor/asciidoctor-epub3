@@ -619,7 +619,11 @@ body > svg {
         if !(kindlegen_cmd = ENV['KINDLEGEN']).nil?
           argv = [kindlegen_cmd]
         else
-          require 'kindlegen' unless defined? ::Kindlegen
+          begin
+            require 'kindlegen' unless defined? ::Kindlegen
+          rescue LoadError => e
+            raise 'Unable to find KindleGen. Either install the kindlegen gem or set KINDLEGEN environment variable with path to KindleGen executable', cause: e
+          end
           argv = [::Kindlegen.command.to_s]
         end
         mobi_file = ::File.basename target.sub(EpubExtensionRx, '.mobi')
