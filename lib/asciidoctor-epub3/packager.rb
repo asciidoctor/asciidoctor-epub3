@@ -7,7 +7,7 @@ module Asciidoctor
   module Epub3
     module GepubBuilderMixin
       include ::Asciidoctor::Logging
-      DATA_DIR = ::File.expand_path ::File.join(::File.dirname(__FILE__), '..', '..', 'data')
+      DATA_DIR = ::File.expand_path ::File.join(__dir__, '..', '..', 'data')
       SAMPLES_DIR = ::File.join DATA_DIR, 'samples'
       LF = ?\n
       CharEntityRx = ContentConverter::CharEntityRx

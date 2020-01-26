@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require File.expand_path('lib/asciidoctor-epub3/version', File.dirname(__FILE__))
+require_relative 'lib/asciidoctor-epub3/version'
 require 'open3' unless defined? Open3
 
 Gem::Specification.new do |s|
