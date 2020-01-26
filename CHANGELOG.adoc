@@ -5,6 +5,10 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== Unreleased
+
+* make `KINDLEGEN` env var work again (#259)
+
 == 1.5.0.alpha.11 (2020-01-26) - @slonopotamus
 
 * drop unused dependencies: thread_safe, concurrent-ruby (#234)
