@@ -7,7 +7,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
-* make `KINDLEGEN` env var work again (#259)
+* make `KINDLEGEN` env var work again (#269)
 
 == 1.5.0.alpha.11 (2020-01-26) - @slonopotamus
 
