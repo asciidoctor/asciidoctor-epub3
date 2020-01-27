@@ -8,7 +8,6 @@ gemspec
 gem 'asciidoctor', ENV['ASCIIDOCTOR_VERSION'], require: false if ENV.key? 'ASCIIDOCTOR_VERSION'
 
 group :optional do
-  gem 'epubcheck-ruby', '4.2.2.0'
   gem 'pygments.rb', '1.2.1'
 end
 
