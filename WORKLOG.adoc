@@ -35,7 +35,6 @@
 * allow role to be applied to chapter (which means the role must be on the document)
 * should we enable hyphens in non-Kindle?
  ** we can reenable once we confirm it doesn't crash Kindle for Mac
-* document KINDLEGEN and EPUBCHECK env vars
 * part vs chapter? a difference?
 
 * create a video to demonstrate Google Play Books read aloud reading complete sentences in books generated with Asciidoctor EPUB3

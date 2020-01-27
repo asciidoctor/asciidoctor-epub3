@@ -540,20 +540,38 @@ For more information about this attribute and other related attributes, see {uri
 *-D, --destination-dir* ::
   Writes files to specified directory (defaults to the current directory)
 
+*-a ebook-epubcheck-path=<path>*::
+  Specifies path to EPUBCheck executable to use with `-a ebook-validate`.
+  This attribute takes precedence over `EPUBCHECK` environment variable.
+
 *-a ebook-extract* ::
   Extracts the EPUB3 to a folder in the destination directory after the file is generated
 
 *-a ebook-format=<format>* ::
   Specifies the ebook format to generate (epub3 or kf8, default: epub3)
 
+*-a ebook-kindlegen-path=<path>*::
+  Specifies path to KindleGen executable to use when producing KF8/Mobi.
+  This attribute takes precedence over `KINDLEGEN` environment variable.
+
 *-a ebook-validate* ::
-  Runs {uri-epubcheck}[EpubCheck] to validate output file against the EPUB3 specification
+  Runs {uri-epubcheck}[EPUBCheck] to validate output file against the EPUB3 specification
 
 *-a ebook-compress=<0|1|2|none|standard|huffdic>* ::
   Controls the compression type used by kindlegen (0=none [default if unset], 1=standard [default if empty], 2=huffdic)
 
 *-v, --version* ::
   Display the program version
+
+=== Environment variables
+
+*EPUBCHECK*::
+  Specifies path to EPUBCheck executable to use with `-a ebook-validate`.
+  Effect of this variable can be overriden with `-a ebook-epubcheck-path` attribute.
+
+*KINDLEGEN*::
+  Specifies path to KindleGen executable to use when producing KF8/Mobi.
+  Effect of this variable can be overriden with `-a ebook-kindlegen-path` attribute.
 
 === EPUB3 Archive Structure
 
