@@ -7,6 +7,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+* make kindlegen a runtime dependency so it installs automatically during `gem install asciidoctor-epub3` (#270)
 * make `KINDLEGEN` env var work again (#269)
 * provide a human-readable error message when we fail to find KindleGen (#268)
 
