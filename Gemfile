@@ -9,7 +9,6 @@ gem 'asciidoctor', ENV['ASCIIDOCTOR_VERSION'], require: false if ENV.key? 'ASCII
 
 group :optional do
   gem 'epubcheck-ruby', '4.2.2.0'
-  gem 'kindlegen', (Gem::Version.new RUBY_VERSION) < (Gem::Version.new '2.4.0') ? '3.0.3' : '3.0.5'
   gem 'pygments.rb', '1.2.1'
 end
 
