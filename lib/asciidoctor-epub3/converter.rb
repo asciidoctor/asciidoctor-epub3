@@ -916,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         document.attributes['spine'] = ''
         document.set_attribute 'listing-caption', 'Listing'
         # pygments.rb hangs on JRuby for Windows, see https://github.com/asciidoctor/asciidoctor-epub3/issues/253
-        if !(defined? ::JRuby) && (::Gem.try_activate 'pygments.rb')
+        if !(::RUBY_ENGINE == 'jruby' && Gem.win_platform?) && (Gem.try_activate 'pygments.rb')
           if document.set_attribute 'source-highlighter', 'pygments'
             document.set_attribute 'pygments-css', 'style'
             document.set_attribute 'pygments-style', 'bw'
