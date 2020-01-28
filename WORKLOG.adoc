@@ -2,7 +2,6 @@
 
 == TODO
 
-* use ImageReference if available to locate image
 * remove conum patch for listing block (fixed in Asciidoctor 1.5.6)
 * change has_role? to role?
 * use empty string in place of nil in interpolated strings (few more still to check)
@@ -53,7 +52,6 @@
 * HIGH: if running on a single article, then the document id has a conflicting purpose
 * HIGH: require spine option on include directive in order to create a chapter file (requires change in Asciidoctor)
 * HIGH: promote regexps to constants
-* HIGH: use more thorough image path resolution
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
 * MEDIUM: add landmarks nav list to nav.xhtml; see https://github.com/IDPF/epub3-samples/blob/master/31/moby-dick-mo-xhtml/EPUB/toc.xhtml
 * MEDIUM: Kindle links to cover page when clicking on first chapter instead of first chapter page
@@ -76,7 +74,6 @@
 * MEDIUM: add JavaScript to nav.xhtml to add class for epubReadingSystem to body
 * MEDIUM: rename OEBPS folder to EPUB
 * MEDIUM: set modified date explicitly
-* MEDIUM: use function to build and manipulate image paths
 * MEDIUM: option to add nav.xhtml to navigation flow?
 * MEDIUM: add Pygments stylesheet to EPUB archive if pygments-css=class
 * support subtitle as separate from main title in package metadata

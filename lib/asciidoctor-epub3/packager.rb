@@ -121,7 +121,7 @@ module Asciidoctor
         return if (image_path = doc.attr 'front-cover-image').nil?
 
         imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
-        imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
+        imagesdir = (imagesdir == '.' ? '' : %(#{imagesdir}/))
 
         image_attrs = {}
         if (image_path.include? ':') && image_path =~ ImageMacroRx
@@ -224,13 +224,13 @@ body > svg {
         self_logger = logger
         workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
         resources workdir: workdir do
-          images.each do |image|
-            if (image_path = image[:path]).start_with? %(#{docimagesdir}jacket/cover.)
-              self_logger.warn %(image path is reserved for cover artwork: #{image_path}; skipping image found in content)
-            elsif ::File.readable? image_path
-              file image_path
+          images.each do |image_name, image_data|
+            if image_name.start_with? %(#{docimagesdir}jacket/cover.)
+              self_logger.warn %(image path is reserved for cover artwork: #{image_name}; skipping image found in content)
+            elsif ::File.readable? image_data[:path]
+              file [image_name, image_data[:path]]
             else
-              self_logger.error %(#{::File.basename image[:docfile]}: image not found or not readable: #{::File.expand_path image_path, workdir})
+              self_logger.error %(#{::File.basename image_data[:docfile]}: image not found or not readable: #{image_data[:path]})
             end
           end
         end
@@ -283,20 +283,19 @@ body > svg {
             builder.add_front_matter_page doc, self
             spine.each_with_index do |item, _i|
               docfile = item.attr 'docfile'
-              imagesdir = (item.attr 'imagesdir', '.').chomp '/'
-              imagesdir = (imagesdir == '.' ? '' : %(#{imagesdir}/))
               file %(#{item.id || (item.attr 'docname')}.xhtml) => (builder.postprocess_xhtml item.convert, format)
               add_property 'svg' if ((item.attr 'epub-properties') || []).include? 'svg'
               # QUESTION should we pass the document itself?
-              item.references[:images].each do |target|
-                images[image_path = %(#{imagesdir}#{target})] ||= { docfile: docfile, path: image_path }
+              next if (image_refs = item.references[:epub_images]).nil?
+              image_refs.each do |image|
+                images[image[:name]] ||= { docfile: docfile, path: image[:path] }
               end
               # QUESTION reenable?
               #linear 'yes' if i == 0
             end
           end
         end
-        add_content_images doc, images.values
+        add_content_images doc, images
         nil
       end
 

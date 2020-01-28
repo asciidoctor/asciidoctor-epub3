@@ -620,8 +620,40 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
+      def doc_option document, key
+        loop do
+          value = document.options[key]
+          return value unless value.nil?
+          document = document.parent_document
+          break if document.nil?
+        end
+        nil
+      end
+
+      def root_document document
+        document = document.parent_document until document.parent_document.nil?
+        document
+      end
+
+      def register_image node, target
+        out_dir = node.attr('outdir', nil, true) || doc_option(node.document, :to_dir)
+        unless ::File.exist? fs_path = (::File.join out_dir, target)
+          # This is actually a hack. It would be more correct to set base_dir of chapter document to base_dir of spine document.
+          # That's how things would normally work if there was no separation between these documents, and instead chapters were normally included into spine document.
+          # However, setting chapter base_dir to spine base_dir breaks parser.rb because it resolves includes in chapter document relative to base_dir instead of actual location of chapter file.
+          # Choosing between two evils - a hack here or writing a full-blown include processor for chapter files, I chose the former.
+          # In the future, this all should be thrown away when we stop parsing chapters as a standalone documents.
+          # https://github.com/asciidoctor/asciidoctor-epub3/issues/47 is used to track that.
+          base_dir = root_document(node.document).references[:spine].base_dir
+          fs_path = ::File.join base_dir, target
+        end
+        # We need *both* virtual and physical image paths. Unfortunately, references[:images] only has one of them.
+        (root_document(node.document).references[:epub_images] ||= []) << { name: target, path: fs_path } if doc_option node.document, :catalog_assets
+      end
+
       def convert_image node
-        target = node.attr 'target'
+        target = node.image_uri node.attr 'target'
+        register_image node, target
         type = (::File.extname target)[1..-1]
         id_attr = node.id ? %( id="#{node.id}") : ''
         img_attrs = [%(alt="#{node.attr 'alt'}")]
@@ -653,7 +685,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 =end
         %(<figure#{id_attr} class="image#{prepend_space node.role}">
 <div class="content">
-<img src="#{node.image_uri node.attr('target')}" #{img_attrs * ' '}/>
+<img src="#{target}" #{img_attrs * ' '}/>
 </div>#{node.title? ? %(
 <figcaption>#{node.captioned_title}</figcaption>) : ''}
 </figure>)
@@ -761,6 +793,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           %(<i class="#{i_classes * ' '}"></i>)
         else
           target = node.image_uri node.target
+          register_image node, target
           img_attrs = [%(alt="#{node.attr 'alt'}"), %(class="inline#{node.role? ? " #{node.role}" : ''}")]
           if target.end_with? '.svg'
             img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'}")
