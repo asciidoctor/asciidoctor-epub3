@@ -96,15 +96,16 @@ module Asciidoctor
         @icon_names = []
       end
 
-      def convert node, name = nil
-        if respond_to? name ||= node.node_name
-          send name, node
+      def convert node, name = nil, _opts = {}
+        method_name = %(convert_#{name ||= node.node_name})
+        if respond_to? method_name
+          send method_name, node
         else
-          logger.warn %(conversion missing in epub3 backend for #{name})
+          logger.warn %(conversion missing in backend #{@backend} for #{name})
         end
       end
 
-      def document node
+      def convert_document node
         docid = node.id
         pubtype = node.attr 'publication-type', 'book'
 
@@ -197,11 +198,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # NOTE embedded is used for AsciiDoc table cell content
-      def embedded node
+      def convert_embedded node
         node.content
       end
 
-      def section node
+      def convert_section node
         hlevel = node.level + 1
         epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
         div_classes = [%(sect#{node.level}), node.role].compact
@@ -219,36 +220,36 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # TODO: support use of quote block as abstract
-      def preamble node
+      def convert_preamble node
         if (first_block = node.blocks[0]) && first_block.style == 'abstract'
-          abstract first_block
+          convert_abstract first_block
           # REVIEW: should we treat the preamble as an abstract in general?
         elsif first_block && node.blocks.size == 1
-          abstract first_block
+          convert_abstract first_block
         else
           node.content
         end
       end
 
-      def open node
+      def convert_open node
         id_attr = node.id ? %( id="#{node.id}") : nil
         class_attr = node.role ? %( class="#{node.role}") : nil
         if id_attr || class_attr
           %(<div#{id_attr}#{class_attr}>
-#{convert_content node}
+#{output_content node}
 </div>)
         else
-          convert_content node
+          output_content node
         end
       end
 
-      def abstract node
+      def convert_abstract node
         %(<div class="abstract" epub:type="preamble">
-#{convert_content node}
+#{output_content node}
 </div>)
       end
 
-      def paragraph node
+      def convert_paragraph node
         role = node.role
         # stack-head is the alternative to the default, inline-head (where inline means "run-in")
         head_stop = node.attr 'head-stop', (role && (node.has_role? 'stack-head') ? nil : '.')
@@ -261,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def pass node
+      def convert_pass node
         content = node.content
         if content == '<?hard-pagebreak?>'
           '<hr epub:type="pagebreak" class="pagebreak"/>'
@@ -270,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def admonition node
+      def convert_admonition node
         id_attr = node.id ? %( id="#{node.id}") : ''
         if node.title?
           title = node.title
@@ -294,29 +295,29 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                     end
         %(<aside#{id_attr} class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
 #{title_el}<div class="content">
-#{convert_content node}
+#{output_content node}
 </div>
 </aside>)
       end
 
-      def example node
+      def convert_example node
         id_attr = node.id ? %( id="#{node.id}") : ''
         title_div = node.title? ? %(<div class="example-title">#{node.title}</div>
 ) : ''
         %(<div#{id_attr} class="example">
 #{title_div}<div class="example-content">
-#{convert_content node}
+#{output_content node}
 </div>
 </div>)
       end
 
-      def floating_title node
+      def convert_floating_title node
         tag_name = %(h#{node.level + 1})
         id_attribute = node.id ? %( id="#{node.id}") : ''
         %(<#{tag_name}#{id_attribute} class="#{['discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
       end
 
-      def listing node
+      def convert_listing node
         figure_classes = ['listing']
         figure_classes << 'coalesce' if node.option? 'unbreakable'
         pre_classes = node.style == 'source' ? ['source', %(language-#{node.attr 'language'})] : ['screen']
@@ -330,19 +331,19 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # QUESTION should we wrap the <pre> in either <div> or <figure>?
-      def literal node
+      def convert_literal node
         %(<pre class="screen">#{node.content}</pre>)
       end
 
-      def page_break _node
+      def convert_page_break _node
         '<hr epub:type="pagebreak" class="pagebreak"/>'
       end
 
-      def thematic_break _node
+      def convert_thematic_break _node
         '<hr class="thematicbreak"/>'
       end
 
-      def quote node
+      def convert_quote node
         id_attr = %( id="#{node.id}") if node.id
         class_attr = (role = node.role) ? %( class="blockquote #{role}") : ' class="blockquote"'
 
@@ -360,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         footer_tag = footer_content.empty? ? '' : %(
 <footer>~ #{footer_content * ' '}</footer>)
-        content = (convert_content node).strip
+        content = (output_content node).strip
         %(<div#{id_attr}#{class_attr}>
 <blockquote>
 #{content}#{footer_tag}
@@ -368,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </div>)
       end
 
-      def verse node
+      def convert_verse node
         id_attr = %( id="#{node.id}") if node.id
         class_attr = (role = node.role) ? %( class="verse #{role}") : ' class="verse"'
 
@@ -389,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </div>)
       end
 
-      def sidebar node
+      def convert_sidebar node
         classes = ['sidebar']
         if node.title?
           classes << 'titled'
@@ -404,12 +405,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         %(<aside class="#{classes * ' '}"#{title_attr} epub:type="sidebar">
 #{title_el}<div class="content">
-#{convert_content node}
+#{output_content node}
 </div>
 </aside>)
       end
 
-      def table node
+      def convert_table node
         lines = [%(<div class="table">)]
         lines << %(<div class="content">)
         table_id_attr = node.id ? %( id="#{node.id}") : ''
@@ -497,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def colist node
+      def convert_colist node
         lines = ['<div class="callout-list">
 <ol>']
         num = CalloutStartNum
@@ -510,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # TODO: add complex class if list has nested blocks
-      def dlist node
+      def convert_dlist node
         lines = []
         case (style = node.style)
         when 'itemized', 'ordered'
@@ -564,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def olist node
+      def convert_olist node
         complex = false
         div_classes = ['ordered-list', node.style, node.role].compact
         ol_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
@@ -592,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def ulist node
+      def convert_ulist node
         complex = false
         div_classes = ['itemized-list', node.style, node.role].compact
         ul_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
@@ -619,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def image node
+      def convert_image node
         target = node.attr 'target'
         type = (::File.extname target)[1..-1]
         id_attr = node.id ? %( id="#{node.id}") : ''
@@ -658,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
-      def inline_anchor node
+      def convert_inline_anchor node
         target = node.target
         case node.type
         when :xref # TODO: would be helpful to know what type the target is (e.g., bibref)
@@ -726,22 +727,22 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def inline_break node
+      def convert_inline_break node
         %(#{node.text}<br/>)
       end
 
-      def inline_button node
+      def convert_inline_button node
         %(<b class="button">[<span class="label">#{node.text}</span>]</b>)
       end
 
-      def inline_callout node
+      def convert_inline_callout node
         num = CalloutStartNum
         int_num = node.text.to_i
         (int_num - 1).times { num = num.next }
         %(<i class="conum" data-value="#{int_num}">#{num}</i>)
       end
 
-      def inline_footnote node
+      def convert_inline_footnote node
         if (index = node.attr 'index')
           %(<sup class="noteref">[<a id="noteref-#{index}" href="#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
         elsif node.type == :xref
@@ -749,7 +750,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def inline_image node
+      def convert_inline_image node
         if node.type == 'icon'
           @icon_names << (icon_name = node.target)
           i_classes = ['icon', %(i-#{icon_name})]
@@ -773,11 +774,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def inline_indexterm node
+      def convert_inline_indexterm node
         node.type == :visible ? node.text : ''
       end
 
-      def inline_kbd node
+      def convert_inline_kbd node
         if (keys = node.attr 'keys').size == 1
           %(<kbd>#{keys[0]}</kbd>)
         else
@@ -786,7 +787,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def inline_menu node
+      def convert_inline_menu node
         menu = node.attr 'menu'
         # NOTE we swap right angle quote with chevron right from FontAwesome using CSS
         caret = %(#{NoBreakSpace}<span class="caret">#{RightAngleQuote}</span> )
@@ -800,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def inline_quoted node
+      def convert_inline_quoted node
         case node.type
         when :strong
           %(<strong>#{node.text}</strong>)
@@ -823,7 +824,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_content node
+      def output_content node
         node.content_model == :simple ? %(<p>#{node.content}</p>) : node.content
       end
 
