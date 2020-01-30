@@ -631,16 +631,16 @@ The sample book contains placeholder images for an author avatar and a book cove
 
 // TODO explain the avatar and book cover images
 
-=== Changing the Cover Image
+=== Adding the Cover Image
 
 Ereaders have different image resolution and file size limits regarding a book's cover.
-Kindle covers tend to be 1050x1600 (16:9 resolution), which is the size of the sample cover provided with {project-name}.
+Kindle covers tend to be 1050x1600 (16:9 resolution).
 To ensure your cover displays correctly, you'll want to review the documentation or publisher guidelines for the e-reading platform you're targeting.
 
 WARNING: We've found that if the book cover is more than 1600px on any side, Aldiko will not render it and may even crash.
 
 Feel free to use the SVG of the sample cover in the [path]_data/images_ folder as a template for creating your own cover.
-Once your image is ready, you can replace the placeholder cover image by defining the `front-cover-image` attribute in the header of the master document.
+Once your image is ready, you can set the cover image by defining the `front-cover-image` attribute in the header of the master document.
 
 [source,asciidoc]
 ----
