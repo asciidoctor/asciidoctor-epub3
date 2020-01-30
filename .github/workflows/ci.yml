@@ -7,7 +7,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up Ruby
-        uses: eregon/use-ruby-action@v1.10.0
+        uses: eregon/use-ruby-action@v1
         with:
           ruby-version: 2.7
       - name: Build
@@ -34,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up Ruby
-        uses: eregon/use-ruby-action@v1.10.0
+        uses: eregon/use-ruby-action@v1
         with:
           ruby-version: ${{ matrix.ruby }}
       - name: Set up Asciidoctor
