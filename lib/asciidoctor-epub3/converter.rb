@@ -21,6 +21,8 @@ module Asciidoctor
         htmlsyntax 'xml'
         @validate = false
         @extract = false
+        @kindlegen_path = nil
+        @epubcheck_path = nil
       end
 
       def convert node, name = nil
@@ -28,6 +30,8 @@ module Asciidoctor
           @validate = node.attr? 'ebook-validate'
           @extract = node.attr? 'ebook-extract'
           @compress = node.attr 'ebook-compress'
+          @kindlegen_path = node.attr 'ebook-kindlegen-path'
+          @epubcheck_path = node.attr 'ebook-epubcheck-path'
           spine_items = node.references[:spine_items]
           if spine_items.nil?
             logger.error %(#{::File.basename node.document.attr('docfile')}: failed to find spine items, produced file will be invalid)
@@ -44,7 +48,7 @@ module Asciidoctor
 
       # FIXME: we have to package in write because we don't have access to target before this point
       def write packager, target
-        packager.package validate: @validate, extract: @extract, compress: @compress, target: target
+        packager.package validate: @validate, extract: @extract, compress: @compress, kindlegen_path: @kindlegen_path, epubcheck_path: @epubcheck_path, target: target
         nil
       end
     end

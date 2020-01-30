@@ -609,30 +609,46 @@ body > svg {
 
         if fmt == :kf8
           # QUESTION shouldn't we validate this epub file too?
-          distill_epub_to_mobi epub_file, target, options[:compress]
+          distill_epub_to_mobi epub_file, target, options[:compress], options[:kindlegen_path]
         elsif options[:validate]
-          validate_epub epub_file
+          validate_epub epub_file, options[:epubcheck_path]
         end
       end
 
-      def distill_epub_to_mobi epub_file, target, compress
-        if !(kindlegen_cmd = ENV['KINDLEGEN']).nil?
-          argv = [kindlegen_cmd]
-        else
-          begin
-            require 'kindlegen' unless defined? ::Kindlegen
-          rescue LoadError => e
-            raise 'Unable to find KindleGen. Either install the kindlegen gem or set KINDLEGEN environment variable with path to KindleGen executable', cause: e
-          end
-          argv = [::Kindlegen.command.to_s]
+      def get_kindlegen_command kindlegen_path
+        unless kindlegen_path.nil?
+          logger.debug %(Using ebook-kindlegen-path attribute: #{kindlegen_path})
+          return [kindlegen_path]
         end
+
+        unless (result = ENV['KINDLEGEN']).nil?
+          logger.debug %(Using KINDLEGEN env variable: #{result})
+          return [result]
+        end
+
+        begin
+          require 'kindlegen' unless defined? ::Kindlegen
+          result = ::Kindlegen.command.to_s
+          logger.debug %(Using KindleGen from gem: #{result})
+          [result]
+        rescue LoadError => e
+          logger.debug %(#{e}; Using KindleGen from PATH)
+          [%(kindlegen#{::Gem.win_platform? ? '.exe' : ''})]
+        end
+      end
+
+      def distill_epub_to_mobi epub_file, target, compress, kindlegen_path
         mobi_file = ::File.basename target.sub(EpubExtensionRx, '.mobi')
         compress_flag = KindlegenCompression[compress ? (compress.empty? ? '1' : compress.to_s) : '0']
-        argv += ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
 
-        # This duplicates Kindlegen.run, but we want to override executable
-        out, err, res = Open3.capture3(*argv) do |r|
-          r.force_encoding 'UTF-8' if windows? && r.respond_to?(:force_encoding)
+        argv = get_kindlegen_command(kindlegen_path) + ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
+        begin
+          # This duplicates Kindlegen.run, but we want to override executable
+          out, err, res = Open3.capture3(*argv) do |r|
+            r.force_encoding 'UTF-8' if ::Gem.win_platform? && r.respond_to?(:force_encoding)
+          end
+        rescue Errno::ENOENT => e
+          raise 'Unable to run KindleGen. Either install the kindlegen gem or set KINDLEGEN environment variable with path to KindleGen executable', cause: e
         end
 
         out.each_line do |line|
@@ -650,15 +666,34 @@ body > svg {
         end
       end
 
-      def validate_epub epub_file
-        if !(epubcheck = ENV['EPUBCHECK']).nil?
-          argv = [epubcheck]
-        else
-          argv = [::Gem.ruby, ::Gem.bin_path('epubcheck-ruby', 'epubcheck')]
+      def get_epubcheck_command epubcheck_path
+        unless epubcheck_path.nil?
+          logger.debug %(Using ebook-epubcheck-path attribute: #{epubcheck_path})
+          return [epubcheck_path]
         end
 
-        argv += ['-w', epub_file]
-        out, err, res = Open3.capture3(*argv)
+        unless (result = ENV['EPUBCHECK']).nil?
+          logger.debug %(Using EPUBCHECK env variable: #{result})
+          return [result]
+        end
+
+        begin
+          result = ::Gem.bin_path 'epubcheck-ruby', 'epubcheck'
+          logger.debug %(Using EPUBCheck from gem: #{result})
+          [::Gem.ruby, result]
+        rescue ::Gem::Exception => e
+          logger.debug %(#{e}; Using EPUBCheck from PATH)
+          ['epubcheck']
+        end
+      end
+
+      def validate_epub epub_file, epubcheck_path
+        argv = get_epubcheck_command(epubcheck_path) + ['-w', epub_file]
+        begin
+          out, err, res = Open3.capture3(*argv)
+        rescue Errno::ENOENT => e
+          raise 'Unable to run EPUBCheck. Either install epubcheck-ruby gem or set EPUBCHECK environment variable with path to EPUBCheck executable', cause: e
+        end
 
         out.each_line do |line|
           logger.info line
