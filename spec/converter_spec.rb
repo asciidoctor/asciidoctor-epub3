@@ -63,5 +63,15 @@ describe Asciidoctor::Epub3::Converter do
       book = GEPUB::Book.parse File.open(out_file)
       expect(book.metadata.date.content).not_to be_nil
     end
+
+    it 'resolves deep includes relative to document that contains include directive' do
+      book_file = fixture_file 'deep-include/book.adoc'
+      spine_doc = Asciidoctor.load_file book_file, backend: 'epub3', header_footer: true, safe: Asciidoctor::SafeMode::UNSAFE
+      spine_doc.convert
+      spine_items = spine_doc.references[:spine_items]
+      (expect spine_items).to have_size 1
+      chapter_content = spine_items[0].content
+      (expect chapter_content).to include '<p>Hello</p>'
+    end
   end
 end
