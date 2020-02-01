@@ -2,6 +2,8 @@
 
 require 'asciidoctor-epub3'
 
+Zip.force_entry_names_encoding = 'UTF-8'
+
 RSpec.configure do |config|
   config.before do
     FileUtils.rm_r temp_dir, force: true, secure: true
@@ -74,6 +76,32 @@ RSpec.configure do |config|
   def skip_if_darwin
     # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/236
     skip '#236: Kindlegen is unavailable for-bit MacOS' if darwin_platform?
+  end
+
+  def convert input, opts = {}
+    input = fixture_file input if String === input
+    opts[:to_dir] = temp_dir unless opts.key? :to_dir
+    opts[:backend] = 'epub3'
+    opts[:header_footer] = true
+    opts[:mkdirs] = true
+    opts[:safe] = Asciidoctor::SafeMode::UNSAFE
+    Asciidoctor.convert_file input, opts
+  end
+
+  def to_epub input, opts = {}
+    doc = convert input, opts
+    output = Pathname.new doc.attr('outfile')
+    book = GEPUB::Book.parse output
+    [book, output]
+  end
+
+  def to_mobi input, opts = {}
+    skip_if_darwin
+    (opts[:attributes] ||= {})['ebook-format'] = 'mobi'
+    doc = convert input, opts
+    output = Pathname.new(doc.attr('outfile')).sub_ext '.mobi'
+    expect(output).to exist
+    output
   end
 end
 

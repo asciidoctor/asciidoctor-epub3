@@ -5,73 +5,31 @@ require_relative 'spec_helper'
 describe Asciidoctor::Epub3::Converter do
   describe '#convert' do
     it 'converts empty file to epub without exceptions' do
-      in_file = fixture_file 'empty.adoc'
-      out_file = temp_file 'empty.epub'
-      Asciidoctor.convert_file in_file,
-          to_file: out_file,
-          backend: 'epub3',
-          header_footer: true,
-          mkdirs: true
-      expect(File).to exist(out_file)
+      to_epub 'empty.adoc'
     end
 
     it 'converts empty file to mobi without exceptions' do
-      skip_if_darwin
-
-      in_file = fixture_file 'empty.adoc'
-      out_file = temp_file 'empty.mobi'
-      Asciidoctor.convert_file in_file,
-          to_file: out_file,
-          backend: 'epub3',
-          header_footer: true,
-          mkdirs: true,
-          attributes: { 'ebook-format' => 'mobi' }
-      expect(File).to exist(out_file)
+      to_mobi 'empty.adoc'
     end
 
     it 'converts chapter with unicode title to unicode filename' do
-      infile = fixture_file 'unicode/spine.adoc'
-      outfile = temp_file 'unicode.epub'
-      Asciidoctor.convert_file infile,
-          to_file: outfile,
-          backend: 'epub3',
-          header_footer: true,
-          mkdirs: true
-      prev_zip_encoding = Zip.force_entry_names_encoding
-      begin
-        Zip.force_entry_names_encoding = 'UTF-8'
-        Zip::File.open outfile do |zip|
-          expect(zip.find_entry('OEBPS/test-é.xhtml')).not_to be_nil
-        end
-      ensure
-        Zip.force_entry_names_encoding = prev_zip_encoding
+      _, out_file = to_epub 'unicode/spine.adoc'
+      Zip::File.open out_file do |zip|
+        expect(zip.find_entry('OEBPS/test-é.xhtml')).not_to be_nil
       end
     end
 
     it 'uses current date as fallback when date attributes cannot be parsed' do
-      in_file = fixture_file 'minimal/book.adoc'
-      out_file = temp_file 'garbage.epub'
-
       # TODO: assert that error log contains 'failed to parse revdate' error when we add test infrastructure for logs
-      Asciidoctor.convert_file in_file,
-          to_file: out_file,
-          backend: 'epub3',
-          header_footer: true,
-          mkdirs: true,
-          attributes: { 'revdate' => 'garbage' }
-
-      book = GEPUB::Book.parse File.open(out_file)
+      book, = to_epub 'minimal/book.adoc', attributes: { 'revdate' => 'garbage' }
       expect(book.metadata.date.content).not_to be_nil
     end
 
     it 'resolves deep includes relative to document that contains include directive' do
-      book_file = fixture_file 'deep-include/book.adoc'
-      spine_doc = Asciidoctor.load_file book_file, backend: 'epub3', header_footer: true, safe: Asciidoctor::SafeMode::UNSAFE
-      spine_doc.convert
-      spine_items = spine_doc.references[:spine_items]
-      (expect spine_items).to have_size 1
-      chapter_content = spine_items[0].content
-      (expect chapter_content).to include '<p>Hello</p>'
+      book, = to_epub 'deep-include/book.adoc'
+      chapter = book.item_by_href '_chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include '<p>Hello</p>'
     end
   end
 end

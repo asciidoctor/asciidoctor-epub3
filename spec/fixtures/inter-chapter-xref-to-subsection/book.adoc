@@ -1,0 +1,8 @@
+= Book Title
+:doctype: book
+:idprefix:
+:idseparator: -
+
+include::chapter-a.adoc[]
+
+include::chapter-b.adoc[]

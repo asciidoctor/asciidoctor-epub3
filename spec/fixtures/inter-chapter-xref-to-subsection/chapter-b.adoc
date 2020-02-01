@@ -1,0 +1,5 @@
+= Chapter B
+
+== Getting Started
+
+Now we can really get to it!
