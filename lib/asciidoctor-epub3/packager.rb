@@ -15,7 +15,6 @@ module Asciidoctor
       FromHtmlSpecialCharsMap = ContentConverter::FromHtmlSpecialCharsMap
       FromHtmlSpecialCharsRx = ContentConverter::FromHtmlSpecialCharsRx
       CsvDelimiterRx = /\s*,\s*/
-      DefaultCoverImage = 'images/default-cover.png'
       ImageMacroRx = /^image::?(.*?)\[(.*?)\]$/
       ImgSrcScanRx = /<img src="(.+?)"/
       SvgImgSniffRx = /<img src=".+?\.svg"/
@@ -119,28 +118,27 @@ module Asciidoctor
       end
 
       def add_cover_image doc
+        return if (image_path = doc.attr 'front-cover-image').nil?
+
         imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
         imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
 
-        if (image_path = doc.attr 'front-cover-image')
-          image_attrs = {}
-          if (image_path.include? ':') && image_path =~ ImageMacroRx
-            logger.warn %(deprecated block macro syntax detected in front-cover-image attribute) if image_path.start_with? 'image::'
-            image_path = %(#{imagesdir}#{$1})
-            (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
-          end
-          workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
-          if ::File.readable? ::File.join(workdir, image_path)
-            unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
-              width, height = 1050, 1600
-            end
-          else
-            logger.error %(#{::File.basename doc.attr('docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
-            image_path = nil
-          end
+        image_attrs = {}
+        if (image_path.include? ':') && image_path =~ ImageMacroRx
+          logger.warn %(deprecated block macro syntax detected in front-cover-image attribute) if image_path.start_with? 'image::'
+          image_path = %(#{imagesdir}#{$1})
+          (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
         end
 
-        image_path, workdir, width, height = DefaultCoverImage, DATA_DIR, 1050, 1600 unless image_path
+        workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
+        unless ::File.readable? ::File.join(workdir, image_path)
+          logger.error %(#{::File.basename doc.attr('docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
+          return
+        end
+
+        unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
+          width, height = 1050, 1600
+        end
 
         resources do
           cover_image %(#{imagesdir}jacket/cover#{::File.extname image_path}) => (::File.join workdir, image_path)
@@ -154,7 +152,8 @@ module Asciidoctor
 
       # NOTE must be called within the ordered block
       def add_cover_page doc, spine_builder, manifest
-        cover_item_attrs = manifest.items['item_cover'].instance_variable_get :@attributes
+        return if (cover_item_attrs = manifest.items['item_cover'].instance_variable_get :@attributes).nil?
+
         href = cover_item_attrs['href']
         # NOTE we only store width and height temporarily to pass through the values
         width = cover_item_attrs.delete 'width'
