@@ -488,8 +488,8 @@ An EPUB3 archive contains:
 * one or more content documents
 * assets (images, fonts, stylesheets, etc.)
 
-The IDPF also supports {uri-epubcheck}[EpubCheck].
-EpubCheck parses and validates the file against the EPUB schema.
+The IDPF also supports {uri-epubcheck}[EPUBCheck].
+EPUBCheck parses and validates the file against the EPUB schema.
 ****
 
 If you want to browse the contents of the EPUB3 file that is generated, or preview the XHTML files in a regular web browser, add the `-a ebook-extract` flag to the `asciidoctor-epub3` command.
