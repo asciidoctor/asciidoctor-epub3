@@ -9,7 +9,6 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 * use imagedir from an image's context during packaging (#282)
 * fix images in tables not included in epub archive (#169)
-* fix `base_dir` set to wrong value in chapter documents (#190)
 * fix inline images not being included in epub archive (#30)
 
 == 1.5.0.alpha.13 (2020-02-04) - @slonopotamus
