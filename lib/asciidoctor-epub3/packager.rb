@@ -647,7 +647,7 @@ body > svg {
             r.force_encoding 'UTF-8' if ::Gem.win_platform? && r.respond_to?(:force_encoding)
           end
         rescue Errno::ENOENT => e
-          raise 'Unable to run KindleGen. Either install the kindlegen gem or set KINDLEGEN environment variable with path to KindleGen executable', cause: e
+          raise 'Unable to run KindleGen. Either install the kindlegen gem or place `kindlegen` executable on PATH or set KINDLEGEN environment variable with path to it', cause: e
         end
 
         out.each_line do |line|
@@ -691,7 +691,7 @@ body > svg {
         begin
           out, err, res = Open3.capture3(*argv)
         rescue Errno::ENOENT => e
-          raise 'Unable to run EPUBCheck. Either install epubcheck-ruby gem or set EPUBCHECK environment variable with path to EPUBCheck executable', cause: e
+          raise 'Unable to run EPUBCheck. Either install epubcheck-ruby gem or place `epubcheck` executable on PATH or set EPUBCHECK environment variable with path to it', cause: e
         end
 
         out.each_line do |line|

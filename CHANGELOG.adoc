@@ -5,6 +5,10 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== Unreleased
+
+* remove kindlegen and epubcheck-ruby from runtime dependencies (#288)
+
 == 1.5.0.alpha.12 (2020-02-02) - @slonopotamus
 
 * make kindlegen a runtime dependency so it installs automatically during `gem install asciidoctor-epub3` (#270)
