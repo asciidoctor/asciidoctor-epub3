@@ -1,0 +1,23 @@
+== Chapter
+
+A
+
+image:wolpertinger.jpg[] B
+
+Z
+
+[separator=¦]
+|===
+a¦[ditaa, "inline-diag"]
+....
++--------------+
+|Inline diagram|
++--------------+
+....
+|===
+
+[cols="1,1"]
+|===
+a|image::square.png[]
+a|Do do see a red square on the left?
+|===

@@ -41,15 +41,15 @@ RSpec.configure do |config|
     File.join __dir__, 'temp'
   end
 
-  def temp_file path
-    File.join temp_dir, path
+  def temp_file *path
+    File.join temp_dir, *path
   end
 
   def fixtures_dir
     File.join __dir__, 'fixtures'
   end
 
-  def fixture_file path
+  def fixture_file *path
     File.join fixtures_dir, path
   end
 
@@ -57,7 +57,7 @@ RSpec.configure do |config|
     File.join __dir__, '..', 'data', 'samples'
   end
 
-  def example_file path
+  def example_file *path
     File.join examples_dir, path
   end
 
@@ -84,7 +84,7 @@ RSpec.configure do |config|
     opts[:backend] = 'epub3'
     opts[:header_footer] = true
     opts[:mkdirs] = true
-    opts[:safe] = Asciidoctor::SafeMode::UNSAFE
+    opts[:safe] = Asciidoctor::SafeMode::UNSAFE unless opts.key? :safe
     Asciidoctor.convert_file input, opts
   end
 
@@ -108,4 +108,9 @@ end
 RSpec::Matchers.define :have_size do |expected|
   match {|actual| actual.size == expected }
   failure_message {|actual| %(expected #{actual} to have size #{expected}, but was #{actual.size}) }
+end
+
+RSpec::Matchers.define :have_item_with_href do |expected|
+  match {|actual| actual.item_by_href expected }
+  failure_message {|actual| %(expected '#{actual.title}' to have item with href #{expected}) }
 end

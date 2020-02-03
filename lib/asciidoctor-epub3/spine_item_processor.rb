@@ -60,6 +60,7 @@ module Asciidoctor
             doctype: :article,
             header_footer: true,
             catalog_assets: true,
+            to_dir: spine_doc.options[:to_dir],
             attributes: inherited_attrs
 
         # restore attributes to those defined in the document header

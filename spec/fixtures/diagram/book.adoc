@@ -1,0 +1,7 @@
+= Diagrams book
+:doctype: book
+
+// TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/190
+// :plantumlconfig: ./plantuml.cfg
+
+include::subdir/chapter.adoc[]
