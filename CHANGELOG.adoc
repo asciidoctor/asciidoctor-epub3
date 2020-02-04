@@ -11,6 +11,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * use imagedir from an image's context during packaging (#282)
 * fix images in tables not included in epub archive (#169)
 * fix inline images not being included in epub archive (#30)
+* add support for Font Awesome Solid 5.12.0 (#155)
 
 == 1.5.0.alpha.13 (2020-02-04) - @slonopotamus
 
