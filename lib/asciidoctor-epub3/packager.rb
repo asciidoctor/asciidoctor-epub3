@@ -650,7 +650,7 @@ body > svg {
         end
 
         out.each_line do |line|
-          logger.info line
+          log_line line
         end
         err.each_line do |line|
           log_line line
@@ -660,7 +660,7 @@ body > svg {
         if res.success?
           logger.debug %(Wrote MOBI to #{output_file})
         else
-          logger.error %(kindlegen failed to write MOBI to #{output_file})
+          logger.error %(KindleGen failed to write MOBI to #{output_file})
         end
       end
 
