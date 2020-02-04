@@ -624,7 +624,7 @@ If this attribute is not set, the images catalog defaults to the directory of th
 
 === Default Images
 
-The sample book contains placeholder images for an author avatar and a book cover.
+The sample book contains placeholder image for an author avatar.
 
 // TODO explain the avatar and book cover images
 
