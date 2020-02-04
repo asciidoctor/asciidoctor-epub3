@@ -622,9 +622,6 @@ If set, the value of this attribute is resolved relative to the spine document a
 If this attribute is not set, the images catalog defaults to the directory of the spine document.
 {project-name} will discover all local image references and insert those images into the EPUB3 archive at the same relative path.
 
-WARNING: {project-name} does not currently discover and package inline images.
-See issue {uri-issues}/30[#30].
-
 === Default Images
 
 The sample book contains placeholder images for an author avatar and a book cover.
