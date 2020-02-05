@@ -330,6 +330,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
+      # TODO: implement proper stem support. See https://github.com/asciidoctor/asciidoctor-epub3/issues/10
+      alias convert_stem convert_listing
+
       # QUESTION should we wrap the <pre> in either <div> or <figure>?
       def convert_literal node
         %(<pre class="screen">#{node.content}</pre>)
@@ -840,7 +843,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           %(<strong>#{node.text}</strong>)
         when :emphasis
           %(<em>#{node.text}</em>)
-        when :monospaced
+        when :monospaced, :asciimath, :latexmath
+          # TODO: implement proper stem support. See https://github.com/asciidoctor/asciidoctor-epub3/issues/10
           %(<code class="literal">#{node.text}</code>)
         when :double
           #%(&#x201c;#{node.text}&#x201d;)
