@@ -8,6 +8,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 == Unreleased
 
 * log KindleGen warnings with WARNING log level (#291)
+* convert stem blocks to `<code>$stem_text</code>` (#10)
 * use imagedir from an image's context during packaging (#282)
 * fix images in tables not included in epub archive (#169)
 * fix inline images not being included in epub archive (#30)

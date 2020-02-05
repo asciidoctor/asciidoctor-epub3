@@ -1,0 +1,4 @@
+= Stem book
+:doctype: book
+
+include::chapter.adoc[]
