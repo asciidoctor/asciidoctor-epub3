@@ -119,6 +119,10 @@ module Asciidoctor
         end
 
         doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).to_s
+
+        # By default, Kindle does not allow the line height to be adjusted.
+        # But if you float the elements, then the line height disappears and can be restored manually using margins.
+        # See https://github.com/asciidoctor/asciidoctor-epub3/issues/123
         subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
 
         if pubtype == 'book'
