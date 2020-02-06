@@ -29,4 +29,11 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(book).to have_item_with_href('imagez/square.png')
     expect(book).to have_item_with_href('imagez/wolpertinger.jpg')
   end
+
+  it 'converts font-based icons to CSS' do
+    book, = to_epub 'icon/book.adoc'
+    chapter = book.item_by_href '_chapter.xhtml'
+    expect(chapter).not_to be_nil
+    expect(chapter.content).to include '.i-commenting::before { content: "\f4ad"; }'
+  end
 end

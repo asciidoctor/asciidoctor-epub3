@@ -582,7 +582,8 @@ META-INF/
   container.xml
 OEBPS/
   fonts/
-    font-awesome.ttf
+    awesome/
+      fa-solid-900.ttf
     font-icons.ttf
     mplus-1mn-latin-bold.ttf
     mplus-1mn-latin-light.ttf

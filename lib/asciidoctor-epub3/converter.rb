@@ -140,7 +140,7 @@ module Asciidoctor
           icon_css_head = ''
         else
           icon_defs = @icon_names.map {|name|
-            %(.i-#{name}::before { content: "#{FontIconMap[name.tr('-', '_').to_sym]}"; })
+            %(.i-#{name}::before { content: "#{FontIconMap.unicode name}"; })
           } * LF
           icon_css_head = %(<style>
 #{icon_defs}
