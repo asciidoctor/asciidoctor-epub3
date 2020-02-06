@@ -658,41 +658,35 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         (root_document(node.document).references[:epub_images] ||= []) << { name: target, path: fs_path } if doc_option node.document, :catalog_assets
       end
 
+      def resolve_image_attrs node
+        img_attrs = []
+        img_attrs << %(alt="#{node.attr 'alt'}") if node.attr? 'alt'
+
+        width = node.attr 'scaledwidth'
+        width = node.attr 'width' if width.nil?
+
+        # Unlike browsers, Calibre/Kindle *do* scale image if only height is specified
+        # So, in order to match browser behavior, we just always omit height
+        img_attrs << %(width="#{width}") unless width.nil?
+
+        img_attrs
+      end
+
       def convert_image node
         target = node.image_uri node.attr 'target'
         register_image node, target
         type = (::File.extname target)[1..-1]
         id_attr = node.id ? %( id="#{node.id}") : ''
-        img_attrs = [%(alt="#{node.attr 'alt'}")]
         case type
         when 'svg'
-          img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'}")
           # TODO: make this a convenience method on document
           epub_properties = (node.document.attributes['epub-properties'] ||= [])
           epub_properties << 'svg' unless epub_properties.include? 'svg'
-        else
-          img_attrs << %(style="width: #{node.attr 'scaledwidth'}") if node.attr? 'scaledwidth'
         end
-=begin
-    # NOTE to set actual width and height, use CSS width and height
-    if type == 'svg'
-      if node.attr? 'scaledwidth'
-        img_attrs << %(width="#{node.attr 'scaledwidth'}")
-      # Kindle
-      #elsif node.attr? 'scaledheight'
-      #  img_attrs << %(width="#{node.attr 'scaledheight'}" height="#{node.attr 'scaledheight'}")
-      # ePub3
-      elsif node.attr? 'scaledheight'
-        img_attrs << %(height="#{node.attr 'scaledheight'}" style="max-height: #{node.attr 'scaledheight'} !important")
-      else
-        # Aldiko doesn't not scale width to 100% by default
-        img_attrs << %(width="100%")
-      end
-    end
-=end
+        img_attrs = resolve_image_attrs node
         %(<figure#{id_attr} class="image#{prepend_space node.role}">
 <div class="content">
-<img src="#{target}" #{img_attrs * ' '}/>
+<img src="#{target}"#{prepend_space img_attrs * ' '} />
 </div>#{node.title? ? %(
 <figcaption>#{node.captioned_title}</figcaption>) : ''}
 </figure>)
@@ -801,16 +795,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         else
           target = node.image_uri node.target
           register_image node, target
-          img_attrs = [%(alt="#{node.attr 'alt'}"), %(class="inline#{node.role? ? " #{node.role}" : ''}")]
+
           if target.end_with? '.svg'
-            img_attrs << %(style="width: #{node.attr 'scaledwidth', '100%'}")
             # TODO: make this a convenience method on document
             epub_properties = (node.document.attributes['epub-properties'] ||= [])
             epub_properties << 'svg' unless epub_properties.include? 'svg'
-          elsif node.attr? 'scaledwidth'
-            img_attrs << %(style="width: #{node.attr 'scaledwidth'}")
           end
-          %(<img src="#{target}" #{img_attrs * ' '}/>)
+
+          img_attrs = resolve_image_attrs node
+          img_attrs << %(class="inline#{prepend_space node.role}")
+          %(<img src="#{target}"#{prepend_space img_attrs * ' '}/>)
         end
       end
 
