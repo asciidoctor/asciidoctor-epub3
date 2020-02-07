@@ -36,4 +36,13 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(chapter).not_to be_nil
     expect(chapter.content).to include '.i-commenting::before { content: "\f4ad"; }'
   end
+
+  it 'supports image width/height' do
+    book, = to_epub 'image-dimensions/book.adoc'
+    chapter = book.item_by_href '_chapter.xhtml'
+    expect(chapter).not_to be_nil
+    expect(chapter.content).to include '<img src="square.png" alt="100x100" width="100" />'
+    expect(chapter.content).to include '<img src="square.png" alt="50x50" width="50" />'
+    expect(chapter.content).to include '<img src="square.png" alt="50x?" width="50" />'
+  end
 end
