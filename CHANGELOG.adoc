@@ -7,6 +7,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+* fix invalid markup produced for tables with footer (#295)
 * add support for image width/height attributes (#183)
 * log KindleGen warnings with WARNING log level (#291)
 * convert stem blocks to `<code>$stem_text</code>` (#10)

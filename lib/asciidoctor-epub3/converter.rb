@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           #  end
           #end
           lines << '</colgroup>'
-          [:head, :foot, :body].reject {|tsec| node.rows[tsec].empty? }.each do |tsec|
+          [:head, :body, :foot].reject {|tsec| node.rows[tsec].empty? }.each do |tsec|
             lines << %(<t#{tsec}>)
             node.rows[tsec].each do |row|
               lines << '<tr>'
