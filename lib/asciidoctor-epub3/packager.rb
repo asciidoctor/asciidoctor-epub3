@@ -550,15 +550,22 @@ body > svg {
           # TODO: getting author list should be a method on Asciidoctor API
           contributors(*authors)
 
-          if doc.attr? 'revdate'
-            begin
-              date doc.attr('revdate')
-            rescue ArgumentError => e
-              logger.error %(#{::File.basename doc.attr('docfile')}: failed to parse revdate: #{e}, using current time as a fallback)
-              date ::Time.now
-            end
+          if doc.attr? 'reproducible'
+            # We need to set lastmodified to some fixed value. Otherwise, gepub will set it to current date.
+            @book.lastmodified (::Time.at 0).utc
+            # Is it correct that we do not populate dc:date when 'reproducible' is set?
           else
-            date ::Time.now
+            if doc.attr? 'revdate'
+              begin
+                date doc.attr('revdate')
+              rescue ArgumentError => e
+                logger.error %(#{::File.basename doc.attr('docfile')}: failed to parse revdate: #{e})
+                date doc.attr('docdatetime')
+              end
+            else
+              date doc.attr('docdatetime')
+            end
+            @book.lastmodified doc.attr('localdatetime')
           end
 
           description doc.attr('description') if doc.attr? 'description'
