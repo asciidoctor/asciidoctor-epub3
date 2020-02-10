@@ -1,0 +1,6 @@
+= Chapter B
+
+[title=.gitattributes]
+----
+*   -text
+----

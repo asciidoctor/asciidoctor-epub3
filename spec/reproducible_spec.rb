@@ -23,8 +23,6 @@ describe Asciidoctor::Epub3::Converter do
   end
 
   it 'sets mod and creation dates to match SOURCE_DATE_EPOCH environment variable' do
-    skip %(Current Asciidoctor version doesn't support SOURCE_DATE_EPOCH) unless supports_source_date_epoch?
-
     old_source_date_epoch = ENV.delete 'SOURCE_DATE_EPOCH'
     begin
       ENV['SOURCE_DATE_EPOCH'] = '1234123412'

@@ -2,7 +2,6 @@
 
 == TODO
 
-* remove conum patch for listing block (fixed in Asciidoctor 1.5.6)
 * change has_role? to role?
 * use empty string in place of nil in interpolated strings (few more still to check)
 * add epub3width (or epubwidth) as alternative to scaledwidth for images
@@ -16,7 +15,6 @@
 * don't add image from front matter if already referenced by chapter
 * add document filename to warn messages (added for some)
 * look for front-matter.html relative to docdir (or base_dir?); also allow front-matter.xhtml
-* change references[:spine] to spine_document property
 * reorder sections in README; needs to flow a bit better...Getting Started is too large & after Structuring your Manuscript
 * add helper to resolve imagesdir
 * support inline SVG
@@ -50,7 +48,6 @@
 * CRITICAL: make generated file name strategy configurable (source file vs id)
 * HIGH: revisit the headshot image logic
 * HIGH: if running on a single article, then the document id has a conflicting purpose
-* HIGH: require spine option on include directive in order to create a chapter file (requires change in Asciidoctor)
 * HIGH: promote regexps to constants
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
 * MEDIUM: add landmarks nav list to nav.xhtml; see https://github.com/IDPF/epub3-samples/blob/master/31/moby-dick-mo-xhtml/EPUB/toc.xhtml

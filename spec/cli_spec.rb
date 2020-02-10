@@ -21,11 +21,11 @@ describe 'asciidoctor-epub3' do
     _, err, res = run_command asciidoctor_epub3_bin,
         '--failure-level=ERROR',
         '-a', 'ebook-validate',
-        fixture_file('empty.adoc'),
-        '-o', temp_file('empty.epub')
+        fixture_file('invalid.adoc'),
+        '-o', temp_file('invalid.epub')
     expect(res.exitstatus).to eq(1)
     # Error from epubcheck
-    expect(err).to include 'ERROR(RSC-005)'
+    expect(err).to include 'ERROR(RSC-012)'
   end
 
   it 'converts sample book to epub and validates it' do
@@ -51,16 +51,16 @@ describe 'asciidoctor-epub3' do
   end
 
   it 'prints errors to stderr when converts invalid book to epub' do
-    _, err, res = to_epub fixture_file('empty.adoc'), temp_file('empty.epub')
+    _, err, res = to_epub fixture_file('invalid.adoc'), temp_file('invalid.epub')
     expect(res.exitstatus).to eq(0)
     # Error from epubcheck
-    expect(err).to include 'ERROR(RSC-005)'
-    # Error from packager.rb
+    expect(err).to include 'ERROR(RSC-012)'
+    # Error from converter.rb
     expect(err).to include 'EPUB validation failed'
   end
 
   it 'prints errors to stderr when converts invalid book to mobi' do
-    _, err, res = to_mobi fixture_file('empty.adoc'), temp_file('empty.mobi')
+    _, err, res = to_mobi fixture_file('invalid.adoc'), temp_file('invalid.mobi')
     expect(err).to include 'ERROR'
     expect(res.exitstatus).to eq(0)
   end

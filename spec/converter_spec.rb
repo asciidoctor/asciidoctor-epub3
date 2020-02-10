@@ -32,6 +32,13 @@ describe Asciidoctor::Epub3::Converter do
       expect(chapter.content).to include '<figcaption>Listing 1. .gitattributes</figcaption>'
     end
 
+    it 'increments listing numbering across chapters' do
+      book, = to_epub 'listing-chapter/book.adoc'
+      chapter_b = book.item_by_href 'chapter-b.xhtml'
+      expect(chapter_b).not_to be_nil
+      expect(chapter_b.content).to include '<figcaption>Listing 2. .gitattributes</figcaption>'
+    end
+
     it 'populates ebook subject from keywords' do
       book, = to_epub 'keywords/book.adoc'
       keywords = book.subject_list.map(&:content)

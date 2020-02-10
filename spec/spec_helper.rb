@@ -61,11 +61,6 @@ RSpec.configure do |config|
     File.join examples_dir, path
   end
 
-  # Returns true if current version of Asciidoctor supports SOURCE_DATE_EPOCH environment variable
-  def supports_source_date_epoch?
-    Gem::Version.new(Asciidoctor::VERSION) >= Gem::Version.new('1.5.5')
-  end
-
   def has_logger?
     defined? Asciidoctor::LoggerManager
   end
