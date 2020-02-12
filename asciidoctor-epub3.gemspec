@@ -34,7 +34,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_development_dependency 'rake', '~> 13.0.0'
   s.add_development_dependency 'rspec', '~> 3.9.0'
   s.add_development_dependency 'rubocop', '~> 0.79.0'
-  s.add_development_dependency 'rubocop-rspec', '~> 1.37.0'
+  s.add_development_dependency 'rubocop-rspec', '~> 1.38.0'
 
   s.add_runtime_dependency 'asciidoctor', '>= 1.5.3', '< 3.0.0'
   s.add_runtime_dependency 'gepub', '~> 1.0.0'
