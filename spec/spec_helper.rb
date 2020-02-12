@@ -61,6 +61,11 @@ RSpec.configure do |config|
     File.join examples_dir, path
   end
 
+  # Returns true if current version of Asciidoctor supports SOURCE_DATE_EPOCH environment variable
+  def supports_source_date_epoch?
+    Gem::Version.new(Asciidoctor::VERSION) >= Gem::Version.new('1.5.5')
+  end
+
   def has_logger?
     defined? Asciidoctor::LoggerManager
   end
@@ -80,7 +85,7 @@ RSpec.configure do |config|
 
   def convert input, opts = {}
     input = fixture_file input if String === input
-    opts[:to_dir] = temp_dir unless opts.key? :to_dir
+    opts[:to_dir] = temp_dir unless opts.key?(:to_dir) || opts.key?(:to_file)
     opts[:backend] = 'epub3'
     opts[:header_footer] = true
     opts[:mkdirs] = true
