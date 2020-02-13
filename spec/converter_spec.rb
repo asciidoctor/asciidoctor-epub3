@@ -25,6 +25,13 @@ describe Asciidoctor::Epub3::Converter do
       expect(book.metadata.date.content).not_to be_nil
     end
 
+    it 'adds listing captions by default' do
+      book, = to_epub 'listing/book.adoc'
+      chapter = book.item_by_href '_chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include '<figcaption>Listing 1. .gitattributes</figcaption>'
+    end
+
     it 'resolves deep includes relative to document that contains include directive' do
       book, = to_epub 'deep-include/book.adoc'
       chapter = book.item_by_href '_chapter.xhtml'

@@ -37,6 +37,15 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(chapter.content).to include '.i-commenting::before { content: "\f4ad"; }'
   end
 
+  it 'adds front cover image' do
+    book, = to_epub 'front-cover-image/book.adoc'
+    cover_image = book.item_by_href 'jacket/cover.png'
+    expect(cover_image).not_to be_nil
+    cover_page = book.item_by_href 'cover.xhtml'
+    expect(cover_page).not_to be_nil
+    expect(cover_page.content).to include '<image width="1050" height="1600" xlink:href="jacket/cover.png"/>'
+  end
+
   it 'supports image width/height' do
     book, = to_epub 'image-dimensions/book.adoc'
     chapter = book.item_by_href '_chapter.xhtml'
