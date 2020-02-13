@@ -1,0 +1,5 @@
+= Book with front cover image
+:doctype: book
+:front-cover-image: default-cover.png
+
+include::chapter.adoc[leveloffset=+1]
