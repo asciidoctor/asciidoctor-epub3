@@ -719,9 +719,23 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             id_attr = '' unless @xrefs_seen.add? refid
             refdoc = doc.references[:spine_items].find {|it| refdoc_id == (it.id || (it.attr 'docname')) }
             if refdoc
-              if (refs = refdoc.references[:refs]) && ::Asciidoctor::AbstractNode === (ref = refs[refdoc_refid])
-                text ||= ::Asciidoctor::Document === ref ? ((ref.attr 'docreftext') || ref.doctitle) : ref.xreftext((@xrefstyle ||= (doc.attr 'xrefstyle')))
-              elsif (xreftext = refdoc.references[:ids][refdoc_refid])
+              if (refs = refdoc.references[:refs])
+                ref = refs[refdoc_refid]
+                # If the reference is to a document, we have attached special reftext as 'docreftext'
+                if ::Asciidoctor::Document === ref
+                  xreftext = (ref.attr 'docreftext') || ref.doctitle
+                  # Otherwise use the usual xreftext
+                elsif ::Asciidoctor::AbstractNode === ref
+                  xreftext = (ref.xreftext node.attr('xrefstyle', nil, true)) || %([#{refdoc_refid}])
+                else
+                  warn %(asciidoctor: anchor in #{refdoc_id} chapter: #{refdoc_refid} no ref in #{refs.keys})
+                end
+              else
+                # Fall back on looking up in 'ids' for backwards compatibility
+                xreftext = refdoc.references[:ids][refdoc_refid]
+              end
+
+              if xreftext
                 text ||= xreftext
               else
                 logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to unknown anchor in #{refdoc_id} chapter: #{refdoc_refid})
@@ -733,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             id_attr = (@xrefs_seen.add? refid) ? %( id="xref-#{refid}") : ''
             if (refs = doc.references[:refs])
               if ::Asciidoctor::AbstractNode === (ref = refs[refid])
-                xreftext = text || ref.xreftext((@xrefstyle ||= (doc.attr 'xrefstyle')))
+                xreftext = (ref.xreftext node.attr('xrefstyle', nil, true)) || %([#{refid}])
               end
             else
               xreftext = doc.references[:ids][refid]
@@ -748,15 +762,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           end
           %(<a#{id_attr} href="#{target}" class="xref">#{text || "[#{refid}]"}</a>)
         when :ref
-          %(<a id="#{target}"></a>)
+          %(<a id="#{target || node.id}"></a>)
         when :link
-          %(<a href="#{target}" class="link">#{node.text}</a>)
+          %(<a href="#{target || node.id}" class="link">#{node.text}</a>)
         when :bibref
-          if @xrefs_seen.include? target
-            %(<a id="#{target}" href="#xref-#{target}">[#{target}]</a>)
-          else
-            %(<a id="#{target}"></a>[#{target}])
-          end
+          %(<a id="#{target || node.id}"></a>[#{node.reftext || target || node.id}])
+        else
+          logger.warn %(unknown anchor type: #{node.type.inspect})
+          nil
         end
       end
 
