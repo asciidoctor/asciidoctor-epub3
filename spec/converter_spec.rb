@@ -32,6 +32,12 @@ describe Asciidoctor::Epub3::Converter do
       expect(chapter.content).to include '<figcaption>Listing 1. .gitattributes</figcaption>'
     end
 
+    it 'populates ebook subject from keywords' do
+      book, = to_epub 'keywords/book.adoc'
+      keywords = book.subject_list.map(&:content)
+      expect(keywords).to eq(%w(a b c))
+    end
+
     it 'adds front matter page with images' do
       book, = to_epub 'front-matter/book.adoc'
       front_matter = book.item_by_href 'front-matter.xhtml'
