@@ -32,6 +32,14 @@ describe Asciidoctor::Epub3::Converter do
       expect(chapter.content).to include '<figcaption>Listing 1. .gitattributes</figcaption>'
     end
 
+    it 'adds front matter page with images' do
+      book, = to_epub 'front-matter/book.adoc'
+      front_matter = book.item_by_href 'front-matter.xhtml'
+      expect(front_matter).not_to be_nil
+      expect(front_matter.content).to include 'Matter. Front Matter.'
+      expect(book).to have_item_with_href 'square.png'
+    end
+
     it 'places footnotes in the same chapter' do
       book, = to_epub 'footnote/book.adoc'
       chapter_a = book.item_by_href 'chapter-a.xhtml'
