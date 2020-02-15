@@ -199,18 +199,25 @@ body > svg {
         nil
       end
 
-      def add_images_from_front_matter
-        (::File.read 'front-matter.html').scan ImgSrcScanRx do
-          resources do
-            file $1
+      def add_images_from_front_matter doc
+        workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
+        front_matter = File.join workdir, 'front-matter.html'
+        if ::File.file? front_matter
+          front_matter_content = ::File.read front_matter
+          front_matter_content.scan ImgSrcScanRx do
+            resources do
+              file $1 => File.join(workdir, $1)
+            end
           end
-        end if ::File.file? 'front-matter.html'
+        end
         nil
       end
 
-      def add_front_matter_page _doc, spine_builder
-        if ::File.file? 'front-matter.html'
-          front_matter_content = ::File.read 'front-matter.html'
+      def add_front_matter_page doc, spine_builder
+        workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
+        front_matter = File.join workdir, 'front-matter.html'
+        if ::File.file? front_matter
+          front_matter_content = ::File.read front_matter
           spine_builder.file 'front-matter.xhtml' => (postprocess_xhtml front_matter_content, @format)
           spine_builder.add_property 'svg' unless (spine_builder.property? 'svg') || SvgImgSniffRx !~ front_matter_content
         end
@@ -275,7 +282,7 @@ body > svg {
         workdir = (doc.attr 'docdir').nil_or_empty? ? '.' : workdir
         resources workdir: workdir do
           extend GepubResourceBuilderMixin
-          builder.add_images_from_front_matter
+          builder.add_images_from_front_matter doc
           builder.add_nav_doc doc, self, spine, format
           builder.add_ncx_doc doc, self, spine
           ordered do
