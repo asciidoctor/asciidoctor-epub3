@@ -1,4 +1,4 @@
-== Diagrams
+= Diagrams
 :imagesdir: a
 
 [ditaa, "a"]
