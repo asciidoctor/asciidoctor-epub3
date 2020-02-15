@@ -3,4 +3,4 @@
 :idprefix:
 :idseparator: -
 
-include::reference.adoc[]
+include::chapter.adoc[leveloffset=+1]

@@ -2,4 +2,4 @@
 :doctype: book
 :imagesdir: imagez
 
-include::subdir/chapter.adoc[]
+include::subdir/chapter.adoc[leveloffset=+1]

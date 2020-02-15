@@ -13,7 +13,7 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'converts chapter with unicode title to unicode filename' do
-      _, out_file = to_epub 'unicode/spine.adoc'
+      _, out_file = to_epub 'unicode/book.adoc'
       Zip::File.open out_file do |zip|
         expect(zip.find_entry('OEBPS/test-é.xhtml')).not_to be_nil
       end

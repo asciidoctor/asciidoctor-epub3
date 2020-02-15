@@ -4,4 +4,4 @@
 // TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/190
 // :plantumlconfig: ./plantuml.cfg
 
-include::subdir/chapter.adoc[]
+include::subdir/chapter.adoc[leveloffset=+1]
