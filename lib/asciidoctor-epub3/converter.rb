@@ -296,6 +296,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                       'note'
                     when 'important', 'warning', 'caution'
                       'warning'
+                    else
+                      logger.warn %(unknown admonition type: #{type})
+                      'note'
                     end
         %(<aside#{id_attr} class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
 #{title_el}<div class="content">
@@ -351,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_quote node
-        id_attr = %( id="#{node.id}") if node.id
+        id_attr = node.id ? %( id="#{node.id}") : ''
         class_attr = (role = node.role) ? %( class="blockquote #{role}") : ' class="blockquote"'
 
         footer_content = []
@@ -377,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_verse node
-        id_attr = %( id="#{node.id}") if node.id
+        id_attr = node.id ? %( id="#{node.id}") : ''
         class_attr = (role = node.role) ? %( class="verse #{role}") : ' class="verse"'
 
         footer_content = []
@@ -644,7 +647,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       def register_image node, target
         out_dir = node.attr('outdir', nil, true) || doc_option(node.document, :to_dir)
-        unless ::File.exist? fs_path = (::File.join out_dir, target)
+        fs_path = (::File.join out_dir, target)
+        unless ::File.exist? fs_path
           # This is actually a hack. It would be more correct to set base_dir of chapter document to base_dir of spine document.
           # That's how things would normally work if there was no separation between these documents, and instead chapters were normally included into spine document.
           # However, setting chapter base_dir to spine base_dir breaks parser.rb because it resolves includes in chapter document relative to base_dir instead of actual location of chapter file.
@@ -677,8 +681,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         register_image node, target
         type = (::File.extname target)[1..-1]
         id_attr = node.id ? %( id="#{node.id}") : ''
-        case type
-        when 'svg'
+        if type == 'svg'
           # TODO: make this a convenience method on document
           epub_properties = (node.document.attributes['epub-properties'] ||= [])
           epub_properties << 'svg' unless epub_properties.include? 'svg'
@@ -729,6 +732,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                   xreftext = (ref.xreftext node.attr('xrefstyle', nil, true)) || %([#{refdoc_refid}])
                 else
                   warn %(asciidoctor: anchor in #{refdoc_id} chapter: #{refdoc_refid} no ref in #{refs.keys})
+                  xreftext = nil
                 end
               else
                 # Fall back on looking up in 'ids' for backwards compatibility
@@ -748,6 +752,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             if (refs = doc.references[:refs])
               if ::Asciidoctor::AbstractNode === (ref = refs[refid])
                 xreftext = (ref.xreftext node.attr('xrefstyle', nil, true)) || %([#{refid}])
+              else
+                xreftext = nil
               end
             else
               xreftext = doc.references[:ids][refid]
