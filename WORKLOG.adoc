@@ -8,25 +8,18 @@
 * only use the inverted sizes for chapter title if publication-type is not book
 * use overflow-wrap consistently
 * use same logic for chapter title in document header as in TOC (level-1 section title should not be detected)
-* when chapter for xref is unknown, don't emit a link (we can't be so sure for refids atm)
-* make sure every doc is assigned an ID (perhaps it already is) so we don't need to rely on the docname attr as a fallback
- ** I believe this is already true; just remove hack
-* allow imagesdir to be outside of docdir (#22)
 * don't add image from front matter if already referenced by chapter
 * add document filename to warn messages (added for some)
-* look for front-matter.html relative to docdir (or base_dir?); also allow front-matter.xhtml
+* allow front-matter.xhtml
 * reorder sections in README; needs to flow a bit better...Getting Started is too large & after Structuring your Manuscript
-* add helper to resolve imagesdir
 * support inline SVG
 * describe the leveloffset setting in more detail in the README
 * link to https://medium.com/@sandersk/responsive-ebook-design-a-primer-8bba01328219 in style section in README
-* why don't we just use the chapter filename as the id?
 * only uppercase document title if detected in CSS
 * add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
  ** why can't we navigate to first chapter on Kindle from TOC?
 * document more clearly how to provide your own CSS
  ** currently it's not possible to override the epub3-fonts.css (though it should be)
-* add nav entry for cover if format != :kf8 ?
 * cleanup this sanitize XML stuff; move to Asciidoctor::Helpers?
  ** also need an upcase_pcdata
 * allow role to be applied to chapter (which means the role must be on the document)
@@ -45,9 +38,7 @@
 * CRITICAL: surround prose in <span> (e.g., simple <dd>) which is not nested in <p> or <div> so iBooks can change the font
 * CRITICAL: don't drop subsequent paragraphs of preamble when abstract is found...need to pass them through
 * CRITICAL: try to pull username from author email field; pull avatar from gravatar
-* CRITICAL: make generated file name strategy configurable (source file vs id)
 * HIGH: revisit the headshot image logic
-* HIGH: if running on a single article, then the document id has a conflicting purpose
 * HIGH: promote regexps to constants
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
 * MEDIUM: add landmarks nav list to nav.xhtml; see https://github.com/IDPF/epub3-samples/blob/master/31/moby-dick-mo-xhtml/EPUB/toc.xhtml
@@ -58,26 +49,21 @@
 * MEDIUM: source highlighting using Rouge (instead of Pygments)
 * MEDIUM: to remove text indent in mobi7, set width="0pt" (text-indent) on <p> tag; also set height="1em" (margin top)
 * MEDIUM: create back link in bibliography entry for each reference to it (currently only the first)
-* packager doesn't resolve include files in subdirectory totally correctly
 * implement checklists
 
 //^
 .Packager
-* HIGH: retain file name of original chapter file (otherwise, it can break interdoc xrefs)
 * HIGH: add NOTICE.adoc to e-book archive
-* HIGH: rework GEPUB so closures work more like in Prawn...perhaps using a wrapper
 * HIGH: minimize CSS (and any other assets worth minimizing)
 * HIGH: add back cover if specified
 * MEDIUM: add JavaScript to nav.xhtml to add class for epubReadingSystem to body
 * MEDIUM: rename OEBPS folder to EPUB
-* MEDIUM: set modified date explicitly
 * MEDIUM: option to add nav.xhtml to navigation flow?
 * MEDIUM: add Pygments stylesheet to EPUB archive if pygments-css=class
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
 
 .Fonts
-* script to merge entypo icons from Font Icons into Font Awesome (name it font-awesomer.ttf)
 * recreate ellipses in M+ 1p to be on baseline
 
 .Stylesheet
@@ -117,7 +103,6 @@
 * use float trick to fix line spacing for primary title like with the subtitle
 * better handling of title without subtitle, particularly HTML and CSS
 * add pink theme: http://designplus.co/en/designplus
-* LOW: customize id of <item> elements in epub manifest?
 
 //^
 .Samples
@@ -136,8 +121,6 @@
 //^
 == REVIEW
 
-* conversion of single file (no master document)
-* package images referenced by content
 * how custom CSS is specified
 
 == NOTES
