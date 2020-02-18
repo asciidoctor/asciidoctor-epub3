@@ -1,0 +1,48 @@
+= Diagrams
+:imagesdir: a
+
+[ditaa, "a"]
+....
++--+
+|A |
++--+
+....
+
+:imagesdir: b
+
+[ditaa, "b"]
+....
++--+
+|B |
++--+
+....
+
+:!imagesdir:
+
+[ditaa, "c"]
+....
++--+
+|C |
++--+
+....
+
+:imagesdir: d
+
+[plantuml, "plantuml"]
+---------------------------------------------------------------------
+@startuml
+
+title Accepting Payments: Blocking the GUI and Synchronous
+
+boundary "Web GUI" as GUI
+control "API"
+boundary "Payment Gateway" as PG
+
+GUI -> API: POST /payments
+API -> PG: POST /submitPaymentAttempt
+PG -> PG: May take 30-60s to confirm
+API <-- PG: HTTP 200 OK
+GUI <-- API: HTTP 200 OK
+
+@enduml
+---------------------------------------------------------------------

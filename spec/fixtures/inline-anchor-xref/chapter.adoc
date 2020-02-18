@@ -1,0 +1,6 @@
+= Chapter
+
+[[item1]]foo::bar
+[[item2]]baz::qux
+
+Try to refer to <<item1>>.

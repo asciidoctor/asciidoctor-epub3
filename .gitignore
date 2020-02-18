@@ -1,4 +1,5 @@
 /.bundle/
+/.idea/
 /.ruby-*
 /_*/
 /Gemfile.lock

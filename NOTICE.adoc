@@ -1,3 +1,4 @@
+[[NOTICE]]
 = Asciidoctor EPUB3
 
 Copyright (C) 2014-2016 OpenDevise Inc. and the Asciidoctor Project.
@@ -35,15 +36,15 @@ Noto Serif font::
 
   - https://code.google.com/p/noto/
 
-Font Awesome icon font (v4.0.3)::
+Font Awesome icon font (v5.12.0)::
   Font Awesome, the iconic font designed for Bootstrap by David Gandy, is used for the admonition icons and other icons in author's content and bundled in the EPUB3 archive.
   Font Awesome is fully open source and GPL compatible.
   The font is licensed under the SIL Open Font 1.1 License (OFL).
   You may obtain a copy of the license at:
 
-  http://scripts.sil.org/OFL
+  https://scripts.sil.org/OFL
 
-  - http://fontawesome.io
+  - https://fontawesome.io
 
 normalize.css (v3.0.1)::
   A customized version of normalize.css is used to provide cross-reader consistency in the default styling of HTML elements.

@@ -1,0 +1,7 @@
+= Bibliography chapter book
+:doctype: book
+:idprefix:
+
+include::chapter.adoc[leveloffset=+1]
+
+include::bibliography.adoc[leveloffset=+1]

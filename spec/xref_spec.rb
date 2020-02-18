@@ -1,101 +1,51 @@
+# frozen_string_literal: true
+
 require_relative 'spec_helper'
-require 'digest'
-require 'fileutils' unless defined? FileUtils
 
 describe 'Asciidoctor::Epub3::Converter - Xref' do
   context 'inter-chapter' do
-    it 'should resolve xref to top of chapter' do |example|
-      signature = Digest::SHA1.hexdigest example.full_description
-      book_dir = File.join __dir__, %(book-#{signature})
-      begin
-        Dir.mkdir book_dir
-        book_file = File.join book_dir, 'book.adoc'
-        chapter_a_file = File.join book_dir, 'chapter-a.adoc'
-        chapter_b_file = File.join book_dir, 'chapter-b.adoc'
-
-        File.write chapter_a_file, <<~'EOS', encoding: 'UTF-8'
-        = Chapter A
-
-        This is chapter A.
-        There's not much too it.
-
-        Time to move on to <<chapter-b#>>.
-        EOS
-
-        File.write chapter_b_file, <<~'EOS', encoding: 'UTF-8'
-        = Chapter B
-
-        Not much to show here either.
-        EOS
-
-        File.write book_file, <<~'EOS', encoding: 'UTF-8'
-        = Book Title
-        :doctype: book
-        :idprefix:
-        :idseparator: -
-
-        include::chapter-a.adoc[]
-
-        include::chapter-b.adoc[]
-        EOS
-
-        doc = Asciidoctor.load_file book_file, backend: 'epub3', header_footer: true
-        doc.convert
-        spine_items = doc.references[:spine_items]
-        (expect spine_items).to have_size 2
-        chapter_a_content = doc.references[:spine_items][0].content
-        (expect chapter_a_content).to include '<a id="xref--chapter-b" href="chapter-b.xhtml" class="xref">Chapter B</a>'
-      ensure
-        FileUtils.rm_r book_dir, force: true, secure: true
-      end
+    it 'resolves xref to top of chapter' do
+      book, = to_epub 'inter-chapter-xref/book.adoc'
+      chapter_a = book.item_by_href 'chapter-a.xhtml'
+      expect(chapter_a).not_to be_nil
+      expect(chapter_a.content).to include '<a id="xref--chapter-b" href="chapter-b.xhtml" class="xref">Chapter B</a>'
     end
 
-    it 'should resolve xref to section inside chapter' do |example|
-      signature = Digest::SHA1.hexdigest example.full_description
-      book_dir = File.join __dir__, %(book-#{signature})
-      begin
-        Dir.mkdir book_dir
-        book_file = File.join book_dir, 'book.adoc'
-        chapter_a_file = File.join book_dir, 'chapter-a.adoc'
-        chapter_b_file = File.join book_dir, 'chapter-b.adoc'
+    it 'resolves xref to section inside chapter' do
+      book, = to_epub 'inter-chapter-xref-to-subsection/book.adoc'
+      chapter_a = book.item_by_href 'chapter-a.xhtml'
+      expect(chapter_a).not_to be_nil
+      expect(chapter_a.content).to include '<a id="xref--chapter-b--getting-started" href="chapter-b.xhtml#getting-started" class="xref">Getting Started</a>'
+    end
 
-        File.write chapter_a_file, <<~'EOS', encoding: 'UTF-8'
-        = Chapter A
+    it 'resolves xref between subchapter include files' do
+      book, = to_epub 'inter-subchapter-xref/book.adoc'
+      chapter_a = book.item_by_href 'chapter-a.xhtml'
+      expect(chapter_a).not_to be_nil
+      expect(chapter_a.content).to include '<a id="xref--chapter-b--anchor" href="chapter-b.xhtml#anchor" class="xref">label</a>'
+    end
 
-        This is chapter A.
-        There's not much too it.
+    it 'resolves xref to inline anchor' do
+      book, = to_epub 'inline-anchor-xref/book.adoc'
+      chapter = book.item_by_href 'chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include '<a id="item1"></a>foo::bar'
+      expect(chapter.content).to include '<a id="xref-item1" href="#item1" class="xref">[item1]</a>'
+    end
 
-        Time to move on to <<chapter-b#getting-started>>.
-        EOS
+    it 'resolves xref to bibliography anchor' do
+      book, = to_epub 'bibliography-xref/book.adoc'
+      chapter = book.item_by_href 'chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include '<a id="item1"></a>[item1] foo::bar'
+      expect(chapter.content).to include '<a id="xref-item1" href="#item1" class="xref">[item1]</a>'
+    end
 
-        File.write chapter_b_file, <<~'EOS', encoding: 'UTF-8'
-        = Chapter B
-
-        == Getting Started
-
-        Now we can really get to it!
-        EOS
-
-        File.write book_file, <<~'EOS', encoding: 'UTF-8'
-        = Book Title
-        :doctype: book
-        :idprefix:
-        :idseparator: -
-
-        include::chapter-a.adoc[]
-
-        include::chapter-b.adoc[]
-        EOS
-
-        doc = Asciidoctor.load_file book_file, backend: 'epub3', header_footer: true
-        doc.convert
-        spine_items = doc.references[:spine_items]
-        (expect spine_items).to have_size 2
-        chapter_a_content = doc.references[:spine_items][0].content
-        (expect chapter_a_content).to include '<a id="xref--chapter-b--getting-started" href="chapter-b.xhtml#getting-started" class="xref">Getting Started</a>'
-      ensure
-        FileUtils.rm_r book_dir, force: true, secure: true
-      end
+    it 'resolves xref to bibliography chapter' do
+      book, = to_epub 'bibliography-chapter/book.adoc'
+      chapter = book.item_by_href 'chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include '<a id="xref--bibliography--pp" href="bibliography.xhtml#pp" class="xref">[pp]</a>'
     end
   end
 end

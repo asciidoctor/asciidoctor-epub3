@@ -858,12 +858,6 @@ blockquote > p {
   line-height: 1.75;
 }
 
-/* hide explicit open quote for CSS3-enabled clients */
-blockquote span.open-quote:not(:empty) {
-  display: none;
-}
-
-/* NOTE if we mapped the font icon to "\201c", we could just style the .open-quote */
 blockquote > p:first-of-type::before {
   display: inline-block;
   color: #666665;
@@ -1029,7 +1023,7 @@ aside[class~="admonition"] > div[class~="content"] {
 }
 
 aside.note::before {
-  content: "\f040"; /* fa-pencil */
+  content: "\f303"; /* fa-pencil-alt */
   color: #FFC14F;
 }
 
@@ -1039,7 +1033,7 @@ aside[class~="note"] > div[class~="content"] {
 }
 
 aside.tip::before {
-  content: "\f0eb"; /* fa-lightbulb-o */
+  content: "\f0eb"; /* fa-lightbulb */
   color: #40403E;
 }
 

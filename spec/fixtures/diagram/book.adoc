@@ -1,0 +1,6 @@
+= Diagrams book
+:doctype: book
+
+:plantumlconfig: ./plantuml.cfg
+
+include::subdir/chapter.adoc[leveloffset=+1]

@@ -29,6 +29,7 @@ endif::[]
 :uri-gem: http://rubygems.org/gems/asciidoctor-epub3
 :uri-repo: {uri-project}
 :uri-issues: {uri-repo}/issues
+:uri-ci: {uri-repo}/actions?query=workflow%3ACI
 :uri-discuss: http://discuss.asciidoctor.org
 :uri-rvm: https://rvm.io
 :uri-asciidoctor: http://asciidoctor.org
@@ -49,6 +50,7 @@ endif::[]
 ifdef::status[]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
 image:https://img.shields.io/badge/license-MIT-blue.svg[MIT License,link=#copyright]
+image:{uri-repo}/workflows/CI/badge.svg[GitHub Actions,link={uri-ci}]
 endif::[]
 
 {project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 and KF8/MOBI e-book formats.
@@ -134,74 +136,22 @@ The EPUB3 publication, which can be thought of as the “digital master”, is a
 
 An EPUB3 archive is composed of multiple files. The content of each “chapter” is typically stored in a dedicated XHTML file.
 Therefore, the {project-name} converter “chunks” the AsciiDoc source document into multiple XHTML files to add to the EPUB3 archive.
-While other converters handle this chunking task by automatically slicing up the XHTML output at predetermined heading levels, this converter takes a different approach, outlined next.
+Like other converters, Asciidoctor EPUB3 handles this chunking task by automatically slicing up the XHTML output at predetermined heading levels.
 
-=== Composition Rules
+When `doctype` attribute is set to `book`, each top-level section will become a separate ebook "chapter" file.
+This includes preface, bibliography, appendix, etc.
 
-There are several rules you must follow to successfully convert your AsciiDoc source documents into an EPUB3 publication archive.
-These rules may be loosened in the future, but they are mandatory at the moment.
+Otherwise, whole document is converted to a single ebook chapter.
 
-Rule 1::
-Each chapter must begin in a dedicated file that resides at the root of the project.
-It must be included into the main document using the AsciiDoc include directive.
-The main document, which we call the “spine”, may only contain a document header and a sequence of include directives.
-See <<Declaring the Spine>> for details.
-+
-TIP: The include directive may be used in the chapter files to include other files (even files in other folders).
+You may specify custom chapter filenames by assigning IDs to sections:
 
-Rule 2::
-Each chapter must start with a document title (i.e., level-0 heading).
-The document header must declare an ID that matches the chapter filename (minus its file extension).
+[source,asciidoc]
+-----
+[#custom-chapter-id]
+= Chapter
+-----
 
-Rule 3::
-No sections in a chapter may have the same ID as the chapter ID.
-
-Rule 4::
-The cross reference (i.e., xref) from one chapter to another must be in the format `+xref:chapter-id#chapter-id[optional reftext]+` (or `+<<chapter-id#chapter-id,optional reftext>>+`).
-If you want to reference a section in a chapter, update the fragment (i.e., the value that follows the hash) to match the target section ID.
-The reftext is optional since the reftext of the target is used by default.
-+
-TIP: To assign reference text (i.e., reftext) for a chapter title, set the document attribute `docreftext` in the header for that chapter.
-+
-TIP: Rule 2 states that the chapter ID must match the basename of the chapter file.
-In truth, the chapter ID can be a _derivative of_ the chapter filename.
-In that case, an attribute reference can be used to prepend a prefix to an inter-document cross reference.
-For example, if you want each chapter file to begin with `chapter-`, you'd write the xref as `+xref:{chapter-prefix}chapter-id#chapter-id[]+`.
-You'd then assign an empty value to the `chapter-prefix` attribute when converting to an e-book and `chapter-` for all other formats.
-
-The next section goes into more detail about how to set up the spine document and include the chapter files.
-
-=== Declaring the Spine
-
-The spine (or master document) must be well-formed.
-Otherwise, {project-name} will not convert the document properly.
-If your AsciiDoc documents are not structured as explained in this section, you'll need to change them.
-
-Asciidoctor uses top-level include directives (i.e., include directives in the master document) to indicate where each chapter split should occur.
-The chapter files should begin with an AsciiDoc document header, which consists of an ID, a document title (i.e., level-0 heading), an author name, and a set of attribute entries.
-Only the document title is required.
-
-The document title in the chapter file is used as the chapter title and the label for the chapter in the TOC.
-The chapter ID, combined with the _.xhtml_ suffix, is used as the filename of the chapter inside the EPUB3 archive (though this could change in the future).
-We recommend that you base the filename of the chapter on the chapter ID.
-
-If you don't specify an ID for a chapter, one will be generated automatically from the document title.
-The rules for generating a chapter ID from the document title are as follows:
-
-* apply inline formatting, then remove XML elements
-* remove the `\&#8217;` character reference (so `John\&#8217;s` becomes `Johns`)
-* replace `\&amp;` with the word `and` (so `John \&amp; Jane` becomes `John and Jane`)
-* expand all other character references
-* lowercase all characters
-* replace illegal ID characters with the character defined by the `idseparator` attribute
-* prepend the value of the `idprefix` attribute
-* prepend an underscore if the ID begins with a number
-
-You can think of the master document as the spine of the book and the include directives the individual items being bound together.
-The target of each include directive in the master document is parsed and converted as a separate AsciiDoc document, with certain options and attributes passed down from the master to ensure consistent behavior.
-Each resulting XHTML document is then added to the EPUB3 archive as a chapter document and the master document becomes the navigation file (i.e, the table of contents).
-
-Here's an example showing the structure of a spine document:
+Here's an example showing the structure of a book:
 
 [source,asciidoc]
 ----
@@ -212,43 +162,21 @@ Author Name
 \ifndef::ebook-format[:leveloffset: 1]
 //...and so on
 
-\include::chapter-one.adoc[]
+== Chapter One
 
-\include::chapter-two.adoc[]
+Some interesting text here.
 
-\include::chapter-three.adoc[]
+== Chapter Two
+
+Even more exciting stuff.
 ----
 
-IMPORTANT: The spine document cannot contain any content other than include directives.
-
-Here's an example showing the structure of a chapter document:
-
-[source,asciidoc]
-----
-[#chapter-one]
-= Chapter One
-
-chapter content
-----
-
-CAUTION: Although an explicit ID over the chapter title is not required, it's recommended for stability.
-
-If your chapter files start with a level-1 section instead of a level-2 section, you need to make the opposite adjustment in the header of the spine document:
-
-[source,asciidoc]
-----
-\ifndef::ebook-format[:leveloffset: -1]
-----
-
-If the master document does not contain any include directives, then the converter treats the document as the sole chapter in the EPUB3 archive and automatically produces a navigation file that references it.
-(Currently broken. See issue {uri-issues}/47[#47]).
-
-NOTE: Eventually, we envision introducing a dedicated block macro to represent a spine item so that we don't overload the meaning of the include directive.
-However, for the time being, the include directive fills this role.
+In older Asciidoctor EPUB3 versions, there were strict rules on document organization: 'spine' master document with chapter includes.
+This is no longer the case. If you followed old rules, chances are your document will work with newer Asciidoctor EPUB3 either as-is or after minor adjustments.
 
 == Prerequisites
 
-All that's needed to use {project-name} is Ruby (1.9.3 or above; 2.2.x recommended) and a few Ruby gems, which we'll explain how to install in the next section.
+All that's needed to use {project-name} is Ruby 2.3 or newer and a few Ruby gems (including at least Asciidoctor 1.5.6), which we'll explain how to install in the next section.
 
 To check if you have Ruby available, use the `ruby` command to query the installed version:
 
@@ -297,31 +225,6 @@ Assuming all the required gems install properly, verify you can run the `asciido
 If you see the version of {project-name} printed, you're ready to use {project-name}.
 Let's get an AsciiDoc document ready to convert to EPUB3.
 
-=== Prepare an AsciiDoc Document
-
-If you don't already have an AsciiDoc document, you can use the [file]_sample-book.adoc_ file and its chapters found in the [path]_data/samples_ directory of this project.
-
-.Master file named sample-book.adoc
-```asciidoc
-= Asciidoctor EPUB3: Sample Book
-Author Name
-v1.0, 2014-04-15
-:doctype: book
-:creator: {author}
-:producer: Asciidoctor
-:keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
-:copyright: CC-BY-SA 3.0
-:imagesdir: images
-
-\include::asciidoctor-epub3-readme.adoc[]
-
-\include::sample-content.adoc[]
-
-\include::asciidoctor-js-introduction.adoc[]
-
-\include::asciidoctor-js-extension.adoc[]
-```
-
 === EPUB-related AsciiDoc Attributes
 
 The metadata in the generated EPUB3 file is populated from attributes in the AsciiDoc document.
@@ -360,7 +263,7 @@ The title is added to the metadata in plain text format.
 The authors in each chapter document are aggregated together with the authors in the master file.
 
 |username
-|Used to resolve an avatar for the author that is displayed in the header of a chapter when the `publication-type` is set to a value other than `book`.
+|Used to resolve an avatar for the author that is displayed in the header of a chapter when the `doctype` is set to a value other than `book`.
 The avatar image should be located at the path _\{imagesdir}/avatars/\{username}.jpg_, where `\{username}` is the value of this attribute.
 
 |producer
@@ -402,13 +305,9 @@ _Only applies to a chapter document._
 |The path to a directory that contains alternate epub3.css and epub3-css3-only.css files to customize the look and feel.
 
 |doctype
-|Effectively ignored.
-The master document is assumed to be a book and each chapter an article.
-
-|publication-type
 |Used to control the inclusion of special content in the generated HTML.
 If set to a value other than book, the byline information (author and avatar) is included below the chapter header and a typographic end mark is added at the end of the last paragraph.
-Suggested values include: book (default), anthology, magazine, journal, article.
+Suggested values include: book (default), article.
 |===
 
 When using the EPUB3 converter, the `ebook-format` attribute resolves to the name of the e-book format being generated (epub3 or kf8) and the corresponding attribute `ebook-format-<name>` is defined, where `<name>` is `epub3` or `kf8`.
@@ -490,8 +389,8 @@ An EPUB3 archive contains:
 * one or more content documents
 * assets (images, fonts, stylesheets, etc.)
 
-The IDPF also supports {uri-epubcheck}[EpubCheck].
-EpubCheck parses and validates the file against the EPUB schema.
+The IDPF also supports {uri-epubcheck}[EPUBCheck].
+EPUBCheck parses and validates the file against the EPUB schema.
 ****
 
 If you want to browse the contents of the EPUB3 file that is generated, or preview the XHTML files in a regular web browser, add the `-a ebook-extract` flag to the `asciidoctor-epub3` command.
@@ -542,20 +441,38 @@ For more information about this attribute and other related attributes, see {uri
 *-D, --destination-dir* ::
   Writes files to specified directory (defaults to the current directory)
 
+*-a ebook-epubcheck-path=<path>*::
+  Specifies path to EPUBCheck executable to use with `-a ebook-validate`.
+  This attribute takes precedence over `EPUBCHECK` environment variable.
+
 *-a ebook-extract* ::
   Extracts the EPUB3 to a folder in the destination directory after the file is generated
 
 *-a ebook-format=<format>* ::
   Specifies the ebook format to generate (epub3 or kf8, default: epub3)
 
+*-a ebook-kindlegen-path=<path>*::
+  Specifies path to KindleGen executable to use when producing KF8/Mobi.
+  This attribute takes precedence over `KINDLEGEN` environment variable.
+
 *-a ebook-validate* ::
-  Runs {uri-epubcheck}[EpubCheck] to validate output file against the EPUB3 specification
+  Runs {uri-epubcheck}[EPUBCheck] to validate output file against the EPUB3 specification
 
 *-a ebook-compress=<0|1|2|none|standard|huffdic>* ::
   Controls the compression type used by kindlegen (0=none [default if unset], 1=standard [default if empty], 2=huffdic)
 
 *-v, --version* ::
   Display the program version
+
+=== Environment variables
+
+*EPUBCHECK*::
+  Specifies path to EPUBCheck executable to use with `-a ebook-validate`.
+  Effect of this variable can be overriden with `-a ebook-epubcheck-path` attribute.
+
+*KINDLEGEN*::
+  Specifies path to KindleGen executable to use when producing KF8/Mobi.
+  Effect of this variable can be overriden with `-a ebook-kindlegen-path` attribute.
 
 === EPUB3 Archive Structure
 
@@ -566,7 +483,8 @@ META-INF/
   container.xml
 OEBPS/
   fonts/
-    font-awesome.ttf
+    awesome/
+      fa-solid-900.ttf
     font-icons.ttf
     mplus-1mn-latin-bold.ttf
     mplus-1mn-latin-light.ttf
@@ -601,37 +519,34 @@ mimetype
 
 Images referenced in your AsciiDoc document must be stored in the images catalog.
 The images catalog is defined by the `imagesdir` attribute.
-If set, the value of this attribute is resolved relative to the spine document and must be at or below (i.e., within) the directory of that document.
+If set, the value of this attribute is resolved relative to the document and must be at or below (i.e., within) the directory of that document.
 (In other words, it cannot point to a location outside the document directory).
-If this attribute is not set, the images catalog defaults to the directory of the spine document.
+If this attribute is not set, the images catalog defaults to the directory of the document.
 {project-name} will discover all local image references and insert those images into the EPUB3 archive at the same relative path.
-
-WARNING: {project-name} does not currently discover and package inline images.
-See issue {uri-issues}/30[#30].
 
 === Default Images
 
-The sample book contains placeholder images for an author avatar and a book cover.
+The sample book contains placeholder image for an author avatar.
 
 // TODO explain the avatar and book cover images
 
-=== Changing the Cover Image
+=== Adding the Cover Image
 
 Ereaders have different image resolution and file size limits regarding a book's cover.
-Kindle covers tend to be 1050x1600 (16:9 resolution), which is the size of the sample cover provided with {project-name}.
+Kindle covers tend to be 1050x1600 (16:9 resolution).
 To ensure your cover displays correctly, you'll want to review the documentation or publisher guidelines for the e-reading platform you're targeting.
 
 WARNING: We've found that if the book cover is more than 1600px on any side, Aldiko will not render it and may even crash.
 
 Feel free to use the SVG of the sample cover in the [path]_data/images_ folder as a template for creating your own cover.
-Once your image is ready, you can replace the placeholder cover image by defining the `front-cover-image` attribute in the header of the master document.
+Once your image is ready, you can set the cover image by defining the `front-cover-image` attribute in the header of the master document.
 
 [source,asciidoc]
 ----
 :front-cover-image: image:cover.png[Front Cover,1050,1600]
 ----
 
-The image is resolved relative to the directory specified in the `imagesdir` attribute, which defaults to the directory of the spine document.
+The image is resolved relative to the directory specified in the `imagesdir` attribute, which defaults to the directory of the3 document.
 The image can be in any format, though we recommend using PNG, JPG, or SVG as they are the most portable formats.
 
 IMPORTANT: *You should always specify the dimensions of the cover image.*

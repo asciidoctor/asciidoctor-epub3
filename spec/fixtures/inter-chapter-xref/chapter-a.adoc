@@ -1,0 +1,6 @@
+= Chapter A
+
+This is chapter A.
+There's not much too it.
+
+Time to move on to <<chapter-b>>.
