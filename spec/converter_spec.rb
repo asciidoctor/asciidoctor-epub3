@@ -54,7 +54,7 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'adds multiple front matter page with images' do
-      book, = to_epub 'front-matter-multi/book.adoc', attributes: {'epub3-frontmatterdir' => 'fm'}
+      book, = to_epub 'front-matter-multi/book.adoc', attributes: { 'epub3-frontmatterdir' => 'fm' }
       front_matter = book.item_by_href 'front-matter.1.xhtml'
       expect(front_matter).not_to be_nil
       expect(front_matter.content).to include 'Matter. Front Matter.'
