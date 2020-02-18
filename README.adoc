@@ -481,7 +481,7 @@ Here's a sample manifest of files found in an EPUB3 document produced by {projec
 ....
 META-INF/
   container.xml
-OEBPS/
+EPUB/
   fonts/
     awesome/
       fa-solid-900.ttf

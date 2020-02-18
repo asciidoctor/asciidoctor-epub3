@@ -109,7 +109,7 @@ module Asciidoctor
         @images = []
         @footnotes = []
 
-        @book = GEPUB::Book.new
+        @book = GEPUB::Book.new 'EPUB/package.opf'
         @book.epub_backward_compat = @format != :kf8
         @book.language node.attr('lang', 'en'), id: 'pub-language'
 

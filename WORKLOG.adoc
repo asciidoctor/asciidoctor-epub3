@@ -57,7 +57,6 @@
 * HIGH: minimize CSS (and any other assets worth minimizing)
 * HIGH: add back cover if specified
 * MEDIUM: add JavaScript to nav.xhtml to add class for epubReadingSystem to body
-* MEDIUM: rename OEBPS folder to EPUB
 * MEDIUM: option to add nav.xhtml to navigation flow?
 * MEDIUM: add Pygments stylesheet to EPUB archive if pygments-css=class
 * support subtitle as separate from main title in package metadata
