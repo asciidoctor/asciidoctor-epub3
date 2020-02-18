@@ -1,4 +1,4 @@
 = Front matter book
-:doctype: book
+:epub3-frontmatterdir: fm
 
-include::chapter.adoc[leveloffset=+1]
+Nothing to see here.

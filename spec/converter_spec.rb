@@ -47,21 +47,31 @@ describe Asciidoctor::Epub3::Converter do
 
     it 'adds front matter page with images' do
       book, = to_epub 'front-matter/book.adoc'
-      front_matter = book.item_by_href 'front-matter.xhtml'
+      spine = book.spine.itemref_list
+      expect(spine).to have_size(2)
+
+      front_matter = book.items[spine[0].idref]
       expect(front_matter).not_to be_nil
+      expect(front_matter.href).to eq('front-matter.xhtml')
       expect(front_matter.content).to include 'Matter. Front Matter.'
       expect(book).to have_item_with_href 'square.png'
     end
 
     it 'adds multiple front matter page with images' do
-      book, = to_epub 'front-matter-multi/book.adoc', attributes: { 'epub3-frontmatterdir' => 'fm' }
-      front_matter = book.item_by_href 'front-matter.1.xhtml'
-      expect(front_matter).not_to be_nil
-      expect(front_matter.content).to include 'Matter. Front Matter.'
+      book, = to_epub 'front-matter-multi/book.adoc'
+      spine = book.spine.itemref_list
+      expect(spine).to have_size(3)
+
+      front_matter_1 = book.items[spine[0].idref]
+      expect(front_matter_1).not_to be_nil
+      expect(front_matter_1.href).to eq('front-matter.1.xhtml')
+      expect(front_matter_1.content).to include 'Matter. Front Matter.'
       expect(book).to have_item_with_href 'square.png'
-      front_matter = book.item_by_href 'front-matter.2.xhtml'
-      expect(front_matter).not_to be_nil
-      expect(front_matter.content).to include 'Matter. Front Matter. 2'
+
+      front_matter_2 = book.items[spine[1].idref]
+      expect(front_matter_2).not_to be_nil
+      expect(front_matter_2.href).to eq('front-matter.2.xhtml')
+      expect(front_matter_2.content).to include 'Matter. Front Matter. 2'
       expect(book).to have_item_with_href 'square_blue.png'
     end
 

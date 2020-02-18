@@ -1185,14 +1185,14 @@ body > svg {
           fmglob = 'front-matter.*\.html'
           fm_path = File.join workdir, fmdir
           unless Dir.exist? fm_path
-            warn %(Directory specified by 'epub3-frontmattderdir' doesn't exist! Ignoring ...)
+            logger.warn %(#{File.basename doc.attr('docfile')}: directory specified by 'epub3-frontmattderdir' doesn't exist! Ignoring ...)
             return []
           end
           fms = Dir.entries(fm_path).delete_if {|x| !x.match fmglob }.sort.map {|y| File.join fm_path, y }
           if fms && !fms.empty?
             fms
           else
-            warn %(Directory specified by 'epub3-frontmattderdir' contains no suitable files! Ignoring ...)
+            logger.warn %(#{File.basename doc.attr('docfile')}: directory specified by 'epub3-frontmattderdir' contains no suitable files! Ignoring ...)
             []
           end
         elsif File.exist? File.join workdir, 'front-matter.html'
@@ -1210,11 +1210,11 @@ body > svg {
           front_matter_content = ::File.read front_matter
 
           front_matter_file = File.basename front_matter, '.html'
-          item = @book.add_item "#{front_matter_file}.xhtml", content: (postprocess_xhtml front_matter_content)
+          item = @book.add_ordered_item "#{front_matter_file}.xhtml", content: (postprocess_xhtml front_matter_content)
           item.add_property 'svg' if SvgImgSniffRx =~ front_matter_content
 
           front_matter_content.scan ImgSrcScanRx do
-            @book.add_item $1
+            @book.add_item $1, content: File.join(File.dirname(front_matter), $1)
           end
         end
 
