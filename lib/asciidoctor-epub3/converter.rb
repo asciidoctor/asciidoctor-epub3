@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'spine_item_processor'
+require 'open3'
 require_relative 'font_icon_map'
 
 module Asciidoctor
@@ -14,56 +14,45 @@ module Asciidoctor
 
       register_for 'epub3'
 
-      def initialize backend, opts
-        super
-        basebackend 'html'
-        outfilesuffix '.epub' # dummy outfilesuffix since it may be .mobi
-        htmlsyntax 'xml'
-        @validate = false
-        @extract = false
-        @kindlegen_path = nil
-        @epubcheck_path = nil
-      end
-
-      def convert node, name = nil
-        if (name ||= node.node_name) == 'document'
-          @validate = node.attr? 'ebook-validate'
-          @extract = node.attr? 'ebook-extract'
-          @compress = node.attr 'ebook-compress'
-          @kindlegen_path = node.attr 'ebook-kindlegen-path'
-          @epubcheck_path = node.attr 'ebook-epubcheck-path'
-          spine_items = node.references[:spine_items]
-          if spine_items.nil?
-            logger.error %(#{::File.basename node.document.attr('docfile')}: failed to find spine items, produced file will be invalid)
-            spine_items = []
+      def write output, target
+        epub_file = @format == :kf8 ? %(#{::Asciidoctor::Helpers.rootname target}-kf8.epub) : target
+        output.generate_epub epub_file
+        logger.debug %(Wrote #{@format.upcase} to #{epub_file})
+        if @extract
+          extract_dir = epub_file.sub EpubExtensionRx, ''
+          ::FileUtils.remove_dir extract_dir if ::File.directory? extract_dir
+          ::Dir.mkdir extract_dir
+          ::Dir.chdir extract_dir do
+            ::Zip::File.open epub_file do |entries|
+              entries.each do |entry|
+                next unless entry.file?
+                unless (entry_dir = ::File.dirname entry.name) == '.' || (::File.directory? entry_dir)
+                  ::FileUtils.mkdir_p entry_dir
+                end
+                entry.extract
+              end
+            end
           end
-          Packager.new node, spine_items, node.attributes['ebook-format'].to_sym
-          # converting an element from the spine document, such as an inline node in the doctitle
-        elsif name.start_with? 'inline_'
-          (@content_converter ||= ::Asciidoctor::Converter::Factory.default.create 'epub3-xhtml5').convert node, name
-        else
-          raise ::ArgumentError, %(Encountered unexpected node in epub3 package converter: #{name})
+          logger.debug %(Extracted #{@format.upcase} to #{extract_dir})
+        end
+
+        if @format == :kf8
+          # QUESTION shouldn't we validate this epub file too?
+          distill_epub_to_mobi epub_file, target, @compress, @kindlegen_path
+        elsif @validate
+          validate_epub epub_file, @epubcheck_path
         end
       end
 
-      # FIXME: we have to package in write because we don't have access to target before this point
-      def write packager, target
-        packager.package validate: @validate, extract: @extract, compress: @compress, kindlegen_path: @kindlegen_path, epubcheck_path: @epubcheck_path, target: target
-        nil
-      end
-    end
+      CsvDelimiterRx = /\s*,\s*/
 
-    # Public: The converter for the epub3 backend that converts the individual
-    # content documents in an EPUB3 publication.
-    class ContentConverter
-      include ::Asciidoctor::Converter
-      include ::Asciidoctor::Logging
-
-      register_for 'epub3-xhtml5'
+      DATA_DIR = ::File.expand_path ::File.join(__dir__, '..', '..', 'data')
+      ImageMacroRx = /^image::?(.*?)\[(.*?)\]$/
+      ImgSrcScanRx = /<img src="(.+?)"/
+      SvgImgSniffRx = /<img src=".+?\.svg"/
 
       LF = ?\n
       NoBreakSpace = '&#xa0;'
-      ThinNoBreakSpace = '&#x202f;'
       RightAngleQuote = '&#x203a;'
       CalloutStartNum = %(\u2460)
 
@@ -87,13 +76,14 @@ module Asciidoctor
 
       ToHtmlSpecialCharsRx = /[#{ToHtmlSpecialCharsMap.keys.join}]/
 
-      def initialize backend, opts
+      EpubExtensionRx = /\.epub$/i
+      KindlegenCompression = ::Hash['0', '-c0', '1', '-c1', '2', '-c2', 'none', '-c0', 'standard', '-c1', 'huffdic', '-c2']
+
+      def initialize backend, opts = {}
         super
         basebackend 'html'
-        outfilesuffix '.xhtml'
+        outfilesuffix '.epub' # dummy outfilesuffix since it may be .mobi
         htmlsyntax 'xml'
-        @xrefs_seen = ::Set.new
-        @icon_names = []
       end
 
       def convert node, name = nil, _opts = {}
@@ -106,37 +96,209 @@ module Asciidoctor
       end
 
       def convert_document node
-        docid = node.id
-        pubtype = node.attr 'publication-type', 'book'
+        @format = node.attr('ebook-format').to_sym
 
-        if (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
-          title = %(#{doctitle.main} )
-          subtitle = doctitle.subtitle
+        @validate = node.attr? 'ebook-validate'
+        @extract = node.attr? 'ebook-extract'
+        @compress = node.attr 'ebook-compress'
+        @kindlegen_path = node.attr 'ebook-kindlegen-path'
+        @epubcheck_path = node.attr 'ebook-epubcheck-path'
+        @xrefs_seen = ::Set.new
+        @in_chapter = false
+        @icon_names = []
+        @images = []
+        @footnotes = []
+
+        @book = GEPUB::Book.new
+        @book.epub_backward_compat = @format != :kf8
+        @book.language node.attr('lang', 'en'), id: 'pub-language'
+
+        if node.attr? 'uuid'
+          @book.primary_identifier node.attr('uuid'), 'pub-identifier', 'uuid'
         else
-          # HACK: until we get proper handling of title-only in CSS
-          title = ''
-          subtitle = doctitle.combined
+          @book.primary_identifier node.id, 'pub-identifier', 'uuid'
+        end
+        # replace with next line once the attributes argument is supported
+        #unique_identifier doc.id, 'pub-id', 'uuid', 'scheme' => 'xsd:string'
+
+        # NOTE we must use :plain_text here since gepub reencodes
+        @book.add_title sanitize_doctitle_xml(node, :plain_text), id: 'pub-title'
+
+        # FIXME: this logic needs some work
+        if node.attr? 'publisher'
+          @book.publisher publisher_name = (node.attr 'publisher')
+          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+          @book.creator (node.attr 'producer', publisher_name), role: 'bkp'
+        elsif node.attr? 'producer'
+          # NOTE Use producer as both publisher and producer if publisher isn't specified
+          producer_name = node.attr 'producer'
+          @book.publisher producer_name
+          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+          @book.creator producer_name, role: 'bkp'
+        elsif node.attr? 'author'
+          # NOTE Use author as creator if both publisher or producer are absent
+          # marc role: Author (see http://www.loc.gov/marc/relators/relaterm.html)
+          @book.creator node.attr('author'), role: 'aut'
         end
 
-        doctitle_sanitized = (node.doctitle sanitize: true, use_fallback: true).to_s
+        if node.attr? 'creator'
+          # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
+          @book.creator node.attr('creator'), role: 'cre'
+        else
+          # marc role: Manufacturer (see http://www.loc.gov/marc/relators/relaterm.html)
+          # QUESTION should this be bkp?
+          @book.creator 'Asciidoctor', role: 'mfr'
+        end
+
+        if node.attr? 'reproducible'
+          # We need to set lastmodified to some fixed value. Otherwise, gepub will set it to current date.
+          @book.lastmodified = (::Time.at 0).utc
+          # Is it correct that we do not populate dc:date when 'reproducible' is set?
+        else
+          if node.attr? 'revdate'
+            begin
+              @book.date = node.attr 'revdate'
+            rescue ArgumentError => e
+              logger.error %(#{::File.basename node.attr('docfile')}: failed to parse revdate: #{e})
+              @book.date = node.attr 'docdatetime'
+            end
+          else
+            @book.date = node.attr 'docdatetime'
+          end
+          @book.lastmodified = node.attr 'localdatetime'
+        end
+
+        @book.description = node.attr 'description' if node.attr? 'description'
+        @book.source = node.attr 'source' if node.attr? 'source'
+        @book.rights = node.attr 'copyright' if node.attr? 'copyright'
+
+        (node.attr 'keywords', '').split(CsvDelimiterRx).each do |s|
+          @book.metadata.add_metadata 'subject', s
+        end
+
+        add_cover_image node
+        add_front_matter_page node
+
+        if node.doctype == 'book'
+          toc_items = []
+          node.sections.each do |item|
+            next unless item.parent == node
+            # Mark top-level sections as separate chapter files
+            item.set_attr 'ebook-chapter', item.id
+            toc_items << item
+          end
+          # TODO: this loses content between doc header and first chapter
+          node.content
+        else
+          toc_items = [node]
+          node.set_attr 'ebook-chapter', node.attr('docname')
+          add_chapter node
+        end
+
+        nav_xhtml = @book.add_item 'nav.xhtml', content: postprocess_xhtml(nav_doc(node, toc_items)), id: 'nav'
+        nav_xhtml.nav
+
+        # NOTE gepub doesn't support building a ncx TOC with depth > 1, so do it ourselves
+        toc_ncx = ncx_doc node, toc_items
+        @book.add_item 'toc.ncx', content: toc_ncx.to_ios, id: 'ncx'
+
+        docimagesdir = (node.attr 'imagesdir', '.').chomp '/'
+        docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
+
+        @images.each do |image|
+          if image[:name].start_with? %(#{docimagesdir}jacket/cover.)
+            logger.warn %(image path is reserved for cover artwork: #{image[:name]}; skipping image found in content)
+          elsif ::File.readable? image[:path]
+            @book.add_item image[:name], content: image[:path]
+          else
+            logger.error %(#{File.basename node.attr('docfile')}: image not found or not readable: #{image[:path]})
+          end
+        end
+
+        #add_metadata 'ibooks:specified-fonts', true
+
+        add_theme_assets node
+        if node.doctype != 'book'
+          usernames = [node].map {|item| item.attr 'username' }.compact.uniq
+          add_profile_images node, usernames
+        end
+
+        @book
+      end
+
+      # FIXME: move to Asciidoctor::Helpers
+      def sanitize_doctitle_xml doc, content_spec
+        doctitle = doc.doctitle use_fallback: true
+        sanitize_xml doctitle, content_spec
+      end
+
+      # FIXME: move to Asciidoctor::Helpers
+      def sanitize_xml content, content_spec
+        if content_spec != :pcdata && (content.include? '<')
+          if (content = (content.gsub XmlElementRx, '').strip).include? ' '
+            content = content.tr_s ' ', ' '
+          end
+        end
+
+        case content_spec
+        when :attribute_cdata
+          content = content.gsub '"', '&quot;' if content.include? '"'
+        when :cdata, :pcdata
+          # noop
+        when :plain_text
+          if content.include? ';'
+            content = content.gsub(CharEntityRx) { [$1.to_i].pack 'U*' } if content.include? '&#'
+            content = content.gsub FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap
+          end
+        else
+          raise ::ArgumentError, %(Unknown content spec: #{content_spec})
+        end
+        content
+      end
+
+      def add_chapter node
+        docid = node.attr 'ebook-chapter'
+
+        if node.context == :document
+          if (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
+            title = %(#{doctitle.main} )
+            subtitle = doctitle.subtitle
+          else
+            # HACK: until we get proper handling of title-only in CSS
+            title = ''
+            subtitle = doctitle.combined
+          end
+        else
+          title = ''
+          subtitle = node.title
+        end
+
+        doctitle_sanitized = (node.document.doctitle sanitize: true, use_fallback: true).to_s
 
         # By default, Kindle does not allow the line height to be adjusted.
         # But if you float the elements, then the line height disappears and can be restored manually using margins.
         # See https://github.com/asciidoctor/asciidoctor-epub3/issues/123
         subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
 
-        if pubtype == 'book'
+        if node.document.doctype == 'book'
           byline = ''
         else
           author = node.attr 'author'
           username = node.attr 'username', 'default'
-          imagesdir = (node.references[:spine].attr 'imagesdir', '.').chomp '/'
+          imagesdir = (node.document.attr 'imagesdir', '.').chomp '/'
           imagesdir = imagesdir == '.' ? '' : %(#{imagesdir}/)
           byline = %(<p class="byline"><img src="#{imagesdir}avatars/#{username}.jpg"/> <b class="author">#{author}</b></p>#{LF})
         end
 
-        mark_last_paragraph node unless pubtype == 'book'
-        content = node.content
+        mark_last_paragraph node unless node.document.doctype == 'book'
+
+        begin
+          @in_chapter = true
+          @xrefs_seen.clear
+          content = node.content
+        ensure
+          @in_chapter = false
+        end
 
         # NOTE must run after content is resolved
         # TODO perhaps create dynamic CSS file?
@@ -154,7 +316,7 @@ module Asciidoctor
 
         # NOTE kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = node.attr 'lang', 'en'}" lang="#{lang}">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
 <head>
 <meta charset="UTF-8"/>
 <title>#{doctitle_sanitized}</title>
@@ -179,12 +341,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </header>
 #{content})]
 
-        if node.footnotes?
+        unless (fns = node.document.footnotes - @footnotes).empty?
+          @footnotes += fns
+
           # NOTE kindlegen seems to mangle the <footer> element, so we wrap its content in a div
           lines << '<footer>
 <div class="chapter-footer">
 <div class="footnotes">'
-          node.footnotes.each do |footnote|
+          fns.each do |footnote|
             lines << %(<aside id="note-#{footnote.index}" epub:type="footnote">
 <p><sup class="noteref"><a href="#noteref-#{footnote.index}">#{footnote.index}</a></sup> #{footnote.text}</p>
 </aside>)
@@ -198,29 +362,37 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </body>
 </html>'
 
-        lines * LF
-      end
+        postprocessed_content = postprocess_xhtml lines * LF
+        chapter_item = @book.add_ordered_item %(#{docid}.xhtml), content: postprocessed_content
+        epub_properties = node.attr 'epub-properties'
+        chapter_item.add_property 'svg' if epub_properties&.include? 'svg'
 
-      # NOTE embedded is used for AsciiDoc table cell content
-      def convert_embedded node
-        node.content
+        # # QUESTION reenable?
+        # #linear 'yes' if i == 0
       end
 
       def convert_section node
-        hlevel = node.level + 1
-        epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
-        div_classes = [%(sect#{node.level}), node.role].compact
-        title = node.title
-        title_sanitized = xml_sanitize title
-        if node.document.header? || node.level != 1 || node != node.document.first_section
+        # TODO: single-document. Investigate if we can use Section.chapter?/Section.part?
+        # See https://github.com/asciidoctor/asciidoctor-pdf/blob/master/lib/asciidoctor/pdf/ext/asciidoctor/section.rb
+        # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
+        if @in_chapter
+          hlevel = node.level
+          epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
+          div_classes = [%(sect#{node.level}), node.role].compact
+          title = node.title
+          title_sanitized = xml_sanitize title
           %(<section class="#{div_classes * ' '}" title="#{title_sanitized}"#{epub_type_attr}>
 <h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? '' : %(
           #{content})}
 </section>)
         else
-          # document has no level-0 heading and this heading serves as the document title
-          node.content
+          add_chapter node
         end
+      end
+
+      # NOTE embedded is used for AsciiDoc table cell content
+      def convert_embedded node
+        node.content
       end
 
       # TODO: support use of quote block as abstract
@@ -330,10 +502,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         pre_classes = node.style == 'source' ? ['source', %(language-#{node.attr 'language'})] : ['screen']
         title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>
 ) : ''
-        # patches conums to fix extra or missing leading space
-        # TODO remove patch once upgrading to Asciidoctor 1.5.6
         %(<figure class="#{figure_classes * ' '}">
-#{title_div}<pre class="#{pre_classes * ' '}"><code>#{(node.content || '').gsub(/(?<! )<i class="conum"| +<i class="conum"/, ' <i class="conum"')}</code></pre>
+#{title_div}<pre class="#{pre_classes * ' '}"><code>#{node.content}</code></pre>
 </figure>)
       end
 
@@ -646,20 +816,21 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def register_image node, target
+        if target.end_with? '.svg'
+          chapter = get_enclosing_chapter node
+          chapter.set_attr 'epub-properties', [] unless chapter.attr? 'epub-properties'
+          epub_properties = chapter.attr 'epub-properties'
+          epub_properties << 'svg' unless epub_properties.include? 'svg'
+        end
+
         out_dir = node.attr('outdir', nil, true) || doc_option(node.document, :to_dir)
         fs_path = (::File.join out_dir, target)
         unless ::File.exist? fs_path
-          # This is actually a hack. It would be more correct to set base_dir of chapter document to base_dir of spine document.
-          # That's how things would normally work if there was no separation between these documents, and instead chapters were normally included into spine document.
-          # However, setting chapter base_dir to spine base_dir breaks parser.rb because it resolves includes in chapter document relative to base_dir instead of actual location of chapter file.
-          # Choosing between two evils - a hack here or writing a full-blown include processor for chapter files, I chose the former.
-          # In the future, this all should be thrown away when we stop parsing chapters as a standalone documents.
-          # https://github.com/asciidoctor/asciidoctor-epub3/issues/47 is used to track that.
-          base_dir = root_document(node.document).references[:spine].base_dir
+          base_dir = root_document(node.document).base_dir
           fs_path = ::File.join base_dir, target
         end
         # We need *both* virtual and physical image paths. Unfortunately, references[:images] only has one of them.
-        (root_document(node.document).references[:epub_images] ||= []) << { name: target, path: fs_path } if doc_option node.document, :catalog_assets
+        @images << { name: target, path: fs_path }
       end
 
       def resolve_image_attrs node
@@ -679,13 +850,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def convert_image node
         target = node.image_uri node.attr 'target'
         register_image node, target
-        type = (::File.extname target)[1..-1]
         id_attr = node.id ? %( id="#{node.id}") : ''
-        if type == 'svg'
-          # TODO: make this a convenience method on document
-          epub_properties = (node.document.attributes['epub-properties'] ||= [])
-          epub_properties << 'svg' unless epub_properties.include? 'svg'
-        end
         img_attrs = resolve_image_attrs node
         %(<figure#{id_attr} class="image#{prepend_space node.role}">
 <div class="content">
@@ -695,84 +860,67 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
+      def get_enclosing_chapter node
+        loop do
+          return nil if node.nil?
+          return node if node.attr? 'ebook-chapter'
+          node = node.parent
+        end
+      end
+
       def convert_inline_anchor node
-        target = node.target
         case node.type
-        when :xref # TODO: would be helpful to know what type the target is (e.g., bibref)
-          doc, refid, text, path = node.document, ((node.attr 'refid') || target), node.text, (node.attr 'path')
-          # NOTE if path is non-nil, we have an inter-document xref
-          # QUESTION should we drop the id attribute for an inter-document xref?
-          if path
-            # ex. chapter-id#section-id
-            if node.attr 'fragment'
-              refdoc_id, refdoc_refid = refid.split '#', 2
-              if refdoc_id == refdoc_refid
-                target = target[0...(target.index '#')]
-                id_attr = %( id="xref--#{refdoc_id}")
+        when :xref
+          doc, refid, target, text = node.document, node.attr('refid'), node.target, node.text
+          id_attr = ''
+
+          if (path = node.attributes['path'])
+            # NOTE non-nil path indicates this is an inter-document xref that's not included in current document
+            text = node.text || path
+          elsif refid == '#'
+            logger.warn %(#{::File.basename doc.attr('docfile')}: <<chapter#>> xref syntax isn't supported anymore. Use either <<chapter>> or <<chapter#anchor>>)
+          elsif refid
+            ref = doc.references[:refs][refid]
+            our_chapter = get_enclosing_chapter node
+            ref_chapter = get_enclosing_chapter ref
+            if ref_chapter
+              ref_docname = ref_chapter.attr 'ebook-chapter'
+              if ref_chapter == our_chapter
+                # ref within same chapter file
+                id_attr = %( id="xref-#{refid}")
+                target = %(##{refid})
+              elsif refid == ref_docname
+                # ref to top section of other chapter file
+                id_attr = %( id="xref--#{refid}")
+                target = %(#{refid}.xhtml)
               else
-                id_attr = %( id="xref--#{refdoc_id}--#{refdoc_refid}")
-              end
-              # ex. chapter-id#
-            else
-              refdoc_id = refdoc_refid = refid
-              # inflate key to spine item root (e.g., transform chapter-id to chapter-id#chapter-id)
-              refid = %(#{refid}##{refid})
-              id_attr = %( id="xref--#{refdoc_id}")
-            end
-            id_attr = '' unless @xrefs_seen.add? refid
-            refdoc = doc.references[:spine_items].find {|it| refdoc_id == (it.id || (it.attr 'docname')) }
-            if refdoc
-              if (refs = refdoc.references[:refs])
-                ref = refs[refdoc_refid]
-                # If the reference is to a document, we have attached special reftext as 'docreftext'
-                if ::Asciidoctor::Document === ref
-                  xreftext = (ref.attr 'docreftext') || ref.doctitle
-                  # Otherwise use the usual xreftext
-                elsif ::Asciidoctor::AbstractNode === ref
-                  xreftext = (ref.xreftext node.attr('xrefstyle', nil, true)) || %([#{refdoc_refid}])
-                else
-                  warn %(asciidoctor: anchor in #{refdoc_id} chapter: #{refdoc_refid} no ref in #{refs.keys})
-                  xreftext = nil
-                end
-              else
-                # Fall back on looking up in 'ids' for backwards compatibility
-                xreftext = refdoc.references[:ids][refdoc_refid]
+                # ref to section within other chapter file
+                id_attr = %( id="xref--#{ref_docname}--#{refid}")
+                target = %(#{ref_docname}.xhtml##{refid})
               end
 
-              if xreftext
-                text ||= xreftext
-              else
-                logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to unknown anchor in #{refdoc_id} chapter: #{refdoc_refid})
-              end
+              id_attr = '' unless @xrefs_seen.add? refid
+              text = (ref.xreftext node.attr('xrefstyle', nil, true))
             else
-              logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to anchor in unknown chapter: #{refdoc_id})
-            end
-          else
-            id_attr = (@xrefs_seen.add? refid) ? %( id="xref-#{refid}") : ''
-            if (refs = doc.references[:refs])
-              if ::Asciidoctor::AbstractNode === (ref = refs[refid])
-                xreftext = (ref.xreftext node.attr('xrefstyle', nil, true)) || %([#{refid}])
-              else
-                xreftext = nil
-              end
-            else
-              xreftext = doc.references[:ids][refid]
-            end
-
-            if xreftext
-              text ||= xreftext
-            else
-              # FIXME: we get false negatives for reference to bibref when using Asciidoctor < 1.5.6
-              logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to unknown local anchor (or valid bibref): #{refid})
+              logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to unknown anchor: #{refid})
             end
           end
+
           %(<a#{id_attr} href="#{target}" class="xref">#{text || "[#{refid}]"}</a>)
         when :ref
-          %(<a id="#{target || node.id}"></a>)
+          # NOTE id is used instead of target starting in Asciidoctor 2.0.0
+          %(<a id="#{node.target || node.id}"></a>)
         when :link
-          %(<a href="#{target || node.id}" class="link">#{node.text}</a>)
+          %(<a href="#{node.target}" class="link">#{node.text}</a>)
         when :bibref
-          %(<a id="#{target || node.id}"></a>[#{node.reftext || target || node.id}])
+          # NOTE reftext is no longer enclosed in [] starting in Asciidoctor 2.0.0
+          # NOTE id is used instead of target starting in Asciidoctor 2.0.0
+          if (reftext = node.reftext)
+            reftext = %([#{reftext}]) unless reftext.start_with? '['
+          else
+            reftext = %([#{node.target || node.id}])
+          end
+          %(<a id="#{node.target || node.id}"></a>#{reftext})
         else
           logger.warn %(unknown anchor type: #{node.type.inspect})
           nil
@@ -814,12 +962,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         else
           target = node.image_uri node.target
           register_image node, target
-
-          if target.end_with? '.svg'
-            # TODO: make this a convenience method on document
-            epub_properties = (node.document.attributes['epub-properties'] ||= [])
-            epub_properties << 'svg' unless epub_properties.include? 'svg'
-          end
 
           img_attrs = resolve_image_attrs node
           img_attrs << %(class="inline#{prepend_space node.role}")
@@ -908,6 +1050,425 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def prepend_space value
         value ? %( #{value}) : ''
       end
+
+      def add_theme_assets doc
+        format = @format
+        workdir = if doc.attr? 'epub3-stylesdir'
+                    stylesdir = doc.attr 'epub3-stylesdir'
+                    # FIXME: make this work for Windows paths!!
+                    if stylesdir.start_with? '/'
+                      stylesdir
+                    else
+                      docdir = doc.attr 'docdir', '.'
+                      docdir = '.' if docdir.empty?
+                      ::File.join docdir, stylesdir
+                    end
+                  else
+                    ::File.join DATA_DIR, 'styles'
+                  end
+
+        # TODO: improve design/UX of custom theme functionality, including custom fonts
+
+        if format == :kf8
+          # NOTE add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
+          @book.add_item 'styles/epub3.css', content: '@import url("epub3-proxied.css");'.to_ios
+          @book.add_item 'styles/epub3-css3-only.css', content: '@import url("epub3-css3-only-proxied.css");'.to_ios
+          @book.add_item 'styles/epub3-proxied.css', content: (postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
+          @book.add_item 'styles/epub3-css3-only-proxied.css', content: (postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+        else
+          @book.add_item 'styles/epub3.css', content: (postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
+          @book.add_item 'styles/epub3-css3-only.css', content: (postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+        end
+
+        font_files, font_css = select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
+        @book.add_item 'styles/epub3-fonts.css', content: font_css
+        unless font_files.empty?
+          # NOTE metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
+          #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
+          @book.add_optional_file 'META-INF/com.apple.ibooks.display-options.xml', '<?xml version="1.0" encoding="UTF-8"?>
+<display_options>
+<platform name="*">
+<option name="specified-fonts">true</option>
+</platform>
+</display_options>'.to_ios unless format == :kf8
+
+          # https://github.com/asciidoctor/asciidoctor-epub3/issues/120
+          #
+          # 'application/x-font-ttf' causes warnings in epubcheck 4.0.2,
+          # "non-standard font type". Discussion:
+          # https://www.mobileread.com/forums/showthread.php?t=231272
+          #
+          # 3.1 spec recommends 'application/font-sfnt', but epubcheck doesn't
+          # implement that yet (warnings). https://idpf.github.io/epub-cmt/v3/
+          #
+          # 3.0 spec recommends 'application/vnd.ms-opentype', this works without
+          # warnings.
+          # http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-core-media-types
+          font_files.each do |font_file|
+            item = @book.add_item font_file, content: File.join(DATA_DIR, font_file)
+            item.set_media_type 'application/vnd.ms-opentype'
+          end
+        end
+        nil
+      end
+
+      def add_cover_image doc
+        return if (image_path = doc.attr 'front-cover-image').nil?
+
+        imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
+        imagesdir = (imagesdir == '.' ? '' : %(#{imagesdir}/))
+
+        image_attrs = {}
+        if (image_path.include? ':') && image_path =~ ImageMacroRx
+          logger.warn %(deprecated block macro syntax detected in front-cover-image attribute) if image_path.start_with? 'image::'
+          image_path = %(#{imagesdir}#{$1})
+          (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
+        end
+
+        image_href = %(#{imagesdir}jacket/cover#{::File.extname image_path})
+
+        workdir = doc.attr 'docdir'
+        workdir = '.' if workdir.nil_or_empty?
+
+        unless ::File.readable? ::File.join(workdir, image_path)
+          logger.error %(#{::File.basename doc.attr('docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
+          return
+        end
+
+        unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
+          width, height = 1050, 1600
+        end
+
+        @book.add_item(image_href, content: File.join(workdir, image_path)).cover_image
+
+        unless @format == :kf8
+          # NOTE SVG wrapper maintains aspect ratio and confines image to view box
+          content = %(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>#{sanitize_doctitle_xml doc, :cdata}</title>
+<style type="text/css">
+@page {
+  margin: 0;
+}
+html {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+body {
+  margin: 0;
+  padding: 0 !important;
+  text-align: center;
+}
+body > svg {
+  /* prevent bleed onto second page (removes descender space) */
+  display: block;
+}
+</style>
+</head>
+<body epub:type="cover"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="100%" height="100%" viewBox="0 0 #{width} #{height}" preserveAspectRatio="xMidYMid meet">
+<image width="#{width}" height="#{height}" xlink:href="#{image_href}"/>
+</svg></body>
+</html>).to_ios
+
+          # Gitden expects a cover.xhtml, so add it to the spine
+          @book.add_ordered_item 'cover.xhtml', content: content, id: 'cover'
+        end
+        nil
+      end
+
+      def add_front_matter_page doc
+        workdir = doc.attr 'docdir'
+        workdir = '.' if workdir.nil_or_empty?
+
+        front_matter = File.join workdir, 'front-matter.html'
+        return unless ::File.file? front_matter
+        front_matter_content = ::File.read front_matter
+
+        item = @book.add_item 'front-matter.xhtml', content: (postprocess_xhtml front_matter_content)
+        item.add_property 'svg' if SvgImgSniffRx =~ front_matter_content
+
+        front_matter_content.scan ImgSrcScanRx do
+          @book.add_item $1
+        end
+        nil
+      end
+
+      def add_profile_images doc, usernames
+        imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
+        imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
+
+        @book.add_item %(#{imagesdir}avatars/default.jpg), content: ::File.join(DATA_DIR, 'images/default-avatar.jpg')
+        @book.add_item %(#{imagesdir}headshots/default.jpg), content: ::File.join(DATA_DIR, 'images/default-headshot.jpg')
+
+        workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
+
+        usernames.each do |username|
+          avatar = %(#{imagesdir}avatars/#{username}.jpg)
+          if ::File.readable? (resolved_avatar = (::File.join workdir, avatar))
+            @book.add_item avatar, content: resolved_avatar
+          else
+            logger.error %(avatar for #{username} not found or readable: #{avatar}; falling back to default avatar)
+            @book.add_item avatar, content: ::File.join(DATA_DIR, 'images/default-avatar.jpg')
+          end
+
+          headshot = %(#{imagesdir}headshots/#{username}.jpg)
+          if ::File.readable? (resolved_headshot = (::File.join workdir, headshot))
+            @book.add_item headshot, content: resolved_headshot
+          elsif doc.attr? 'builder', 'editions'
+            logger.error %(headshot for #{username} not found or readable: #{headshot}; falling back to default headshot)
+            @book.add_item headshot, content: ::File.join(DATA_DIR, 'images/default-headshot.jpg')
+          end
+        end
+        nil
+      end
+
+      # TODO: aggregate authors of chapters into authors attribute(s) on main document
+      def nav_doc doc, items
+        lines = [%(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = doc.attr 'lang', 'en'}" lang="#{lang}">
+<head>
+<meta charset="UTF-8"/>
+<title>#{sanitize_doctitle_xml doc, :cdata}</title>
+<link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
+<link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
+</head>
+<body>
+<h1>#{sanitize_doctitle_xml doc, :pcdata}</h1>
+<nav epub:type="toc" id="toc">
+<h2>#{doc.attr 'toc-title'}</h2>)]
+        lines << (nav_level items, [(doc.attr 'toclevels', 1).to_i, 0].max)
+        lines << %(</nav>
+</body>
+</html>)
+        lines * LF
+      end
+
+      def nav_level items, depth, state = {}
+        lines = []
+        lines << '<ol>'
+        items.each do |item|
+          #index = (state[:index] = (state.fetch :index, 0) + 1)
+          if item.attr? 'ebook-chapter'
+            # NOTE we sanitize the chapter titles because we use formatting to control layout
+            if item.context == :document
+              item_label = sanitize_doctitle_xml item, :cdata
+            else
+              item_label = sanitize_xml item.title, :cdata
+            end
+            item_href = (state[:content_doc_href] = %(#{item.attr 'ebook-chapter'}.xhtml))
+          else
+            item_label = sanitize_xml item.title, :pcdata
+            item_href = %(#{state[:content_doc_href]}##{item.id})
+          end
+          lines << %(<li><a href="#{item_href}">#{item_label}</a>)
+          if depth == 0 || (child_sections = item.sections).empty?
+            lines[-1] = %(#{lines[-1]}</li>)
+          else
+            lines << (nav_level child_sections, depth - 1, state)
+            lines << '</li>'
+          end
+          state.delete :content_doc_href if item.attr? 'ebook-chapter'
+        end
+        lines << '</ol>'
+        lines * LF
+      end
+
+      def ncx_doc doc, items
+        # TODO: populate docAuthor element based on unique authors in work
+        lines = [%(<?xml version="1.0" encoding="utf-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="#{doc.attr 'lang', 'en'}">
+<head>
+<meta name="dtb:uid" content="#{@book.identifier}"/>
+%{depth}
+<meta name="dtb:totalPageCount" content="0"/>
+<meta name="dtb:maxPageNumber" content="0"/>
+</head>
+<docTitle><text>#{sanitize_doctitle_xml doc, :cdata}</text></docTitle>
+<navMap>)]
+        lines << (ncx_level items, [(doc.attr 'toclevels', 1).to_i, 0].max, state = {})
+        lines[0] = lines[0].sub '%{depth}', %(<meta name="dtb:depth" content="#{state[:max_depth]}"/>)
+        lines << %(</navMap>
+</ncx>)
+        lines * LF
+      end
+
+      def ncx_level items, depth, state = {}
+        lines = []
+        state[:max_depth] = (state.fetch :max_depth, 0) + 1
+        items.each do |item|
+          index = (state[:index] = (state.fetch :index, 0) + 1)
+          item_id = %(nav_#{index})
+          if item.attr? 'ebook-chapter'
+            if item.context == :document
+              item_label = sanitize_doctitle_xml item, :cdata
+            else
+              item_label = sanitize_xml item.title, :cdata
+            end
+            item_href = (state[:content_doc_href] = %(#{item.attr 'ebook-chapter'}.xhtml))
+          else
+            item_label = sanitize_xml item.title, :cdata
+            item_href = %(#{state[:content_doc_href]}##{item.id})
+          end
+          lines << %(<navPoint id="#{item_id}" playOrder="#{index}">)
+          lines << %(<navLabel><text>#{item_label}</text></navLabel>)
+          lines << %(<content src="#{item_href}"/>)
+          unless depth == 0 || (child_sections = item.sections).empty?
+            lines << (ncx_level child_sections, depth - 1, state)
+          end
+          lines << %(</navPoint>)
+          state.delete :content_doc_href if item.attr? 'ebook-chapter'
+        end
+        lines * LF
+      end
+
+      # Swap fonts in CSS based on the value of the document attribute 'scripts',
+      # then return the list of fonts as well as the font CSS.
+      def select_fonts filename, scripts = 'latin'
+        font_css = ::File.read filename
+        font_css = font_css.gsub(/(?<=-)latin(?=\.ttf\))/, scripts) unless scripts == 'latin'
+
+        # match CSS font urls in the forms of:
+        # src: url(../fonts/notoserif-regular-latin.ttf);
+        # src: url(../fonts/notoserif-regular-latin.ttf) format("truetype");
+        font_list = font_css.scan(/url\(\.\.\/([^)]+\.ttf)\)/).flatten
+
+        [font_list, font_css.to_ios]
+      end
+
+      def postprocess_css_file filename, format
+        return filename unless format == :kf8
+        postprocess_css ::File.read(filename), format
+      end
+
+      def postprocess_css content, format
+        return content.to_ios unless format == :kf8
+        # TODO: convert regular expressions to constants
+        content
+          .gsub(/^  -webkit-column-break-.*\n/, '')
+          .gsub(/^  max-width: .*\n/, '')
+          .to_ios
+      end
+
+      # NOTE Kindle requires that
+      #      <meta charset="utf-8"/>
+      #      be converted to
+      #      <meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8"/>
+      def postprocess_xhtml content
+        return content.to_ios unless @format == :kf8
+        # TODO: convert regular expressions to constants
+        content
+          .gsub(/<meta charset="(.+?)"\/>/, '<meta http-equiv="Content-Type" content="application/xml+xhtml; charset=\1"/>')
+          .gsub(/<img([^>]+) style="width: (\d\d)%;"/, '<img\1 style="width: \2%; height: \2%;"')
+          .gsub(/<script type="text\/javascript">.*?<\/script>\n?/m, '')
+          .to_ios
+      end
+
+      def get_kindlegen_command kindlegen_path
+        unless kindlegen_path.nil?
+          logger.debug %(Using ebook-kindlegen-path attribute: #{kindlegen_path})
+          return [kindlegen_path]
+        end
+
+        unless (result = ENV['KINDLEGEN']).nil?
+          logger.debug %(Using KINDLEGEN env variable: #{result})
+          return [result]
+        end
+
+        begin
+          require 'kindlegen' unless defined? ::Kindlegen
+          result = ::Kindlegen.command.to_s
+          logger.debug %(Using KindleGen from gem: #{result})
+          [result]
+        rescue LoadError => e
+          logger.debug %(#{e}; Using KindleGen from PATH)
+          [%(kindlegen#{::Gem.win_platform? ? '.exe' : ''})]
+        end
+      end
+
+      def distill_epub_to_mobi epub_file, target, compress, kindlegen_path
+        mobi_file = ::File.basename target.sub(EpubExtensionRx, '.mobi')
+        compress_flag = KindlegenCompression[compress ? (compress.empty? ? '1' : compress.to_s) : '0']
+
+        argv = get_kindlegen_command(kindlegen_path) + ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
+        begin
+          # This duplicates Kindlegen.run, but we want to override executable
+          out, err, res = Open3.capture3(*argv) do |r|
+            r.force_encoding 'UTF-8' if ::Gem.win_platform? && r.respond_to?(:force_encoding)
+          end
+        rescue Errno::ENOENT => e
+          raise 'Unable to run KindleGen. Either install the kindlegen gem or place `kindlegen` executable on PATH or set KINDLEGEN environment variable with path to it', cause: e
+        end
+
+        out.each_line do |line|
+          log_line line
+        end
+        err.each_line do |line|
+          log_line line
+        end
+
+        output_file = ::File.join ::File.dirname(epub_file), mobi_file
+        if res.success?
+          logger.debug %(Wrote MOBI to #{output_file})
+        else
+          logger.error %(KindleGen failed to write MOBI to #{output_file})
+        end
+      end
+
+      def get_epubcheck_command epubcheck_path
+        unless epubcheck_path.nil?
+          logger.debug %(Using ebook-epubcheck-path attribute: #{epubcheck_path})
+          return [epubcheck_path]
+        end
+
+        unless (result = ENV['EPUBCHECK']).nil?
+          logger.debug %(Using EPUBCHECK env variable: #{result})
+          return [result]
+        end
+
+        begin
+          result = ::Gem.bin_path 'epubcheck-ruby', 'epubcheck'
+          logger.debug %(Using EPUBCheck from gem: #{result})
+          [::Gem.ruby, result]
+        rescue ::Gem::Exception => e
+          logger.debug %(#{e}; Using EPUBCheck from PATH)
+          ['epubcheck']
+        end
+      end
+
+      def validate_epub epub_file, epubcheck_path
+        argv = get_epubcheck_command(epubcheck_path) + ['-w', epub_file]
+        begin
+          out, err, res = Open3.capture3(*argv)
+        rescue Errno::ENOENT => e
+          raise 'Unable to run EPUBCheck. Either install epubcheck-ruby gem or place `epubcheck` executable on PATH or set EPUBCHECK environment variable with path to it', cause: e
+        end
+
+        out.each_line do |line|
+          logger.info line
+        end
+        err.each_line do |line|
+          log_line line
+        end
+
+        logger.error %(EPUB validation failed: #{epub_file}) unless res.success?
+      end
+
+      def log_line line
+        line = line.strip
+
+        if line =~ /^fatal/i
+          logger.fatal line
+        elsif line =~ /^error/i
+          logger.error line
+        elsif line =~ /^warning/i
+          logger.warn line
+        else
+          logger.info line
+        end
+      end
     end
 
     class DocumentIdGenerator
@@ -968,11 +1529,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
     end
 
-    require_relative 'packager'
-
     Extensions.register do
       if (document = @document).backend == 'epub3'
-        document.attributes['spine'] = ''
         document.set_attribute 'listing-caption', 'Listing'
         # pygments.rb hangs on JRuby for Windows, see https://github.com/asciidoctor/asciidoctor-epub3/issues/253
         if !(::RUBY_ENGINE == 'jruby' && Gem.win_platform?) && (Gem.try_activate 'pygments.rb')
@@ -991,8 +1549,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           ebook_format = document.attributes['ebook-format'] = 'epub3'
         end
         document.attributes[%(ebook-format-#{ebook_format})] = ''
-        # Only fire SpineItemProcessor for top-level include directives
-        include_processor SpineItemProcessor.new(document)
         treeprocessor do
           process do |doc|
             doc.id = DocumentIdGenerator.generate_id doc, (doc.attr 'idprefix'), (doc.attr 'idseparator')
