@@ -1179,20 +1179,46 @@ body > svg {
         nil
       end
 
+
+      def get_frontmatter_files doc, workdir
+        if doc.attr? 'epub3-frontmatterdir'
+          fmdir = doc.attr 'epub3-frontmatterdir'
+          fmglob = 'front-matter.*\.html'
+          fm_path = File.join workdir, fmdir
+          unless Dir.exist? fm_path
+            warn %(Directory specified by 'epub3-frontmattderdir' doesn't exist! Ignoring ...)
+            return []
+          end
+          fms = Dir.entries(fm_path).delete_if {|x| !x.match fmglob}.sort.map {|y| File.join(fm_path,y)}
+          if fms && fms.length > 0
+            fms
+          else
+            warn %(Directory specified by 'epub3-frontmattderdir' contains no suitable files! Ignoring ...)
+            []
+          end
+        elsif File.exist? File.join workdir, 'front-matter.html'
+          [File.join(workdir, 'front-matter.html')]
+        else
+          []
+        end
+      end
+
       def add_front_matter_page doc
         workdir = doc.attr 'docdir'
         workdir = '.' if workdir.nil_or_empty?
 
-        front_matter = File.join workdir, 'front-matter.html'
-        return unless ::File.file? front_matter
-        front_matter_content = ::File.read front_matter
+        get_frontmatter_files(doc, workdir).each do | front_matter |
+          front_matter_content = ::File.read front_matter
 
-        item = @book.add_item 'front-matter.xhtml', content: (postprocess_xhtml front_matter_content)
-        item.add_property 'svg' if SvgImgSniffRx =~ front_matter_content
+          front_matter_file = File.basename(front_matter, '.html')
+          item = @book.add_item "#{front_matter_file}.xhtml", content: (postprocess_xhtml front_matter_content)
+          item.add_property 'svg' if SvgImgSniffRx =~ front_matter_content
 
-        front_matter_content.scan ImgSrcScanRx do
-          @book.add_item $1
+          front_matter_content.scan ImgSrcScanRx do
+            @book.add_item $1
+          end
         end
+
         nil
       end
 

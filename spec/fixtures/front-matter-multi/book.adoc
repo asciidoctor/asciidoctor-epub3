@@ -1,0 +1,4 @@
+= Front matter book
+:doctype: book
+
+include::chapter.adoc[leveloffset=+1]
