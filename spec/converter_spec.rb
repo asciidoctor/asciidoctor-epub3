@@ -62,16 +62,16 @@ describe Asciidoctor::Epub3::Converter do
       spine = book.spine.itemref_list
       expect(spine).to have_size(3)
 
-      front_matter_1 = book.items[spine[0].idref]
-      expect(front_matter_1).not_to be_nil
-      expect(front_matter_1.href).to eq('front-matter.1.xhtml')
-      expect(front_matter_1.content).to include 'Matter. Front Matter.'
+      front_matter1 = book.items[spine[0].idref]
+      expect(front_matter1).not_to be_nil
+      expect(front_matter1.href).to eq('front-matter.1.xhtml')
+      expect(front_matter1.content).to include 'Matter. Front Matter.'
       expect(book).to have_item_with_href 'square.png'
 
-      front_matter_2 = book.items[spine[1].idref]
-      expect(front_matter_2).not_to be_nil
-      expect(front_matter_2.href).to eq('front-matter.2.xhtml')
-      expect(front_matter_2.content).to include 'Matter. Front Matter. 2'
+      front_matter2 = book.items[spine[1].idref]
+      expect(front_matter2).not_to be_nil
+      expect(front_matter2.href).to eq('front-matter.2.xhtml')
+      expect(front_matter2.content).to include 'Matter. Front Matter. 2'
       expect(book).to have_item_with_href 'square_blue.png'
     end
 
