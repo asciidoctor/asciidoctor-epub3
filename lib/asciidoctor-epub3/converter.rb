@@ -124,30 +124,57 @@ module Asciidoctor
         # NOTE we must use :plain_text here since gepub reencodes
         @book.add_title sanitize_doctitle_xml(node, :plain_text), id: 'pub-title'
 
-        # FIXME: this logic needs some work
-        if node.attr? 'publisher'
-          @book.publisher publisher_name = (node.attr 'publisher')
-          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator (node.attr 'producer', publisher_name), role: 'bkp'
-        elsif node.attr? 'producer'
-          # NOTE Use producer as both publisher and producer if publisher isn't specified
-          producer_name = node.attr 'producer'
-          @book.publisher producer_name
-          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator producer_name, role: 'bkp'
-        elsif node.attr? 'author'
-          # NOTE Use author as creator if both publisher or producer are absent
-          # marc role: Author (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator node.attr('author'), role: 'aut'
-        end
+        if (node.attr 'publication-type', 'book') == 'book'
+          # For books add authors as creators
+          # NOTE Move authors to the front because reading systems will display the first creator(s) as the author(s),
+          # see https://www.w3.org/publishing/epub3/epub-packages.html#sec-opf-dccreator
+          authorcount = node.attr 'authorcount', 0
+          if authorcount == 1
+            a = node.attr 'author'
+            @book.add_creator a, role: 'aut' unless a.nil? # authorcount reports always at least 1
+          elsif authorcount > 1
+            (1..authorcount).each do |i|
+              a = node.attr "author_#{i}"
+              @book.add_creator a, role: 'aut'
+            end
+          end
 
-        if node.attr? 'creator'
-          # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator node.attr('creator'), role: 'cre'
+          # NOTE attributed creator links for bkp, mfr are currently removed for books because some reading systems
+          # (e.g. Kindle) won't recognize the attributes and use them as author entries
+          if node.attr? 'publisher'
+            publisher_name = (node.attr 'publisher')
+            @book.publisher publisher_name
+          elsif node.attr? 'producer'
+            # NOTE Use producer as publisher if publisher isn't specified
+            producer_name = node.attr 'producer'
+            @book.publisher producer_name
+          end
         else
-          # marc role: Manufacturer (see http://www.loc.gov/marc/relators/relaterm.html)
-          # QUESTION should this be bkp?
-          @book.creator 'Asciidoctor', role: 'mfr'
+          # FIXME: this logic needs some work
+          if node.attr? 'publisher'
+            @book.publisher publisher_name = (node.attr 'publisher')
+            # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+            @book.creator (node.attr 'producer', publisher_name), role: 'bkp'
+          elsif node.attr? 'producer'
+            # NOTE Use producer as both publisher and producer if publisher isn't specified
+            producer_name = node.attr 'producer'
+            @book.publisher producer_name
+            # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
+            @book.creator producer_name, role: 'bkp'
+          elsif node.attr? 'author'
+            # NOTE Use author as creator if both publisher or producer are absent
+            # marc role: Author (see http://www.loc.gov/marc/relators/relaterm.html)
+            @book.creator node.attr('author'), role: 'aut'
+          end
+
+          if node.attr? 'creator'
+            # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
+            @book.creator node.attr('creator'), role: 'cre'
+          else
+            # marc role: Manufacturer (see http://www.loc.gov/marc/relators/relaterm.html)
+            # QUESTION should this be bkp?
+            @book.creator 'Asciidoctor', role: 'mfr'
+          end
         end
 
         if node.attr? 'reproducible'

@@ -96,5 +96,41 @@ describe Asciidoctor::Epub3::Converter do
       expect(chapter).not_to be_nil
       expect(chapter.content).to include '<p>Hello</p>'
     end
+
+    it 'adds no book authors if there are none' do
+      book, = to_epub 'author/book-no-author.adoc'
+      expect(book.creator).to be_nil
+      expect(book.creator_list.size).to eq(0)
+    end
+
+    it 'adds a single book author' do
+      book, = to_epub 'author/book-one-author.adoc'
+      expect(book.creator).not_to be_nil
+      expect(book.creator.content).to eq('Author One')
+      expect(book.creator.role.content).to eq('aut')
+      expect(book.creator_list.size).to eq(1)
+    end
+
+    it 'adds multiple book authors' do
+      book, = to_epub 'author/book-multiple-authors.adoc'
+      expect(book.metadata.creator).not_to be_nil
+      expect(book.metadata.creator.content).to eq('Author One')
+      expect(book.metadata.creator.role.content).to eq('aut')
+      expect(book.creator_list.size).to eq(2)
+      expect(book.metadata.creator_list[0].content).to eq('Author One')
+      expect(book.metadata.creator_list[1].content).to eq('Author Two')
+    end
+
+    it 'adds the publisher if both publisher and producer are defined' do
+      book, = to_epub 'author/book-one-author.adoc'
+      expect(book.publisher).not_to be_nil
+      expect(book.publisher.content).to eq('MyPublisher')
+    end
+
+    it 'adds the producer as publisher if no publisher is defined' do
+      book, = to_epub 'author/book-no-author.adoc'
+      expect(book.publisher).not_to be_nil
+      expect(book.publisher.content).to eq('MyProducer')
+    end
   end
 end
