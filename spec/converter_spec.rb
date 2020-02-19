@@ -207,5 +207,25 @@ describe Asciidoctor::Epub3::Converter do
       expect(meta.refiner('group-position').content).to eq('42')
       expect(meta.refiner('dcterms:identifier').content).to eq('bla')
     end
+
+    it 'supports video' do
+      book, = to_epub fixture_file('video/book.adoc')
+      chapter = book.item_by_href '_chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include '<video src="small.webm" width="400" controls="controls">'
+      video = book.item_by_href 'small.webm'
+      expect(video).not_to be_nil
+      expect(video.media_type).to eq('video/webm')
+    end
+
+    it 'supports audio' do
+      book, = to_epub fixture_file('audio/book.adoc')
+      chapter = book.item_by_href '_chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include '<audio src="small.mp3" controls="controls">'
+      audio = book.item_by_href 'small.mp3'
+      expect(audio).not_to be_nil
+      expect(audio.media_type).to eq('audio/mpeg')
+    end
   end
 end

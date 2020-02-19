@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'mime/types'
 require 'open3'
 require_relative 'font_icon_map'
 
@@ -150,7 +151,7 @@ module Asciidoctor
         @epubcheck_path = node.attr 'ebook-epubcheck-path'
         @xrefs_seen = ::Set.new
         @icon_names = []
-        @images = []
+        @media_files = []
         @footnotes = []
 
         @book = GEPUB::Book.new 'EPUB/package.opf'
@@ -245,13 +246,16 @@ module Asciidoctor
         docimagesdir = (node.attr 'imagesdir', '.').chomp '/'
         docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
 
-        @images.each do |image|
-          if image[:name].start_with? %(#{docimagesdir}jacket/cover.)
-            logger.warn %(image path is reserved for cover artwork: #{image[:name]}; skipping image found in content)
-          elsif ::File.readable? image[:path]
-            @book.add_item image[:name], content: image[:path]
+        @media_files.each do |file|
+          if file[:name].start_with? %(#{docimagesdir}jacket/cover.)
+            logger.warn %(path is reserved for cover artwork: #{file[:name]}; skipping file found in content)
+          elsif ::File.readable? file[:path]
+            mime_types = MIME::Types.type_for file[:name]
+            mime_types.delete_if {|x| x.media_type != file[:media_type] }
+            preferred_mime_type = mime_types.empty? ? nil : mime_types[0].content_type
+            @book.add_item file[:name], content: file[:path], media_type: preferred_mime_type
           else
-            logger.error %(#{File.basename node.attr('docfile')}: image not found or not readable: #{image[:path]})
+            logger.error %(#{File.basename node.attr('docfile')}: media file not found or not readable: #{file[:path]})
           end
         end
 
@@ -565,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
         figure_classes = ['listing']
         figure_classes << 'coalesce' if node.option? 'unbreakable'
-        title_div = node.title? ? %(<figcaption>#{get_numbered_title node}</figcaption>) : ''
+        title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>) : ''
         %(<figure class="#{figure_classes * ' '}">#{title_div}
         #{syntax_hl ? (syntax_hl.format node, lang, opts) : pre_open + (node.content || '') + pre_close}
 </figure>)
@@ -879,7 +883,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         document
       end
 
-      def register_image node, target
+      def register_media_file node, target, media_type
         if target.end_with? '.svg'
           chapter = get_enclosing_chapter node
           chapter.set_attr 'epub-properties', [] unless chapter.attr? 'epub-properties'
@@ -894,7 +898,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           fs_path = ::File.join base_dir, target
         end
         # We need *both* virtual and physical image paths. Unfortunately, references[:images] only has one of them.
-        @images << { name: target, path: fs_path }
+        @media_files << { name: target, path: fs_path, media_type: media_type }
       end
 
       def resolve_image_attrs node
@@ -911,16 +915,81 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         img_attrs
       end
 
+      def convert_audio node
+        id_attr = node.id ? %( id="#{node.id}") : ''
+        target = node.media_uri node.attr 'target'
+        register_media_file node, target, 'audio'
+        title_element = node.title? ? %(\n<figcaption>#{node.captioned_title}</figcaption>) : ''
+
+        autoplay_attr = (node.option? 'autoplay') ? ' autoplay="autoplay"' : ''
+        controls_attr = (node.option? 'nocontrols') ? '' : ' controls="controls"'
+        loop_attr = (node.option? 'loop') ? ' loop="loop"' : ''
+
+        start_t = node.attr 'start'
+        end_t = node.attr 'end'
+        if start_t || end_t
+          time_anchor = %(#t=#{start_t || ''}#{end_t ? ",#{end_t}" : ''})
+        else
+          time_anchor = ''
+        end
+
+        %(<figure#{id_attr} class="audioblock#{prepend_space node.role}">#{title_element}
+<div class="content">
+<audio src="#{target}#{time_anchor}"#{autoplay_attr}#{controls_attr}#{loop_attr}>
+<div>Your Reading System does not support (this) audio.</div>
+</audio>
+</div>
+</figure>)
+      end
+
+      # TODO: Support multiple video files in different formats for a single video
+      def convert_video node
+        id_attr = node.id ? %( id="#{node.id}") : ''
+        target = node.media_uri node.attr 'target'
+        register_media_file node, target, 'video'
+        title_element = node.title? ? %(\n<figcaption>#{node.captioned_title}</figcaption>) : ''
+
+        width_attr = (node.attr? 'width') ? %( width="#{node.attr 'width'}") : ''
+        height_attr = (node.attr? 'height') ? %( height="#{node.attr 'height'}") : ''
+        autoplay_attr = (node.option? 'autoplay') ? ' autoplay="autoplay"' : ''
+        controls_attr = (node.option? 'nocontrols') ? '' : ' controls="controls"'
+        loop_attr = (node.option? 'loop') ? ' loop="loop"' : ''
+
+        start_t = node.attr 'start'
+        end_t = node.attr 'end'
+        if start_t || end_t
+          time_anchor = %(#t=#{start_t || ''}#{end_t ? ",#{end_t}" : ''})
+        else
+          time_anchor = ''
+        end
+
+        if (poster = node.attr 'poster').nil_or_empty?
+          poster_attr = ''
+        else
+          poster = node.media_uri poster
+          register_media_file node, poster, 'image'
+          poster_attr = %( poster="#{poster}")
+        end
+
+        %(<figure#{id_attr} class="video#{prepend_space node.role}">#{title_element}
+<div class="content">
+<video src="#{target}#{time_anchor}"#{width_attr}#{height_attr}#{autoplay_attr}#{poster_attr}#{controls_attr}#{loop_attr}>
+<div>Your Reading System does not support (this) video.</div>
+</video>
+</div>
+</figure>)
+      end
+
       def convert_image node
         target = node.image_uri node.attr 'target'
-        register_image node, target
+        register_media_file node, target, 'image'
         id_attr = node.id ? %( id="#{node.id}") : ''
+        title_element = node.title? ? %(\n<figcaption>#{node.captioned_title}</figcaption>) : ''
         img_attrs = resolve_image_attrs node
         %(<figure#{id_attr} class="image#{prepend_space node.role}">
 <div class="content">
 <img src="#{target}"#{prepend_space img_attrs * ' '} />
-</div>#{node.title? ? %(
-<figcaption>#{node.captioned_title}</figcaption>) : ''}
+</div>#{title_element}
 </figure>)
       end
 
@@ -1025,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           %(<i class="#{i_classes * ' '}"></i>)
         else
           target = node.image_uri node.target
-          register_image node, target
+          register_media_file node, target, 'image'
 
           img_attrs = resolve_image_attrs node
           img_attrs << %(class="inline#{prepend_space node.role}")
