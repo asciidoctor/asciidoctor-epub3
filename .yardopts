@@ -1,0 +1,12 @@
+--charset UTF-8
+--readme README.adoc
+--no-private
+--hide-api private
+--title "Asciidoctor EPUB3 API Docs"
+--output-dir apidoc
+--exclude /ext(?:\.rb$|/)
+lib/**/*.rb
+-
+CHANGELOG.adoc
+LICENSE.adoc
+NOTICE.adoc

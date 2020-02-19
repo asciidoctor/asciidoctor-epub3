@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'stringio' unless defined? StringIO
 
 class String

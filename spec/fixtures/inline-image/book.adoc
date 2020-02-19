@@ -1,0 +1,5 @@
+= Inline images
+:doctype: book
+:imagesdir: imagez
+
+include::subdir/chapter.adoc[leveloffset=+1]

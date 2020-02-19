@@ -1,0 +1,6 @@
+= Chapter
+
+[latexmath]
+++++
+\sqrt(4) = 2
+++++

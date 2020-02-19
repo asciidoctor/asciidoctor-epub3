@@ -104,6 +104,40 @@ body code, body kbd, body pre, pre :not(code) {
   }
 }
 
+/* Use darker font colors on Kindle Paperwhite */
+@media amzn-kf8 and (device-height: 1024px) and (device-width: 758px),
+    amzn-kf8 and (device-height:  758px) and (device-width: 1024px) {
+  body p,
+  div.abstract > p,
+  ul, ol, li, dl, dt, dd, footer,
+  div.verse .attribution, table.table th, table.table td,
+  figcaption, caption,
+  h1, h2, h3, h4, h5 {
+    color: #000000;
+  }
+
+  body a:link,
+  div.abstract > p a:link {
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+  }
+
+  body a:visited {
+    color: #333332;
+    -webkit-text-fill-color: #333332;
+  }
+
+  .chapter-header {
+    color: #191918;
+    border-bottom-color: #191918;
+  }
+  
+  h1.chapter-title .subtitle,
+  .chapter-header p.byline {
+    color: #000000;
+  }
+}
+
 .chapter-header p.byline {
   height: auto; /* Aldiko requires this value to be 0; reset it for all others */
 }

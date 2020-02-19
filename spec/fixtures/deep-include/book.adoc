@@ -1,0 +1,4 @@
+= Deep book
+:doctype: book
+
+include::chapter/chapter.adoc[leveloffset=+1]

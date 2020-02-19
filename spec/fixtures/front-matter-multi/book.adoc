@@ -1,0 +1,4 @@
+= Front matter book
+:epub3-frontmatterdir: fm
+
+Nothing to see here.

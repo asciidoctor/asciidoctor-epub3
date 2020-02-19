@@ -1,0 +1,48 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - name: Build
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+      - name: Lint
+        run: bundle exec rake lint
+  test:
+    strategy:
+      matrix:
+        ruby: [jruby, 2.3, 2.4, 2.5, 2.6, 2.7]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+        asciidoctor: [1.5.6, '']
+        exclude:
+          # kindlegen fails to install on 2.3 on Windows. See https://github.com/asciidoctor/asciidoctor-epub3/pull/213
+          - ruby: 2.3
+            platform: windows-latest
+          # TODO: nokogiri doesn't install on 2.7 on Windows: https://github.com/sparklemotion/nokogiri/issues/1961
+          - ruby: 2.7
+            platform: windows-latest
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: eregon/use-ruby-action@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: Set up Asciidoctor
+        if: matrix.asciidoctor != ''
+        run: echo "::set-env name=ASCIIDOCTOR_VERSION::${{ matrix.asciidoctor }}"
+      - name: Build
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+      - name: Test
+        run: bundle exec rake spec

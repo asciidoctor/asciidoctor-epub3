@@ -1,0 +1,157 @@
+AllCops:
+  TargetRubyVersion: 2.3
+require: rubocop-rspec
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+  IndentationWidth: 4
+Layout/CaseIndentation:
+  EnforcedStyle: end
+Layout/SpaceInsideBlockBraces:
+  SpaceBeforeBlockParameters: false
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+Layout/HeredocIndentation:
+  Enabled: false
+Layout/LineLength:
+  Enabled: false # TODO reenable me
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+  IndentationWidth: 4
+Layout/FirstArgumentIndentation:
+  Enabled: false
+Layout/LeadingCommentSpace:
+  Enabled: false
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+Layout/RescueEnsureAlignment:
+  Enabled: false
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+Lint/EmptyWhen:
+  Enabled: false
+Lint/ParenthesesAsGroupedExpression:
+  Enabled: false
+Lint/SuppressedException:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+Metrics/BlockNesting:
+  Max: 10
+Metrics/ClassLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+#  Max: 120
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+Metrics/ParameterLists:
+  Max: 10
+Metrics/PerceivedComplexity:
+  Enabled: false
+Naming/AccessorMethodName:
+  Enabled: false
+Naming/ConstantName:
+  Enabled: false
+Naming/FileName:
+  Enabled: false
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+Naming/MethodParameterName:
+  Enabled: false
+Security/Open:
+  Enabled: false
+Style/Attr:
+  Enabled: false
+Style/BlockComments:
+  Enabled: false
+Style/BlockDelimiters:
+  EnforcedStyle: braces_for_chaining
+Style/CaseEquality:
+  Enabled: false
+Style/CharacterLiteral:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false
+Style/ConditionalAssignment:
+  EnforcedStyle: assign_inside_condition
+  IncludeTernaryExpressions: false
+Style/Documentation:
+  Enabled: false # FIXME reenable me
+Style/DoubleNegation:
+  Enabled: false
+Style/FormatString:
+  EnforcedStyle: percent
+Style/FormatStringToken:
+  Enabled: false
+Style/GuardClause:
+  Enabled: false
+Style/HashSyntax:
+  EnforcedStyle: ruby19
+Style/IfUnlessModifierOfIfUnless:
+  Enabled: false
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  EnforcedStyle: omit_parentheses
+Style/MethodDefParentheses:
+  EnforcedStyle: require_no_parentheses
+Style/MutableConstant:
+  Enabled: false
+Style/MultilineBlockChain:
+  Enabled: false
+Style/MultilineIfModifier:
+  Enabled: false
+Style/MultilineTernaryOperator:
+  Enabled: false
+Style/MultipleComparison:
+  Enabled: false
+Style/NestedTernaryOperator:
+  Enabled: false
+Style/NumericPredicate:
+  EnforcedStyle: comparison
+Style/ParallelAssignment:
+  Enabled: false
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: ()
+    '%w': ()
+    '%r': //
+Style/PerlBackrefs:
+  Enabled: false
+Style/RegexpLiteral:
+  Enabled: false
+Style/RescueModifier:
+  Enabled: false
+Style/RescueStandardError:
+  EnforcedStyle: implicit
+Style/SpecialGlobalVars:
+  EnforcedStyle: use_perl_names
+Style/SymbolArray:
+  EnforcedStyle: brackets
+Style/TernaryParentheses:
+  Enabled: false # TODO consider reenabling
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+RSpec/ContextWording:
+  Enabled: false
+RSpec/DescribeClass:
+  Enabled: false
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/FilePath:
+  Enabled: false
+RSpec/ExampleWording:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/NamedSubject:
+  Enabled: false
+RSpec/VoidExpect:
+  Enabled: false
+RSpec/BeEql:
+  Enabled: false # NOTE: can't enable since be <float> doesn't work on JRuby
