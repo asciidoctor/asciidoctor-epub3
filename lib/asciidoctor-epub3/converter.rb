@@ -124,31 +124,16 @@ module Asciidoctor
         # NOTE we must use :plain_text here since gepub reencodes
         @book.add_title sanitize_doctitle_xml(node, :plain_text), id: 'pub-title'
 
-        # FIXME: this logic needs some work
-        if node.attr? 'publisher'
-          @book.publisher publisher_name = (node.attr 'publisher')
-          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator (node.attr 'producer', publisher_name), role: 'bkp'
-        elsif node.attr? 'producer'
-          # NOTE Use producer as both publisher and producer if publisher isn't specified
-          producer_name = node.attr 'producer'
-          @book.publisher producer_name
-          # marc role: Book producer (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator producer_name, role: 'bkp'
-        elsif node.attr? 'author'
-          # NOTE Use author as creator if both publisher or producer are absent
-          # marc role: Author (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator node.attr('author'), role: 'aut'
+        # see https://www.w3.org/publishing/epub3/epub-packages.html#sec-opf-dccreator
+        (1..(node.attr 'authorcount', 1).to_i).map do |idx|
+          author = node.attr(idx == 1 ? 'author' : %(author_#{idx}))
+          @book.add_creator author, role: 'aut' unless author.nil_or_empty?
         end
 
-        if node.attr? 'creator'
-          # marc role: Creator (see http://www.loc.gov/marc/relators/relaterm.html)
-          @book.creator node.attr('creator'), role: 'cre'
-        else
-          # marc role: Manufacturer (see http://www.loc.gov/marc/relators/relaterm.html)
-          # QUESTION should this be bkp?
-          @book.creator 'Asciidoctor', role: 'mfr'
-        end
+        publisher = node.attr 'publisher'
+        # NOTE Use producer as both publisher and producer if publisher isn't specified
+        publisher = node.attr 'producer' if publisher.nil_or_empty?
+        @book.publisher = publisher unless publisher.nil_or_empty?
 
         if node.attr? 'reproducible'
           # We need to set lastmodified to some fixed value. Otherwise, gepub will set it to current date.
