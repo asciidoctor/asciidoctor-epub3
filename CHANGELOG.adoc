@@ -30,6 +30,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add support for Font Awesome Solid 5.12.0 (#155)
 * fix inline anchors missing their ids (#201)
 * support multiple front-matter files via `epub3-frontmatterdir` attribute
+* add support for multiple authors in book metadata
 
 == 1.5.0.alpha.13 (2020-02-04) - @slonopotamus
 

@@ -1,0 +1,6 @@
+= Minimal book
+Author One
+:doctype: book
+:publisher: MyPublisher
+:producer: MyProducer
+include::chapter.adoc[leveloffset=+1]
