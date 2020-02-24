@@ -172,8 +172,9 @@ module Asciidoctor
             item.set_attr 'ebook-chapter', item.id
             toc_items << item
           end
-          # TODO: this loses content between doc header and first chapter
-          node.content
+          orphan_content = node.content.strip
+          # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/303
+          logger.warn %(#{File.basename node.attr('docfile')}: Preamble is not supported yet for book doctype) unless orphan_content.nil_or_empty?
         else
           toc_items = [node]
           node.set_attr 'ebook-chapter', node.attr('docname')
