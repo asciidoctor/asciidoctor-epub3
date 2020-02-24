@@ -172,9 +172,9 @@ module Asciidoctor
             item.set_attr 'ebook-chapter', item.id
             toc_items << item
           end
-          orphan_content = node.content.strip
-          # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/303
-          logger.warn %(#{File.basename node.attr('docfile')}: Preamble is not supported yet for book doctype) unless orphan_content.nil_or_empty?
+          # Mark preamble as chapter (if it exists)
+          node.blocks[0].set_attr 'ebook-chapter', (node.blocks[0].id || 'preamble') if !node.blocks.empty? && node.blocks[0].context == :preamble
+          node.content
         else
           toc_items = [node]
           node.set_attr 'ebook-chapter', node.attr('docname')
@@ -245,18 +245,16 @@ module Asciidoctor
       def add_chapter node
         docid = node.attr 'ebook-chapter'
 
-        if node.context == :document
-          if (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
-            title = %(#{doctitle.main} )
-            subtitle = doctitle.subtitle
-          else
-            # HACK: until we get proper handling of title-only in CSS
-            title = ''
-            subtitle = doctitle.combined
-          end
-        else
+        if node.context == :document && (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
+          title = %(#{doctitle.main} )
+          subtitle = doctitle.subtitle
+        elsif node.title
+          # HACK: until we get proper handling of title-only in CSS
           title = ''
           subtitle = node.title
+        else
+          title = nil
+          subtitle = nil
         end
 
         doctitle_sanitized = (node.document.doctitle sanitize: true, use_fallback: true).to_s
@@ -264,7 +262,7 @@ module Asciidoctor
         # By default, Kindle does not allow the line height to be adjusted.
         # But if you float the elements, then the line height disappears and can be restored manually using margins.
         # See https://github.com/asciidoctor/asciidoctor-epub3/issues/123
-        subtitle_formatted = subtitle.split.map {|w| %(<b>#{w}</b>) } * ' '
+        subtitle_formatted = subtitle ? subtitle.split.map {|w| %(<b>#{w}</b>) } * ' ' : nil
 
         if node.document.doctype == 'book'
           byline = ''
@@ -300,6 +298,12 @@ module Asciidoctor
 )
         end
 
+        header = (title || subtitle) ? %(<header>
+<div class="chapter-header">
+#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %(<small class="subtitle">#{subtitle_formatted}</small>) : ''}</h1>
+</div>
+</header>) : ''
+
         # NOTE kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
@@ -320,11 +324,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </head>
 <body>
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
-<header>
-<div class="chapter-header">
-#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %(<small class="subtitle">#{subtitle_formatted}</small>) : ''}</h1>
-</div>
-</header>
+#{header}
 #{content})]
 
         unless (fns = node.document.footnotes - @footnotes).empty?
@@ -383,13 +383,18 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       # TODO: support use of quote block as abstract
       def convert_preamble node
-        if (first_block = node.blocks[0]) && first_block.style == 'abstract'
-          convert_abstract first_block
-          # REVIEW: should we treat the preamble as an abstract in general?
-        elsif first_block && node.blocks.size == 1
-          convert_abstract first_block
+        if @in_chapter
+          if (first_block = node.blocks[0]) && first_block.style == 'abstract'
+            convert_abstract first_block
+            # REVIEW: should we treat the preamble as an abstract in general?
+          elsif first_block && node.blocks.size == 1
+            convert_abstract first_block
+          else
+            node.content
+          end
         else
-          node.content
+          # TODO: we're bypassing `convert_abstract` here
+          add_chapter node
         end
       end
 

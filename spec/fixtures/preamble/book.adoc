@@ -1,0 +1,6 @@
+= Preamble book
+:doctype: book
+
+I am a preamble.
+
+== Chapter
