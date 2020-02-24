@@ -55,8 +55,7 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(chapter.content).to include '<img src="square.png" alt="50x?" width="50" />'
   end
 
-=begin
-  TODO: blocked by https://github.com/skoji/gepub/issues/110
+  # If this test fails for you, make sure you're using gepub >= 1.0.11
   it 'adds SVG attribute to EPUB manifest if chapter contains SVG images' do
     book, = to_epub 'svg/book.adoc'
     chapter = book.item_by_href '_chapter.xhtml'
@@ -64,5 +63,4 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     properties = chapter['properties']
     expect(properties).to include('svg')
   end
-=end
 end
