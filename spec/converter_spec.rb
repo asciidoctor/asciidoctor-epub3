@@ -39,6 +39,17 @@ describe Asciidoctor::Epub3::Converter do
       expect(chapter_b.content).to include '<figcaption>Listing 2. .gitattributes</figcaption>'
     end
 
+    it 'adds preamble chapter' do
+      book, = to_epub 'preamble/book.adoc'
+      spine = book.spine.itemref_list
+      expect(spine).to have_size(2)
+
+      preamble = book.items[spine[0].idref]
+      expect(preamble).not_to be_nil
+      expect(preamble.href).to eq('preamble.xhtml')
+      expect(preamble.content).to include %(I am a preamble)
+    end
+
     it 'populates ebook subject from keywords' do
       book, = to_epub 'keywords/book.adoc'
       keywords = book.subject_list.map(&:content)
