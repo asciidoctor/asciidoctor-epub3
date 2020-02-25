@@ -1095,7 +1095,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </display_options>'.to_ios unless format == :kf8
 
           font_files.each do |font_file|
-            item = @book.add_item font_file, content: File.join(DATA_DIR, font_file)
+            @book.add_item font_file, content: File.join(DATA_DIR, font_file)
           end
         end
         nil
