@@ -79,6 +79,19 @@ module Asciidoctor
       EpubExtensionRx = /\.epub$/i
       KindlegenCompression = ::Hash['0', '-c0', '1', '-c1', '2', '-c2', 'none', '-c0', 'standard', '-c1', 'huffdic', '-c2']
 
+      (QUOTE_TAGS = {
+        monospaced: ['<code>', '</code>', true],
+        emphasis: ['<em>', '</em>', true],
+        strong: ['<strong>', '</strong>', true],
+        double: ['“', '”'],
+        single: ['‘', '’'],
+        mark: ['<mark>', '</mark>', true],
+        superscript: ['<sup>', '</sup>', true],
+        subscript: ['<sub>', '</sub>', true],
+        asciimath: ['<code>', '</code>', true],
+        latexmath: ['<code>', '</code>', true],
+      }).default = ['', '']
+
       def initialize backend, opts = {}
         super
         basebackend 'html'
@@ -988,26 +1001,27 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_inline_quoted node
-        case node.type
-        when :strong
-          %(<strong>#{node.text}</strong>)
-        when :emphasis
-          %(<em>#{node.text}</em>)
-        when :monospaced, :asciimath, :latexmath
-          # TODO: implement proper stem support. See https://github.com/asciidoctor/asciidoctor-epub3/issues/10
-          %(<code class="literal">#{node.text}</code>)
-        when :double
-          #%(&#x201c;#{node.text}&#x201d;)
-          %(“#{node.text}”)
-        when :single
-          #%(&#x2018;#{node.text}&#x2019;)
-          %(‘#{node.text}’)
-        when :superscript
-          %(<sup>#{node.text}</sup>)
-        when :subscript
-          %(<sub>#{node.text}</sub>)
+        open, close, tag = QUOTE_TAGS[node.type]
+
+        # TODO: implement proper stem support. See https://github.com/asciidoctor/asciidoctor-epub3/issues/10
+        node.add_role 'literal' if [:monospaced, :asciimath, :latexmath].include? node.type
+
+        if node.id
+          class_attr = class_string node
+          if tag
+            %(#{open.chop} id="#{node.id}"#{class_attr}>#{node.text}#{close})
+          else
+            %(<span id="#{node.id}"#{class_attr}>#{open}#{node.text}#{close}</span>)
+          end
+        elsif role_valid_class? node.role
+          class_attr = class_string node
+          if tag
+            %(#{open.chop}#{class_attr}>#{node.text}#{close})
+          else
+            %(<span#{class_attr}>#{open}#{node.text}#{close}</span>)
+          end
         else
-          node.text
+          %(#{open}#{node.text}#{close})
         end
       end
 
@@ -1484,6 +1498,21 @@ body > svg {
         else
           logger.info line
         end
+      end
+
+      private
+
+      def class_string node
+        role = node.role
+
+        return '' unless role_valid_class? role
+
+        %( class="#{role}")
+      end
+
+      # Handles asciidoctor 1.5.6 quirk when role can be parent
+      def role_valid_class? role
+        role.is_a? String
       end
     end
 
