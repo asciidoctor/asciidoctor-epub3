@@ -179,11 +179,16 @@ module Asciidoctor
 
         if node.doctype == 'book'
           toc_items = []
-          node.sections.each do |item|
-            next unless item.parent == node
+          node.sections.each do |section|
             # Mark top-level sections as separate chapter files
-            item.set_attr 'ebook-chapter', item.id
-            toc_items << item
+            section.set_attr 'ebook-chapter', section.id
+            toc_items << section
+            section.sections.each do |subsection|
+              # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
+              next if subsection.level > 1
+              subsection.set_attr 'ebook-chapter', subsection.id
+              toc_items << subsection
+            end
           end
           # Mark preamble as chapter (if it exists)
           node.blocks[0].set_attr 'ebook-chapter', (node.blocks[0].id || 'preamble') if !node.blocks.empty? && node.blocks[0].context == :preamble
@@ -257,6 +262,7 @@ module Asciidoctor
 
       def add_chapter node
         docid = node.attr 'ebook-chapter'
+        chapter_item = @book.add_ordered_item %(#{docid}.xhtml)
 
         if node.context == :document && (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
           title = %(#{doctitle.main} )
@@ -289,13 +295,8 @@ module Asciidoctor
 
         mark_last_paragraph node unless node.document.doctype == 'book'
 
-        begin
-          @in_chapter = true
-          @xrefs_seen.clear
-          content = node.content
-        ensure
-          @in_chapter = false
-        end
+        @xrefs_seen.clear
+        content = node.content
 
         # NOTE must run after content is resolved
         # TODO perhaps create dynamic CSS file?
@@ -361,8 +362,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </body>
 </html>'
 
-        postprocessed_content = postprocess_xhtml lines * LF
-        chapter_item = @book.add_ordered_item %(#{docid}.xhtml), content: postprocessed_content
+        chapter_item.add_content postprocess_xhtml lines * LF
         epub_properties = node.attr 'epub-properties'
         chapter_item.add_property 'svg' if epub_properties&.include? 'svg'
 
@@ -371,10 +371,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_section node
-        # TODO: single-document. Investigate if we can use Section.chapter?/Section.part?
-        # See https://github.com/asciidoctor/asciidoctor-pdf/blob/master/lib/asciidoctor/pdf/ext/asciidoctor/section.rb
-        # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
-        if @in_chapter
+        if node.attr? 'ebook-chapter'
+          add_chapter node
+        else
           hlevel = node.level
           epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
           div_classes = [%(sect#{node.level}), node.role].compact
@@ -384,8 +383,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? '' : %(
           #{content})}
 </section>)
-        else
-          add_chapter node
         end
       end
 

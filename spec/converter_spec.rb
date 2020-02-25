@@ -50,6 +50,19 @@ describe Asciidoctor::Epub3::Converter do
       expect(preamble.content).to include %(I am a preamble)
     end
 
+    it 'converts multi-part book' do
+      book, = to_epub 'multi-part.adoc'
+      spine = book.spine.itemref_list
+      expect(spine).to have_size(4)
+
+      part2 = book.items[spine[2].idref]
+      expect(part2.href).to eq('part-2.xhtml')
+      expect(part2.content).to include %(Three)
+      chapter21 = book.items[spine[3].idref]
+      expect(chapter21.href).to eq('chapter-2-1.xhtml')
+      expect(chapter21.content).to include %(Four)
+    end
+
     it 'populates ebook subject from keywords' do
       book, = to_epub 'keywords/book.adoc'
       keywords = book.subject_list.map(&:content)

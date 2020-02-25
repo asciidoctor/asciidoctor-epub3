@@ -1,0 +1,18 @@
+= Multi-part book
+:doctype: book
+:idprefix:
+:idseparator: -
+
+One
+
+== Chapter 1.1
+
+Two
+
+= Part 2
+
+Three
+
+== Chapter 2.1
+
+Four
