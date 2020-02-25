@@ -1097,21 +1097,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </platform>
 </display_options>'.to_ios unless format == :kf8
 
-          # https://github.com/asciidoctor/asciidoctor-epub3/issues/120
-          #
-          # 'application/x-font-ttf' causes warnings in epubcheck 4.0.2,
-          # "non-standard font type". Discussion:
-          # https://www.mobileread.com/forums/showthread.php?t=231272
-          #
-          # 3.1 spec recommends 'application/font-sfnt', but epubcheck doesn't
-          # implement that yet (warnings). https://idpf.github.io/epub-cmt/v3/
-          #
-          # 3.0 spec recommends 'application/vnd.ms-opentype', this works without
-          # warnings.
-          # http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-core-media-types
           font_files.each do |font_file|
             item = @book.add_item font_file, content: File.join(DATA_DIR, font_file)
-            item.set_media_type 'application/vnd.ms-opentype'
           end
         end
         nil
