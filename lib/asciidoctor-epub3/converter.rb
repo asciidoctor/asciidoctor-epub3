@@ -108,6 +108,15 @@ module Asciidoctor
         end
       end
 
+      # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
+      def get_chapter_name node
+        if node.document.doctype != 'book'
+          return Asciidoctor::Document === node ? node.attr('docname') : nil
+        end
+        return (node.id || 'preamble') if node.context == :preamble && node.level == 0
+        Asciidoctor::Section === node && node.level <= 1 ? node.id : nil
+      end
+
       def convert_document node
         @format = node.attr('ebook-format').to_sym
 
@@ -117,7 +126,6 @@ module Asciidoctor
         @kindlegen_path = node.attr 'ebook-kindlegen-path'
         @epubcheck_path = node.attr 'ebook-epubcheck-path'
         @xrefs_seen = ::Set.new
-        @in_chapter = false
         @icon_names = []
         @images = []
         @footnotes = []
@@ -180,22 +188,15 @@ module Asciidoctor
         if node.doctype == 'book'
           toc_items = []
           node.sections.each do |section|
-            # Mark top-level sections as separate chapter files
-            section.set_attr 'ebook-chapter', section.id
             toc_items << section
             section.sections.each do |subsection|
-              # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
-              next if subsection.level > 1
-              subsection.set_attr 'ebook-chapter', subsection.id
+              next if get_chapter_name(node).nil?
               toc_items << subsection
             end
           end
-          # Mark preamble as chapter (if it exists)
-          node.blocks[0].set_attr 'ebook-chapter', (node.blocks[0].id || 'preamble') if !node.blocks.empty? && node.blocks[0].context == :preamble
           node.content
         else
           toc_items = [node]
-          node.set_attr 'ebook-chapter', node.attr('docname')
           add_chapter node
         end
 
@@ -261,7 +262,9 @@ module Asciidoctor
       end
 
       def add_chapter node
-        docid = node.attr 'ebook-chapter'
+        docid = get_chapter_name node
+        return nil if docid.nil?
+
         chapter_item = @book.add_ordered_item %(#{docid}.xhtml)
 
         if node.context == :document && (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
@@ -368,12 +371,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         # # QUESTION reenable?
         # #linear 'yes' if i == 0
+
+        chapter_item
       end
 
       def convert_section node
-        if node.attr? 'ebook-chapter'
-          add_chapter node
-        else
+        if add_chapter(node).nil?
           hlevel = node.level
           epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
           div_classes = [%(sect#{node.level}), node.role].compact
@@ -393,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       # TODO: support use of quote block as abstract
       def convert_preamble node
-        if @in_chapter
+        if add_chapter(node).nil?
           if (first_block = node.blocks[0]) && first_block.style == 'abstract'
             convert_abstract first_block
             # REVIEW: should we treat the preamble as an abstract in general?
@@ -402,9 +405,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           else
             node.content
           end
-        else
-          # TODO: we're bypassing `convert_abstract` here
-          add_chapter node
         end
       end
 
@@ -864,7 +864,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def get_enclosing_chapter node
         loop do
           return nil if node.nil?
-          return node if node.attr? 'ebook-chapter'
+          return node unless get_chapter_name(node).nil?
           node = node.parent
         end
       end
@@ -885,7 +885,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             our_chapter = get_enclosing_chapter node
             ref_chapter = get_enclosing_chapter ref
             if ref_chapter
-              ref_docname = ref_chapter.attr 'ebook-chapter'
+              ref_docname = get_chapter_name ref_chapter
               if ref_chapter == our_chapter
                 # ref within same chapter file
                 id_attr = %( id="xref-#{refid}")
@@ -1265,17 +1265,17 @@ body > svg {
         lines << '<ol>'
         items.each do |item|
           #index = (state[:index] = (state.fetch :index, 0) + 1)
-          if item.attr? 'ebook-chapter'
+          if (chapter_name = get_chapter_name item).nil?
+            item_label = sanitize_xml item.title, :pcdata
+            item_href = %(#{state[:content_doc_href]}##{item.id})
+          else
             # NOTE we sanitize the chapter titles because we use formatting to control layout
             if item.context == :document
               item_label = sanitize_doctitle_xml item, :cdata
             else
               item_label = sanitize_xml item.title, :cdata
             end
-            item_href = (state[:content_doc_href] = %(#{item.attr 'ebook-chapter'}.xhtml))
-          else
-            item_label = sanitize_xml item.title, :pcdata
-            item_href = %(#{state[:content_doc_href]}##{item.id})
+            item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
           end
           lines << %(<li><a href="#{item_href}">#{item_label}</a>)
           if depth == 0 || (child_sections = item.sections).empty?
@@ -1284,7 +1284,7 @@ body > svg {
             lines << (nav_level child_sections, depth - 1, state)
             lines << '</li>'
           end
-          state.delete :content_doc_href if item.attr? 'ebook-chapter'
+          state.delete :content_doc_href unless chapter_name.nil?
         end
         lines << '</ol>'
         lines * LF
@@ -1315,16 +1315,16 @@ body > svg {
         items.each do |item|
           index = (state[:index] = (state.fetch :index, 0) + 1)
           item_id = %(nav_#{index})
-          if item.attr? 'ebook-chapter'
+          if (chapter_name = get_chapter_name item).nil?
+            item_label = sanitize_xml item.title, :cdata
+            item_href = %(#{state[:content_doc_href]}##{item.id})
+          else
             if item.context == :document
               item_label = sanitize_doctitle_xml item, :cdata
             else
               item_label = sanitize_xml item.title, :cdata
             end
-            item_href = (state[:content_doc_href] = %(#{item.attr 'ebook-chapter'}.xhtml))
-          else
-            item_label = sanitize_xml item.title, :cdata
-            item_href = %(#{state[:content_doc_href]}##{item.id})
+            item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
           end
           lines << %(<navPoint id="#{item_id}" playOrder="#{index}">)
           lines << %(<navLabel><text>#{item_label}</text></navLabel>)
@@ -1333,7 +1333,7 @@ body > svg {
             lines << (ncx_level child_sections, depth - 1, state)
           end
           lines << %(</navPoint>)
-          state.delete :content_doc_href if item.attr? 'ebook-chapter'
+          state.delete :content_doc_href unless chapter_name.nil?
         end
         lines * LF
       end
