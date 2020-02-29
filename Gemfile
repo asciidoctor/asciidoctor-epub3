@@ -19,7 +19,3 @@ group :optional do
   gem 'kindlegen', '~> 3.0.3'
   gem 'pygments.rb', '1.2.1'
 end
-
-group :docs do
-  gem 'yard', require: false
-end
