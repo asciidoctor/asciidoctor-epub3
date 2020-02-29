@@ -159,7 +159,6 @@ Here's an example showing the structure of a book:
 Author Name
 :doctype: book
 :imagesdir: images
-\ifndef::ebook-format[:leveloffset: 1]
 //...and so on
 
 == Chapter One
