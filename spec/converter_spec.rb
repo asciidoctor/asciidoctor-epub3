@@ -50,6 +50,16 @@ describe Asciidoctor::Epub3::Converter do
       expect(preamble.content).to include %(I am a preamble)
     end
 
+    it 'converts appendix to a separate book chapter' do
+      book, = to_epub 'appendix.adoc'
+      spine = book.spine.itemref_list
+      expect(spine).to have_size(2)
+
+      appendix = book.items[spine[1].idref]
+      expect(appendix).not_to be_nil
+      expect(appendix.href).to eq('appendix.xhtml')
+    end
+
     it 'converts multi-part book' do
       book, = to_epub 'multi-part.adoc'
       spine = book.spine.itemref_list

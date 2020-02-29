@@ -1,0 +1,15 @@
+= Appendix book
+:doctype: book
+:idprefix:
+:idseparator: -
+
+Preamble
+
+[appendix]
+== Appendix
+
+One
+
+=== Subsection
+
+Two
