@@ -5,7 +5,7 @@ require 'asciidoctor-diagram'
 
 describe 'Asciidoctor::Epub3::Converter - Image' do
   it 'supports imagesoutdir != imagesdir != "{base_dir}/images"' do
-    book, out_file = to_epub 'diagram/book.adoc'
+    book, out_file = to_epub fixture_file('diagram/book.adoc')
     out_dir = out_file.dirname
 
     expect(out_dir.join('a', 'a.png')).to exist
@@ -20,7 +20,7 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
   end
 
   it 'supports inline images' do
-    book, out_file = to_epub 'inline-image/book.adoc'
+    book, out_file = to_epub fixture_file('inline-image/book.adoc')
     out_dir = out_file.dirname
 
     expect(out_dir.join('imagez', 'inline-diag.png')).to exist
@@ -31,14 +31,14 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
   end
 
   it 'converts font-based icons to CSS' do
-    book, = to_epub 'icon/book.adoc'
+    book, = to_epub fixture_file('icon/book.adoc')
     chapter = book.item_by_href '_chapter.xhtml'
     expect(chapter).not_to be_nil
     expect(chapter.content).to include '.i-commenting::before { content: "\f4ad"; }'
   end
 
   it 'adds front cover image' do
-    book, = to_epub 'front-cover-image/book.adoc'
+    book, = to_epub fixture_file('front-cover-image/book.adoc')
     cover_image = book.item_by_href 'jacket/cover.png'
     expect(cover_image).not_to be_nil
     cover_page = book.item_by_href 'cover.xhtml'
@@ -47,7 +47,7 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
   end
 
   it 'supports image width/height' do
-    book, = to_epub 'image-dimensions/book.adoc'
+    book, = to_epub fixture_file('image-dimensions/book.adoc')
     chapter = book.item_by_href '_chapter.xhtml'
     expect(chapter).not_to be_nil
     expect(chapter.content).to include '<img src="square.png" alt="100x100" width="100" />'
@@ -57,7 +57,7 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
 
   # If this test fails for you, make sure you're using gepub >= 1.0.11
   it 'adds SVG attribute to EPUB manifest if chapter contains SVG images' do
-    book, = to_epub 'svg/book.adoc'
+    book, = to_epub fixture_file('svg/book.adoc')
     chapter = book.item_by_href '_chapter.xhtml'
     expect(chapter).not_to be_nil
     properties = chapter['properties']

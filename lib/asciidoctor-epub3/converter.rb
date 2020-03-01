@@ -111,7 +111,7 @@ module Asciidoctor
       # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
       def get_chapter_name node
         if node.document.doctype != 'book'
-          return Asciidoctor::Document === node ? node.attr('docname') : nil
+          return Asciidoctor::Document === node ? node.attr('docname') || '' : nil
         end
         return (node.id || 'preamble') if node.context == :preamble && node.level == 0
         Asciidoctor::Section === node && node.level <= 1 ? node.id : nil

@@ -38,27 +38,27 @@ RSpec.configure do |config|
   end
 
   def temp_dir
-    File.join __dir__, 'temp'
+    Pathname.new(__dir__).join 'temp'
   end
 
   def temp_file *path
-    File.join temp_dir, *path
+    temp_dir.join(*path)
   end
 
   def fixtures_dir
-    File.join __dir__, 'fixtures'
+    Pathname.new(__dir__).join 'fixtures'
   end
 
   def fixture_file *path
-    File.join fixtures_dir, path
+    fixtures_dir.join(*path)
   end
 
   def examples_dir
-    File.join __dir__, '..', 'data', 'samples'
+    Pathname.new(__dir__).join '..', 'data', 'samples'
   end
 
   def example_file *path
-    File.join examples_dir, path
+    examples_dir.join(*path)
   end
 
   def has_logger?
@@ -73,30 +73,35 @@ RSpec.configure do |config|
     RbConfig::CONFIG['host_os'] =~ /darwin/
   end
 
-  def skip_if_darwin
+  def skip_unless_has_kindlegen
     # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/236
     skip '#236: Kindlegen is unavailable for-bit MacOS' if darwin_platform?
   end
 
   def convert input, opts = {}
-    input = fixture_file input if String === input
-    opts[:to_dir] = temp_dir unless opts.key?(:to_dir) || opts.key?(:to_file)
     opts[:backend] = 'epub3'
     opts[:header_footer] = true
     opts[:mkdirs] = true
     opts[:safe] = Asciidoctor::SafeMode::UNSAFE unless opts.key? :safe
-    Asciidoctor.convert_file input, opts
+
+    if Pathname === input
+      opts[:to_dir] = temp_dir.to_s unless opts.key?(:to_dir) || opts.key?(:to_file)
+      Asciidoctor.convert_file input.to_s, opts
+    else
+      Asciidoctor.convert input, opts
+    end
   end
 
   def to_epub input, opts = {}
-    doc = convert input, opts
-    output = Pathname.new doc.attr('outfile')
+    result = convert input, opts
+    return result if GEPUB::Book === result
+    output = Pathname.new result.attr('outfile')
     book = GEPUB::Book.parse output
     [book, output]
   end
 
   def to_mobi input, opts = {}
-    skip_if_darwin
+    skip_unless_has_kindlegen
     (opts[:attributes] ||= {})['ebook-format'] = 'mobi'
     doc = convert input, opts
     output = Pathname.new(doc.attr('outfile')).sub_ext '.mobi'

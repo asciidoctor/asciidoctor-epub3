@@ -9,7 +9,7 @@ describe 'Asciidoctor::Epub3::Converter - Inline Quoted' do
   let(:node) { Asciidoctor::Inline.new parent, :bar, 'text', type: type }
 
   it 'resolves inline quotes' do
-    book, = to_epub 'inline-quote/book.adoc'
+    book, = to_epub fixture_file('inline-quote/book.adoc')
     chapter = book.item_by_href 'chapter.xhtml'
     expect(chapter).not_to be_nil
     expect(chapter.content).to include '<p><span class="inline-quote">Knowledge kills action; action requires the veils of illusion.</span></p>'

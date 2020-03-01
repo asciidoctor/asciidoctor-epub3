@@ -5,15 +5,27 @@ require_relative 'spec_helper'
 describe Asciidoctor::Epub3::Converter do
   describe '#convert' do
     it 'converts empty file to epub without exceptions' do
-      to_epub 'empty.adoc'
+      to_epub fixture_file('empty.adoc')
     end
 
     it 'converts empty file to mobi without exceptions' do
-      to_mobi 'empty.adoc'
+      to_mobi fixture_file('empty.adoc')
+    end
+
+    it 'converts empty heredoc document to epub without exceptions' do
+      to_epub <<~EOS
+      EOS
+    end
+
+    it 'converts minimal heredoc document to epub without exceptions' do
+      book = to_epub <<~EOS
+      = Title
+      EOS
+      expect(book).to be_a(GEPUB::Book)
     end
 
     it 'converts chapter with unicode title to unicode filename' do
-      _, out_file = to_epub 'unicode/book.adoc'
+      _, out_file = to_epub fixture_file('unicode/book.adoc')
       Zip::File.open out_file do |zip|
         expect(zip.find_entry('EPUB/test-é.xhtml')).not_to be_nil
       end
@@ -21,26 +33,26 @@ describe Asciidoctor::Epub3::Converter do
 
     it 'uses current date as fallback when date attributes cannot be parsed' do
       # TODO: assert that error log contains 'failed to parse revdate' error when we add test infrastructure for logs
-      book, = to_epub 'minimal/book.adoc', attributes: { 'revdate' => 'garbage' }
+      book, = to_epub fixture_file('minimal/book.adoc'), attributes: { 'revdate' => 'garbage' }
       expect(book.metadata.date.content).not_to be_nil
     end
 
     it 'adds listing captions by default' do
-      book, = to_epub 'listing/book.adoc'
+      book, = to_epub fixture_file('listing/book.adoc')
       chapter = book.item_by_href '_chapter.xhtml'
       expect(chapter).not_to be_nil
       expect(chapter.content).to include '<figcaption>Listing 1. .gitattributes</figcaption>'
     end
 
     it 'increments listing numbering across chapters' do
-      book, = to_epub 'listing-chapter/book.adoc'
+      book, = to_epub fixture_file('listing-chapter/book.adoc')
       chapter_b = book.item_by_href 'chapter-b.xhtml'
       expect(chapter_b).not_to be_nil
       expect(chapter_b.content).to include '<figcaption>Listing 2. .gitattributes</figcaption>'
     end
 
     it 'adds preamble chapter' do
-      book, = to_epub 'preamble/book.adoc'
+      book, = to_epub fixture_file('preamble/book.adoc')
       spine = book.spine.itemref_list
       expect(spine).to have_size(2)
 
@@ -51,7 +63,7 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'converts appendix to a separate book chapter' do
-      book, = to_epub 'appendix.adoc'
+      book, = to_epub fixture_file('appendix.adoc')
       spine = book.spine.itemref_list
       expect(spine).to have_size(2)
 
@@ -61,7 +73,7 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'converts multi-part book' do
-      book, = to_epub 'multi-part.adoc'
+      book, = to_epub fixture_file('multi-part.adoc')
       spine = book.spine.itemref_list
       expect(spine).to have_size(4)
 
@@ -74,13 +86,13 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'populates ebook subject from keywords' do
-      book, = to_epub 'keywords/book.adoc'
+      book, = to_epub fixture_file('keywords/book.adoc')
       keywords = book.subject_list.map(&:content)
       expect(keywords).to eq(%w(a b c))
     end
 
     it 'adds front matter page with images' do
-      book, = to_epub 'front-matter/book.adoc'
+      book, = to_epub fixture_file('front-matter/book.adoc')
       spine = book.spine.itemref_list
       expect(spine).to have_size(2)
 
@@ -92,7 +104,7 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'adds multiple front matter page with images' do
-      book, = to_epub 'front-matter-multi/book.adoc'
+      book, = to_epub fixture_file('front-matter-multi/book.adoc')
       spine = book.spine.itemref_list
       expect(spine).to have_size(3)
 
@@ -110,7 +122,7 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'places footnotes in the same chapter' do
-      book, = to_epub 'footnote/book.adoc'
+      book, = to_epub fixture_file('footnote/book.adoc')
       chapter_a = book.item_by_href 'chapter-a.xhtml'
       chapter_b = book.item_by_href 'chapter-b.xhtml'
       expect(chapter_a).not_to be_nil
@@ -125,20 +137,20 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'resolves deep includes relative to document that contains include directive' do
-      book, = to_epub 'deep-include/book.adoc'
+      book, = to_epub fixture_file('deep-include/book.adoc')
       chapter = book.item_by_href '_chapter.xhtml'
       expect(chapter).not_to be_nil
       expect(chapter.content).to include '<p>Hello</p>'
     end
 
     it 'adds no book authors if there are none' do
-      book, = to_epub 'author/book-no-author.adoc'
+      book, = to_epub fixture_file('author/book-no-author.adoc')
       expect(book.creator).to be_nil
       expect(book.creator_list.size).to eq(0)
     end
 
     it 'adds a single book author' do
-      book, = to_epub 'author/book-one-author.adoc'
+      book, = to_epub fixture_file('author/book-one-author.adoc')
       expect(book.creator).not_to be_nil
       expect(book.creator.content).to eq('Author One')
       expect(book.creator.role.content).to eq('aut')
@@ -146,7 +158,7 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'adds multiple book authors' do
-      book, = to_epub 'author/book-multiple-authors.adoc'
+      book, = to_epub fixture_file('author/book-multiple-authors.adoc')
       expect(book.metadata.creator).not_to be_nil
       expect(book.metadata.creator.content).to eq('Author One')
       expect(book.metadata.creator.role.content).to eq('aut')
@@ -156,13 +168,13 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'adds the publisher if both publisher and producer are defined' do
-      book, = to_epub 'author/book-one-author.adoc'
+      book, = to_epub fixture_file('author/book-one-author.adoc')
       expect(book.publisher).not_to be_nil
       expect(book.publisher.content).to eq('MyPublisher')
     end
 
     it 'adds the producer as publisher if no publisher is defined' do
-      book, = to_epub 'author/book-no-author.adoc'
+      book, = to_epub fixture_file('author/book-no-author.adoc')
       expect(book.publisher).not_to be_nil
       expect(book.publisher.content).to eq('MyProducer')
     end
