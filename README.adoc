@@ -49,7 +49,6 @@ endif::[]
 
 ifdef::status[]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
-image:https://img.shields.io/badge/license-MIT-blue.svg[MIT License,link=#copyright]
 image:{uri-repo}/workflows/CI/badge.svg[GitHub Actions,link={uri-ci}]
 endif::[]
 
@@ -883,7 +882,7 @@ endif::[]
 Copyright (C) 2014-2019 OpenDevise Inc. and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
-For the full text of the license, see the <<LICENSE#,LICENSE>> file.
+For the full text of the license, see the link:LICENSE[] file.
 Refer to the <<NOTICE#,NOTICE>> file for information about third-party Open Source software in use.
 
 ////
