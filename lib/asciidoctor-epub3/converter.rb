@@ -117,6 +117,29 @@ module Asciidoctor
         Asciidoctor::Section === node && node.level <= 1 ? node.id : nil
       end
 
+      def get_numbered_title node
+        doc_attrs = node.document.attributes
+        level = node.level
+        if node.caption
+          title = node.captioned_title
+        elsif node.respond_to?(:numbered) && node.numbered && level <= (doc_attrs['sectnumlevels'] || 3).to_i
+          if level < 2 && node.document.doctype == 'book'
+            if node.sectname == 'chapter'
+              title = %(#{(signifier = doc_attrs['chapter-signifier']) ? "#{signifier} " : ''}#{node.sectnum} #{node.title})
+            elsif node.sectname == 'part'
+              title = %(#{(signifier = doc_attrs['part-signifier']) ? "#{signifier} " : ''}#{node.sectnum nil, ':'} #{node.title})
+            else
+              title = %(#{node.sectnum} #{node.title})
+            end
+          else
+            title = %(#{node.sectnum} #{node.title})
+          end
+        else
+          title = node.title
+        end
+        title
+      end
+
       def convert_document node
         @format = node.attr('ebook-format').to_sym
 
@@ -273,7 +296,7 @@ module Asciidoctor
         elsif node.title
           # HACK: until we get proper handling of title-only in CSS
           title = ''
-          subtitle = node.title
+          subtitle = get_numbered_title node
         else
           title = nil
           subtitle = nil
@@ -380,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           hlevel = node.level
           epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
           div_classes = [%(sect#{node.level}), node.role].compact
-          title = node.title
+          title = get_numbered_title node
           title_sanitized = xml_sanitize title
           %(<section class="#{div_classes * ' '}" title="#{title_sanitized}"#{epub_type_attr}>
 <h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? '' : %(
@@ -501,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         figure_classes = ['listing']
         figure_classes << 'coalesce' if node.option? 'unbreakable'
         pre_classes = node.style == 'source' ? ['source', %(language-#{node.attr 'language'})] : ['screen']
-        title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>
+        title_div = node.title? ? %(<figcaption>#{get_numbered_title node}</figcaption>
 ) : ''
         %(<figure class="#{figure_classes * ' '}">
 #{title_div}<pre class="#{pre_classes * ' '}"><code>#{node.content}</code></pre>
@@ -1266,14 +1289,14 @@ body > svg {
         items.each do |item|
           #index = (state[:index] = (state.fetch :index, 0) + 1)
           if (chapter_name = get_chapter_name item).nil?
-            item_label = sanitize_xml item.title, :pcdata
+            item_label = sanitize_xml get_numbered_title(item), :pcdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
             # NOTE we sanitize the chapter titles because we use formatting to control layout
             if item.context == :document
               item_label = sanitize_doctitle_xml item, :cdata
             else
-              item_label = sanitize_xml item.title, :cdata
+              item_label = sanitize_xml get_numbered_title(item), :cdata
             end
             item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
           end
@@ -1316,13 +1339,13 @@ body > svg {
           index = (state[:index] = (state.fetch :index, 0) + 1)
           item_id = %(nav_#{index})
           if (chapter_name = get_chapter_name item).nil?
-            item_label = sanitize_xml item.title, :cdata
+            item_label = sanitize_xml get_numbered_title(item), :cdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
             if item.context == :document
               item_label = sanitize_doctitle_xml item, :cdata
             else
-              item_label = sanitize_xml item.title, :cdata
+              item_label = sanitize_xml get_numbered_title(item), :cdata
             end
             item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
           end
