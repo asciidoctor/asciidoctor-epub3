@@ -5,6 +5,10 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== Unreleased
+
+* support section numbering and captions (#20)
+
 == 1.5.0.alpha.14 (2020-02-29) - @slonopotamus
 
 * support conversion of article documents to a single-chapter file

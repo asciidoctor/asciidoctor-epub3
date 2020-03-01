@@ -70,6 +70,20 @@ describe Asciidoctor::Epub3::Converter do
       appendix = book.items[spine[1].idref]
       expect(appendix).not_to be_nil
       expect(appendix.href).to eq('appendix.xhtml')
+      expect(appendix.content).to include('<b>Appendix</b> <b>A:</b> <b>Appendix</b>')
+    end
+
+    it 'supports section numbers' do
+      book, = to_epub <<~EOS
+= Title
+:sectnums:
+:doctype: book
+
+== Chapter
+      EOS
+      chapter = book.item_by_href '_chapter.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include('<b>1.</b> <b>Chapter</b>')
     end
 
     it 'converts multi-part book' do
