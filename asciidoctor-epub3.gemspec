@@ -24,7 +24,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   rescue
     Dir['**/*']
   end
-  s.files = files.grep %r/^(?:(?:data\/(?:fonts|images|styles)|lib)\/.+|Gemfile|Rakefile|(?:CHANGELOG|LICENSE|NOTICE|README)\.adoc|\.yardopts|#{s.name}\.gemspec)$/
+  s.files = files.grep %r/^(?:(?:data\/(?:fonts|images|styles)|lib)\/.+|Gemfile|Rakefile|LICENSE|(?:CHANGELOG|NOTICE|README)\.adoc|\.yardopts|#{s.name}\.gemspec)$/
   s.executables = %w(asciidoctor-epub3 adb-push-ebook)
   s.test_files = s.files.grep(/^(?:test|spec|feature)\/.*$/)
 
