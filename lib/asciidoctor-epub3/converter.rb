@@ -111,7 +111,7 @@ module Asciidoctor
       # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
       def get_chapter_name node
         if node.document.doctype != 'book'
-          return Asciidoctor::Document === node ? node.attr('docname') || '' : nil
+          return Asciidoctor::Document === node ? node.attr('docname') || node.id : nil
         end
         return (node.id || 'preamble') if node.context == :preamble && node.level == 0
         Asciidoctor::Section === node && node.level <= 1 ? node.id : nil
@@ -344,6 +344,9 @@ module Asciidoctor
 </div>
 </header>) : ''
 
+        # TODO : support writing code highlighter CSS to a separate file
+        linkcss = false
+
         # NOTE kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
@@ -360,12 +363,17 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
   }
   document.body.setAttribute('class', reader.name.toLowerCase().replace(/ /g, '-'));
 });
-]]></script>
-</head>
+]]></script>)]
+
+        if self.class.supports_highlighter_docinfo? && (syntax_hl = node.document.syntax_highlighter) && (syntax_hl.docinfo? :head)
+          lines << (syntax_hl.docinfo :head, node, linkcss: linkcss, self_closing_tag_slash: '/')
+        end
+
+        lines << %(</head>
 <body>
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
 #{header}
-#{content})]
+#{content})
 
         unless (fns = node.document.footnotes - @footnotes).empty?
           @footnotes += fns
@@ -384,8 +392,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </footer>'
         end
 
-        lines << '</section>
-</body>
+        lines << '</section>'
+
+        lines << (syntax_hl.docinfo :footer, node.document, linkcss: linkcss, self_closing_tag_slash: '/') if syntax_hl && (syntax_hl.docinfo? :footer)
+
+        lines << '</body>
 </html>'
 
         chapter_item.add_content postprocess_xhtml lines * LF
@@ -521,13 +532,29 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_listing node
+        nowrap = (node.option? 'nowrap') || !(node.document.attr? 'prewrap')
+        if node.style == 'source'
+          lang = node.attr 'language'
+          if self.class.supports_highlighter_docinfo? && (syntax_hl = node.document.syntax_highlighter)
+            opts = syntax_hl.highlight? ? {
+              css_mode: ((doc_attrs = node.document.attributes)[%(#{syntax_hl.name}-css)] || :class).to_sym,
+              style: doc_attrs[%(#{syntax_hl.name}-style)],
+            } : {}
+            opts[:nowrap] = nowrap
+          else
+            pre_open = %(<pre class="highlight#{nowrap ? ' nowrap' : ''}"><code#{lang ? %( class="language-#{lang}" data-lang="#{lang}") : ''}>)
+            pre_close = '</code></pre>'
+          end
+        else
+          pre_open = %(<pre#{nowrap ? ' class="nowrap"' : ''}>)
+          pre_close = '</pre>'
+          syntax_hl = nil
+        end
         figure_classes = ['listing']
         figure_classes << 'coalesce' if node.option? 'unbreakable'
-        pre_classes = node.style == 'source' ? ['source', %(language-#{node.attr 'language'})] : ['screen']
-        title_div = node.title? ? %(<figcaption>#{get_numbered_title node}</figcaption>
-) : ''
-        %(<figure class="#{figure_classes * ' '}">
-#{title_div}<pre class="#{pre_classes * ' '}"><code>#{node.content}</code></pre>
+        title_div = node.title? ? %(<figcaption>#{get_numbered_title node}</figcaption>) : ''
+        %(<figure class="#{figure_classes * ' '}">#{title_div}
+        #{syntax_hl ? (syntax_hl.format node, lang, opts) : pre_open + (node.content || '') + pre_close}
 </figure>)
       end
 
@@ -1521,6 +1548,14 @@ body > svg {
       def role_valid_class? role
         role.is_a? String
       end
+
+      class << self
+        def supports_highlighter_docinfo?
+          # Asciidoctor only got pluggable syntax highlighters since 2.0:
+          # https://github.com/asciidoctor/asciidoctor/commit/23ddbaed6818025cbe74365fec7e8101f34eadca
+          Asciidoctor::Document.method_defined? :syntax_highlighter
+        end
+      end
     end
 
     class DocumentIdGenerator
@@ -1584,13 +1619,16 @@ body > svg {
     Extensions.register do
       if (document = @document).backend == 'epub3'
         document.set_attribute 'listing-caption', 'Listing'
-        # pygments.rb hangs on JRuby for Windows, see https://github.com/asciidoctor/asciidoctor-epub3/issues/253
-        if !(::RUBY_ENGINE == 'jruby' && Gem.win_platform?) && (Gem.try_activate 'pygments.rb')
-          if document.set_attribute 'source-highlighter', 'pygments'
-            document.set_attribute 'pygments-css', 'style'
-            document.set_attribute 'pygments-style', 'bw'
-          end
+
+        # TODO: bw theme for CodeRay
+        document.set_attribute 'pygments-style', 'bw' unless document.attr? 'pygments-style'
+        document.set_attribute 'rouge-style', 'bw' unless document.attr? 'rouge-style'
+        unless Converter.supports_highlighter_docinfo?
+          document.set_attribute 'coderay-css', 'style'
+          document.set_attribute 'pygments-css', 'style'
+          document.set_attribute 'rouge-css', 'style'
         end
+
         case (ebook_format = document.attributes['ebook-format'])
         when 'epub3', 'kf8'
           # all good

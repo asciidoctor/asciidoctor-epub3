@@ -13,7 +13,6 @@
 * allow front-matter.xhtml
 * reorder sections in README; needs to flow a bit better...Getting Started is too large & after Structuring your Manuscript
 * support inline SVG
-* describe the leveloffset setting in more detail in the README
 * link to https://medium.com/@sandersk/responsive-ebook-design-a-primer-8bba01328219 in style section in README
 * only uppercase document title if detected in CSS
 * add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
@@ -46,7 +45,6 @@
 * MEDIUM: add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file and read/include from converter
 * MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
-* MEDIUM: source highlighting using Rouge (instead of Pygments)
 * MEDIUM: to remove text indent in mobi7, set width="0pt" (text-indent) on <p> tag; also set height="1em" (margin top)
 * MEDIUM: create back link in bibliography entry for each reference to it (currently only the first)
 * implement checklists
@@ -58,7 +56,6 @@
 * HIGH: add back cover if specified
 * MEDIUM: add JavaScript to nav.xhtml to add class for epubReadingSystem to body
 * MEDIUM: option to add nav.xhtml to navigation flow?
-* MEDIUM: add Pygments stylesheet to EPUB archive if pygments-css=class
 * support subtitle as separate from main title in package metadata
 * support collection title in package metadata
 

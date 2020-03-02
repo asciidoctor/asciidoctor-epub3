@@ -3,11 +3,11 @@
 require_relative 'spec_helper'
 
 describe 'Asciidoctor::Epub3::Converter - Stem' do
-  it 'converts stem block to <code>' do
+  it 'converts stem block to <pre>' do
     book, = to_epub fixture_file('stem/book.adoc')
     chapter = book.item_by_href '_chapter.xhtml'
     expect(chapter).not_to be_nil
-    expect(chapter.content).to include '<code>\sqrt(4) = 2</code>'
+    expect(chapter.content).to include '<pre>\sqrt(4) = 2</pre>'
   end
 
   it 'converts inline stem to <code>' do
