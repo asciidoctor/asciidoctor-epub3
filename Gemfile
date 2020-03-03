@@ -17,5 +17,4 @@ group :optional do
   # We would like to make kindlegen a runtime dependency, but can't because of the way asciidoctorj-epub3 packaging works
   # See https://github.com/asciidoctor/asciidoctor-epub3/issues/288
   gem 'kindlegen', '~> 3.0.3'
-  gem 'pygments.rb', '1.2.1'
 end
