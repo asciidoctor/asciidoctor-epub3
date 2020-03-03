@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
               end
 
               id_attr = '' unless @xrefs_seen.add? refid
-              text = (ref.xreftext node.attr('xrefstyle', nil, true))
+              text ||= (ref.xreftext node.attr('xrefstyle', nil, true))
             else
               logger.warn %(#{::File.basename doc.attr('docfile')}: invalid reference to unknown anchor: #{refid})
             end
