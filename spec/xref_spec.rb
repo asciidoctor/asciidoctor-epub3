@@ -49,6 +49,20 @@ describe 'Asciidoctor::Epub3::Converter - Xref' do
     expect(chapter.content).to include '<a id="xref--bibliography--pp" href="bibliography.xhtml#pp" class="xref">[pp]</a>'
   end
 
+  it 'adds xref id to paragraph' do
+    book = to_epub <<~EOS
+= Article
+
+[id=anchor]
+Text
+
+More text
+    EOS
+    article = book.item_by_href '_article.xhtml'
+    expect(article).not_to be_nil
+    expect(article.content).to include '<p id="anchor">Text</p>'
+  end
+
   it 'displays anchor text' do
     book = to_epub <<~EOS
 = Article
