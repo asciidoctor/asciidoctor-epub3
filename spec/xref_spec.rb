@@ -47,5 +47,18 @@ describe 'Asciidoctor::Epub3::Converter - Xref' do
       expect(chapter).not_to be_nil
       expect(chapter.content).to include '<a id="xref--bibliography--pp" href="bibliography.xhtml#pp" class="xref">[pp]</a>'
     end
+
+    it 'displays anchor text' do
+      book = to_epub <<~EOS
+= Article
+
+<<_subsection,link text>>
+
+== Subsection
+      EOS
+      article = book.item_by_href '_article.xhtml'
+      expect(article).not_to be_nil
+      expect(article.content).to include '<a id="xref-_subsection" href="#_subsection" class="xref">link text</a>'
+    end
   end
 end
