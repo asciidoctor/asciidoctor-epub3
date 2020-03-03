@@ -461,15 +461,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_paragraph node
+        id_attr = node.id ? %( id="#{node.id}") : ''
         role = node.role
         # stack-head is the alternative to the default, inline-head (where inline means "run-in")
         head_stop = node.attr 'head-stop', (role && (node.has_role? 'stack-head') ? nil : '.')
         head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ TrailingPunctRx ? head_stop : ''}</strong> ) : ''
         if role
           node.set_option 'hardbreaks' if node.has_role? 'signature'
-          %(<p class="#{role}">#{head}#{node.content}</p>)
+          %(<p#{id_attr} class="#{role}">#{head}#{node.content}</p>)
         else
-          %(<p>#{head}#{node.content}</p>)
+          %(<p#{id_attr}>#{head}#{node.content}</p>)
         end
       end
 

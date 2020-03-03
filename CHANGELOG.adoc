@@ -9,6 +9,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 * support section numbering and captions (#20)
 * fix `\<<anchor,link text>>` to show link text (#317)
+* add xref ids to paragraphs (#317)
 * support syntax highlighting with CodeRay and Rouge (#262)
 * pygments.rb is no longer auto-activated
 
