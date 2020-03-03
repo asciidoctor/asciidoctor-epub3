@@ -328,5 +328,19 @@ CPU
 </tr>
       EOS
     end
+
+    it 'prevents document from overriding kindlegen/epubcheck path attributes' do
+      book = to_epub <<~EOS
+= Article
+:ebook-kindlegen-path: /evilgen
+:ebook-epubcheck-path: /evilcheck
+
+{ebook-epubcheck-path}
+{ebook-kindlegen-path}
+      EOS
+
+      article = book.item_by_href '_article.xhtml'
+      expect(article.content).not_to include('evil')
+    end
   end
 end
