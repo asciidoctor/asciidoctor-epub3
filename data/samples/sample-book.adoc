@@ -1,6 +1,8 @@
 = Asciidoctor Playground: Sample Content
 Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 v1.0, 2014-04-15
+:series-name: Asciidoctor EPUB3 Series
+:series-volume: 2
 :doctype: book
 :producer: Asciidoctor
 :keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js

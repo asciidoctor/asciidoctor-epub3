@@ -297,6 +297,10 @@ The recommended practice is to identify the referenced resource by means of a st
 |An optional override of the properties attribute for this document's item in the manifest.
 _Only applies to a chapter document._
 
+|series-name, series-volume, series-id
+|Populates the series statements (`belongs-to-collection`) in the package metadata.
+Volume is a number, ID probably a UUID that is constant for all volumes in the series.
+
 |epub3-frontmatterdir
 |The path to a directory that contains frontmatter files. The file names must match `front-matter*.html` and will be included in alphabetic order. The files are expected to be valid EPUB HTML files. _If only one front matter page is
  required, the default 'front-matter.html' file can be used instead._

@@ -205,6 +205,18 @@ module Asciidoctor
           @book.metadata.add_metadata 'subject', s
         end
 
+        if node.attr? 'series-name'
+          series_name = node.attr 'series-name'
+          series_volume = node.attr 'series-volume', 1
+          series_id = node.attr 'series-id'
+
+          series_meta = @book.metadata.add_metadata 'meta', series_name, id: 'pub-collection', group_position: series_volume
+          series_meta['property'] = 'belongs-to-collection'
+          series_meta.refine 'dcterms:identifier', series_id unless series_id.nil?
+          # Calibre only understands 'series'
+          series_meta.refine 'collection-type', 'series'
+        end
+
         add_cover_image node
         add_front_matter_page node
 
@@ -373,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <body>
 <section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
 #{header}
-#{content})
+        #{content})
 
         unless (fns = node.document.footnotes - @footnotes).empty?
           @footnotes += fns
