@@ -215,8 +215,8 @@ body a:link {
 body:first-of-type a:link {
   border-bottom: none;
   background-repeat: no-repeat;
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, #666665 5%, #666665 95%, rgba(255,255,255,0) 100%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 0%, #666665 5%, #666665 95%, rgba(255,255,255,0) 100%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%);
   background-size: 100% 1px;
   background-position: 0 1.2em;
 }
@@ -1028,8 +1028,8 @@ aside.note::before {
 }
 
 aside[class~="note"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.tip::before {
@@ -1038,8 +1038,8 @@ aside.tip::before {
 }
 
 aside[class~="tip"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #40403E 45%, #40403E 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.caution::before {
@@ -1048,8 +1048,8 @@ aside.caution::before {
 }
 
 aside[class~="caution"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.warning::before {
@@ -1058,8 +1058,8 @@ aside.warning::before {
 }
 
 aside[class~="warning"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #C83737 45%, #C83737 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #C83737 45%, #C83737 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.important::before {
@@ -1068,8 +1068,8 @@ aside.important::before {
 }
 
 aside[class~="important"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255,255,255,0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.admonition > h2 {
@@ -1257,9 +1257,11 @@ nav#toc ol {
   table.table th, table.table td, div.verse .attribution {
     font-family: serif;
   }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: sans-serif;
   }
+
   code, kbd, pre, i.conum {
     font-family: monospace;
   }

@@ -28,8 +28,7 @@ body.gitden-reader {
 }*/
 
 /* Use tighter margins and smaller font (18px) on phones (Nexus 4 and smaller) */
-@media only screen and (max-device-width: 768px) and (max-device-height: 1280px),
-only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
+@media only screen and (max-device-width: 768px) and (max-device-height: 1280px), only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
   body.gitden-reader,
   body.namo-epub-library {
     font-size: 112.5%;
@@ -38,7 +37,6 @@ only screen and (max-device-width: 1280px) and (max-device-height: 768px) {
   /*body.gitden-reader {
     margin: 0 5pt !important;
   }*/
-
   /*body.namo-epub-library > section.chapter {
     margin: 0 5pt;
   }*/
@@ -69,7 +67,6 @@ body code, body kbd, body pre, pre :not(code) {
   /*body {
     margin: 0 !important;
   }*/
-
   /* text-rendering is the only way to enable kerning in Kindle (and Calibre, though it seems to kern automatically) */
   /* personally, I think Kindle overdoes kerning, but we're running with it for now */
   /* text-rendering: optimizeLegibility kills certain Kindle eInk devices */
@@ -78,7 +75,6 @@ body code, body kbd, body pre, pre :not(code) {
   th, td, figcaption, caption {
     text-rendering: optimizeLegibility;
   }*/
-
   /* hack line height of subtitle using floats on Kindle */
   h1.chapter-title .subtitle {
     margin-top: -0.2em;
@@ -105,8 +101,7 @@ body code, body kbd, body pre, pre :not(code) {
 }
 
 /* Use darker font colors on Kindle Paperwhite */
-@media amzn-kf8 and (device-height: 1024px) and (device-width: 758px),
-    amzn-kf8 and (device-height:  758px) and (device-width: 1024px) {
+@media amzn-kf8 and (device-height: 1024px) and (device-width: 758px), amzn-kf8 and (device-height: 758px) and (device-width: 1024px) {
   body p,
   div.abstract > p,
   ul, ol, li, dl, dt, dd, footer,
@@ -131,7 +126,7 @@ body code, body kbd, body pre, pre :not(code) {
     color: #191918;
     border-bottom-color: #191918;
   }
-  
+
   h1.chapter-title .subtitle,
   .chapter-header p.byline {
     color: #000000;
