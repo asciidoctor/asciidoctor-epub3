@@ -192,5 +192,20 @@ describe Asciidoctor::Epub3::Converter do
       expect(book.publisher).not_to be_nil
       expect(book.publisher.content).to eq('MyProducer')
     end
+
+    it 'adds book series metadata' do
+      book = to_epub <<~EOS
+= Article
+:series-name: My Series
+:series-volume: 42
+:series-id: bla
+      EOS
+      meta = book.metadata.meta_list[1]
+      expect(meta).not_to be_nil
+      expect(meta['property']).to eq('belongs-to-collection')
+      expect(meta.content).to eq('My Series')
+      expect(meta.refiner('group-position').content).to eq('42')
+      expect(meta.refiner('dcterms:identifier').content).to eq('bla')
+    end
   end
 end

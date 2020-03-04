@@ -12,6 +12,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add xref ids to paragraphs (#317)
 * support syntax highlighting with CodeRay and Rouge (#262)
 * pygments.rb is no longer auto-activated
+* add series metadata (#307)
 
 == 1.5.0.alpha.14 (2020-02-29) - @slonopotamus
 
