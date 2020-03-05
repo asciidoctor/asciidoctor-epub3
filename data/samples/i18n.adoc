@@ -2,6 +2,7 @@
 = Asciidoctor Playground: _i18n_ Noto Šerif
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>
 :username: mojavelinux
+:imagesdir: images
 :source: http://www.impallari.com/testing
 
 [abstract]

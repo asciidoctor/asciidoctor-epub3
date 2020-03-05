@@ -2,6 +2,7 @@
 = Asciidoctor.js browser extension: _Preview_ AsciiDoc in your browser
 Guillaume Grossetie <https://github.com/mogztter>
 2013-09-18
+:imagesdir: images
 :username: mogztter
 :gh-chrome-repo: https://github.com/asciidoctor/asciidoctor-chrome-extension
 :gh-ff-repo: https://github.com/asciidoctor/asciidoctor-firefox-addon

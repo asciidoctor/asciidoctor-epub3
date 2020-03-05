@@ -2,6 +2,7 @@
 = Asciidoctor.js: AsciiDoc in your _browser_
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>
 v1.0, 2013-05-21
+:imagesdir: images
 :username: mojavelinux
 
 We've combined http://asciidoctor.org[Asciidoctor] and http://opalrb.org[Opal] to bring AsciiDoc rendering to the browser!
