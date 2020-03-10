@@ -1,6 +1,5 @@
 = {project-name}: A _native_ EPUB3 converter for AsciiDoc
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
-v1.5.0.alpha.15, 2020-03-11
 // Settings:
 :experimental:
 :idprefix:
