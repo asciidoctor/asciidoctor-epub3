@@ -18,6 +18,6 @@ a¦[ditaa, "inline-diag"]
 
 [cols="1,1"]
 |===
-a|image::square.png[]
+a|image:square.png[]
 a|Do do see a red square on the left?
 |===
