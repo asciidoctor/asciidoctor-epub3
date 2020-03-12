@@ -30,7 +30,7 @@ module Asciidoctor
                 unless (entry_dir = ::File.dirname entry.name) == '.' || (::File.directory? entry_dir)
                   ::FileUtils.mkdir_p entry_dir
                 end
-                entry.extract dest_path = entry.name
+                entry.extract entry.name
               end
             end
           end
