@@ -357,6 +357,11 @@ dl dd {
   margin-top: 0.25em;
 }
 
+td.hdlist1 {
+  font-weight: bold;
+  padding-right: 0.625em;
+}
+
 div.callout-list {
   margin-top: 0.5em;
 }

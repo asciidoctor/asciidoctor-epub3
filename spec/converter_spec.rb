@@ -233,5 +233,31 @@ describe Asciidoctor::Epub3::Converter do
       expect(audio).not_to be_nil
       expect(audio.media_type).to eq('audio/mpeg')
     end
+
+    it 'supports horizontal dlist' do
+      book = to_epub <<~EOS
+= Article
+
+[horizontal]
+CPU:: The brain of the computer.
+Hard drive:: Permanent storage for operating system and/or user files.
+RAM:: Temporarily stores information the CPU uses during operation.
+      EOS
+
+      chapter = book.item_by_href '_article.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include <<~EOS
+<tr>
+<td class="hdlist1">
+<p>
+CPU
+</p>
+</td>
+<td class="hdlist2">
+<p>The brain of the computer.</p>
+</td>
+</tr>
+      EOS
+    end
   end
 end
