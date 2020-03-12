@@ -31,6 +31,12 @@ describe Asciidoctor::Epub3::Converter do
       end
     end
 
+    it 'extracts book when given ebook-extract attribute' do
+      _, out_file = to_epub fixture_file('minimal/book.adoc'), attributes: { 'ebook-extract' => '' }
+      out_dir = out_file.dirname
+      expect(out_dir.join('book', 'EPUB', 'package.opf')).to exist
+    end
+
     it 'uses current date as fallback when date attributes cannot be parsed' do
       # TODO: assert that error log contains 'failed to parse revdate' error when we add test infrastructure for logs
       book, = to_epub fixture_file('minimal/book.adoc'), attributes: { 'revdate' => 'garbage' }
