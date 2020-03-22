@@ -12,7 +12,6 @@
 * add document filename to warn messages (added for some)
 * allow front-matter.xhtml
 * reorder sections in README; needs to flow a bit better...Getting Started is too large & after Structuring your Manuscript
-* support inline SVG
 * link to https://medium.com/@sandersk/responsive-ebook-design-a-primer-8bba01328219 in style section in README
 * only uppercase document title if detected in CSS
 * add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
