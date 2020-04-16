@@ -156,6 +156,31 @@ describe Asciidoctor::Epub3::Converter do
       expect(chapter_b.content).not_to include footnote
     end
 
+    it 'supports custom epub-chapter-level' do
+      book = to_epub <<~EOS
+= Book
+:epub-chapter-level: 2
+:doctype: book
+
+text0
+
+== Level 1
+
+text1
+
+=== Level 2
+
+text2
+
+==== Level 3
+
+text3
+      EOS
+
+      spine = book.spine.itemref_list
+      expect(spine).to have_size(3)
+    end
+
     it 'resolves deep includes relative to document that contains include directive' do
       book, = to_epub fixture_file('deep-include/book.adoc')
       chapter = book.item_by_href '_chapter.xhtml'
