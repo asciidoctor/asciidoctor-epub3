@@ -115,7 +115,8 @@ module Asciidoctor
           return Asciidoctor::Document === node ? node.attr('docname') || node.id : nil
         end
         return (node.id || 'preamble') if node.context == :preamble && node.level == 0
-        Asciidoctor::Section === node && node.level <= 1 ? node.id : nil
+        chapter_level = [node.document.attr('epub-chapter-level', 1).to_i, 1].max
+        Asciidoctor::Section === node && node.level <= chapter_level ? node.id : nil
       end
 
       def get_numbered_title node
@@ -139,6 +140,14 @@ module Asciidoctor
           title = node.title
         end
         title
+      end
+
+      def collect_toc_items node, into
+        node.sections.each do |section|
+          next if get_chapter_name(section).nil?
+          into << section
+          collect_toc_items section, into
+        end
       end
 
       def convert_document node
@@ -223,13 +232,7 @@ module Asciidoctor
 
         if node.doctype == 'book'
           toc_items = []
-          node.sections.each do |section|
-            toc_items << section
-            section.sections.each do |subsection|
-              next if get_chapter_name(node).nil?
-              toc_items << subsection
-            end
-          end
+          collect_toc_items node, toc_items
           node.content
         else
           toc_items = [node]
