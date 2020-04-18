@@ -142,14 +142,6 @@ module Asciidoctor
         title
       end
 
-      def collect_toc_items node, into
-        node.sections.each do |section|
-          next if get_chapter_name(section).nil?
-          into << section
-          collect_toc_items section, into
-        end
-      end
-
       def convert_document node
         @format = node.attr('ebook-format').to_sym
 
@@ -231,8 +223,7 @@ module Asciidoctor
         add_front_matter_page node
 
         if node.doctype == 'book'
-          toc_items = []
-          collect_toc_items node, toc_items
+          toc_items = node.sections
           node.content
         else
           toc_items = [node]

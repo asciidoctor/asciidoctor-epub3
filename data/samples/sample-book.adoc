@@ -4,6 +4,7 @@ v1.0, 2014-04-15
 :series-name: Asciidoctor EPUB3 Series
 :series-volume: 2
 :doctype: book
+:epub-chapter-level: 2
 :producer: Asciidoctor
 :keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
 :copyright: CC-BY-SA 3.0
