@@ -11,9 +11,7 @@ jobs:
         with:
           ruby-version: 2.7
       - name: Build
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
+        run: bundle install --jobs 4 --retry 3
       - name: Lint
         run: bundle exec rake lint
   test:
@@ -34,15 +32,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up Ruby
-        uses: eregon/use-ruby-action@v1
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
       - name: Set up Asciidoctor
         if: matrix.asciidoctor != ''
         run: echo "::set-env name=ASCIIDOCTOR_VERSION::${{ matrix.asciidoctor }}"
       - name: Build
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
+        run: bundle install --jobs 4 --retry 3
       - name: Test
         run: bundle exec rake spec
