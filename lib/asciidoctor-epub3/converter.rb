@@ -930,7 +930,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           epub_properties << 'svg' unless epub_properties.include? 'svg'
         end
 
-        return if target.start_with? 'data:'
+        return if Asciidoctor::Helpers.uriish? target
 
         out_dir = node.attr('outdir', nil, true) || doc_option(node.document, :to_dir)
         fs_path = (::File.join out_dir, target)
