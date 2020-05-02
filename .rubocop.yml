@@ -31,6 +31,10 @@ Lint/EmptyWhen:
   Enabled: false
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
 Lint/SuppressedException:
   Enabled: false
 Metrics/AbcSize:
@@ -89,8 +93,14 @@ Style/FormatStringToken:
   Enabled: false
 Style/GuardClause:
   Enabled: false
+Style/HashEachMethods:
+  Enabled: true
 Style/HashSyntax:
   EnforcedStyle: ruby19
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
 Style/IfUnlessModifierOfIfUnless:
   Enabled: false
 Style/MethodCallWithArgsParentheses:
@@ -117,8 +127,9 @@ Style/ParallelAssignment:
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     default: ()
-    '%w': ()
+    '%i': ()
     '%r': //
+    '%w': ()
 Style/PerlBackrefs:
   Enabled: false
 Style/RegexpLiteral:
@@ -137,11 +148,15 @@ Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: consistent_comma
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
+RSpec/BeforeAfterAll:
+  Enabled: false
 RSpec/ContextWording:
   Enabled: false
 RSpec/DescribeClass:
   Enabled: false
 RSpec/ExampleLength:
+  Enabled: false
+RSpec/ExpectInHook:
   Enabled: false
 RSpec/FilePath:
   Enabled: false
