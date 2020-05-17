@@ -249,12 +249,42 @@ text3
       expect(video.media_type).to eq('video/webm')
     end
 
+    it 'supports remote video' do
+      book, = to_epub <<~EOS
+= Article
+
+video::http://nonexistent/small.webm[]
+      EOS
+      article = book.item_by_href '_article.xhtml'
+      expect(article).not_to be_nil
+      expect(article['properties']).to include('remote-resources')
+      expect(article.content).to include '<video src="http://nonexistent/small.webm" controls="controls">'
+      video = book.item_by_href 'http://nonexistent/small.webm'
+      expect(video).not_to be_nil
+      expect(video.media_type).to eq('video/webm')
+    end
+
     it 'supports audio' do
       book, = to_epub fixture_file('audio/book.adoc')
       chapter = book.item_by_href '_chapter.xhtml'
       expect(chapter).not_to be_nil
       expect(chapter.content).to include '<audio src="small.mp3" controls="controls">'
       audio = book.item_by_href 'small.mp3'
+      expect(audio).not_to be_nil
+      expect(audio.media_type).to eq('audio/mpeg')
+    end
+
+    it 'supports remote audio' do
+      book, = to_epub <<~EOS
+= Article
+
+audio::http://nonexistent/small.mp3[]
+      EOS
+      article = book.item_by_href '_article.xhtml'
+      expect(article).not_to be_nil
+      expect(article['properties']).to include('remote-resources')
+      expect(article.content).to include '<audio src="http://nonexistent/small.mp3" controls="controls">'
+      audio = book.item_by_href 'http://nonexistent/small.mp3'
       expect(audio).not_to be_nil
       expect(audio.media_type).to eq('audio/mpeg')
     end
