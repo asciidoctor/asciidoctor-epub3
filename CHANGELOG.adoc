@@ -7,7 +7,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
-* support remote URLs for audio/video/image (#333)
+* support remote URLs for audio/video/image (#333, #334)
 
 == 1.5.0.alpha.16 (2020-04-26) - @slonopotamus
 

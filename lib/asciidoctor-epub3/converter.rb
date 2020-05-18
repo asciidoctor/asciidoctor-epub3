@@ -244,7 +244,7 @@ module Asciidoctor
         @media_files.each do |file|
           if file[:name].start_with? %(#{docimagesdir}jacket/cover.)
             logger.warn %(path is reserved for cover artwork: #{file[:name]}; skipping file found in content)
-          elsif ::File.readable? file[:path]
+          elsif file[:path].nil? || File.readable?(file[:path])
             mime_types = MIME::Types.type_for file[:name]
             mime_types.delete_if {|x| x.media_type != file[:media_type] }
             preferred_mime_type = mime_types.empty? ? nil : mime_types[0].content_type
@@ -930,13 +930,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           epub_properties << 'svg' unless epub_properties.include? 'svg'
         end
 
-        return if Asciidoctor::Helpers.uriish? target
-
-        out_dir = node.attr('outdir', nil, true) || doc_option(node.document, :to_dir)
-        fs_path = (::File.join out_dir, target)
-        unless ::File.exist? fs_path
-          base_dir = root_document(node.document).base_dir
-          fs_path = ::File.join base_dir, target
+        if Asciidoctor::Helpers.uriish? target
+          # We need to add both local and remote media files to manifect
+          fs_path = nil
+        else
+          out_dir = node.attr('outdir', nil, true) || doc_option(node.document, :to_dir)
+          fs_path = (::File.join out_dir, target)
+          unless ::File.exist? fs_path
+            base_dir = root_document(node.document).base_dir
+            fs_path = ::File.join base_dir, target
+          end
         end
         # We need *both* virtual and physical image paths. Unfortunately, references[:images] only has one of them.
         @media_files << { name: target, path: fs_path, media_type: media_type }
