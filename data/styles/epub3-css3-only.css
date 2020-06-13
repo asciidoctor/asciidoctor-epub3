@@ -100,8 +100,8 @@ body code, body kbd, body pre, pre :not(code) {
   }
 }
 
-/* Use darker font colors on Kindle Paperwhite */
-@media amzn-kf8 and (device-height: 1024px) and (device-width: 758px), amzn-kf8 and (device-height: 758px) and (device-width: 1024px) {
+/* Use darker font colors on Kindle Paperwhite and Oasis */
+@media amzn-kf8 and (device-height: 1024px) and (device-width: 758px), amzn-kf8 and (device-height: 758px) and (device-width: 1024px), amzn-kf8 and (device-height: 1680px) and (device-width: 1264px), amzn-kf8 and (device-height: 1264px) and (device-width: 1680px) {
   body p,
   div.abstract > p,
   ul, ol, li, dl, dt, dd, footer,
