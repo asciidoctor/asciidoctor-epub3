@@ -75,7 +75,7 @@ RSpec.configure do |config|
 
   def skip_unless_has_kindlegen
     # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/236
-    skip '#236: Kindlegen is unavailable for-bit MacOS' if darwin_platform?
+    skip '#236: Kindlegen is unavailable for 64-bit MacOS' if darwin_platform?
   end
 
   def convert input, opts = {}

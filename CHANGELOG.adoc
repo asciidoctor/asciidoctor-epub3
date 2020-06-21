@@ -5,6 +5,10 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== Unreleased
+
+* Store syntax highlighter CSS in a separate file (#339)
+
 == 1.5.0.alpha.17 (2020-05-25) - @slonopotamus
 
 * support remote URLs for audio/video/image (#333, #334)
