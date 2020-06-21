@@ -1,0 +1,10 @@
+= Article
+
+[source,ruby]
+----
+class Foo
+  def bar?
+    true
+  end
+end
+----

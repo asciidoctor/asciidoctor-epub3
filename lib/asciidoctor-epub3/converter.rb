@@ -355,8 +355,9 @@ module Asciidoctor
 </div>
 </header>) : ''
 
-        # TODO : support writing code highlighter CSS to a separate file
-        linkcss = false
+        # We want highlighter CSS to be stored in a separate file
+        # in order to avoid style duplication across chapter files
+        linkcss = true
 
         # NOTE kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<!DOCTYPE html>
@@ -376,9 +377,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 });
 ]]></script>)]
 
-        if self.class.supports_highlighter_docinfo? && (syntax_hl = node.document.syntax_highlighter) && (syntax_hl.docinfo? :head)
-          lines << (syntax_hl.docinfo :head, node, linkcss: linkcss, self_closing_tag_slash: '/')
-        end
+        syntax_hl = node.document.syntax_highlighter
+        lines << (syntax_hl.docinfo :head, node, linkcss: linkcss, self_closing_tag_slash: '/') if syntax_hl&.docinfo? :head
 
         lines << %(</head>
 <body>
@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         lines << '</section>'
 
-        lines << (syntax_hl.docinfo :footer, node.document, linkcss: linkcss, self_closing_tag_slash: '/') if syntax_hl && (syntax_hl.docinfo? :footer)
+        lines << (syntax_hl.docinfo :footer, node.document, linkcss: linkcss, self_closing_tag_slash: '/') if syntax_hl&.docinfo? :footer
 
         lines << '</body>
 </html>'
@@ -547,7 +547,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         nowrap = (node.option? 'nowrap') || !(node.document.attr? 'prewrap')
         if node.style == 'source'
           lang = node.attr 'language'
-          if self.class.supports_highlighter_docinfo? && (syntax_hl = node.document.syntax_highlighter)
+          syntax_hl = node.document.syntax_highlighter
+          if syntax_hl
             opts = syntax_hl.highlight? ? {
               css_mode: ((doc_attrs = node.document.attributes)[%(#{syntax_hl.name}-css)] || :class).to_sym,
               style: doc_attrs[%(#{syntax_hl.name}-style)],
@@ -1258,6 +1259,19 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           @book.add_item 'styles/epub3-css3-only.css', content: (postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
         end
 
+        syntax_hl = doc.syntax_highlighter
+        if syntax_hl&.write_stylesheet? doc
+          Dir.mktmpdir do |dir|
+            syntax_hl.write_stylesheet doc, dir
+            Pathname.glob(dir + '/**/*').map do |filename|
+              # Workaround for https://github.com/skoji/gepub/pull/117
+              filename.open do |f|
+                @book.add_item filename.basename.to_s, content: f
+              end if filename.file?
+            end
+          end
+        end
+
         font_files, font_css = select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
         @book.add_item 'styles/epub3-fonts.css', content: font_css
         unless font_files.empty?
@@ -1674,14 +1688,6 @@ body > svg {
       def role_valid_class? role
         role.is_a? String
       end
-
-      class << self
-        def supports_highlighter_docinfo?
-          # Asciidoctor only got pluggable syntax highlighters since 2.0:
-          # https://github.com/asciidoctor/asciidoctor/commit/23ddbaed6818025cbe74365fec7e8101f34eadca
-          Asciidoctor::Document.method_defined? :syntax_highlighter
-        end
-      end
     end
 
     class DocumentIdGenerator
@@ -1694,6 +1700,7 @@ body > svg {
         InvalidIdCharsRx = /[^[:word:]]+/
         LeadingDigitRx = /^[[:digit:]]/
       end
+
       class << self
         def generate_id doc, pre = nil, sep = nil
           synthetic = false
@@ -1749,7 +1756,10 @@ body > svg {
         # TODO: bw theme for CodeRay
         document.set_attribute 'pygments-style', 'bw' unless document.attr? 'pygments-style'
         document.set_attribute 'rouge-style', 'bw' unless document.attr? 'rouge-style'
-        unless Converter.supports_highlighter_docinfo?
+
+        # Old asciidoctor versions do not have public API for writing highlighter CSS file
+        # So just use inline CSS there.
+        unless Document.supports_syntax_highlighter?
           document.set_attribute 'coderay-css', 'style'
           document.set_attribute 'pygments-css', 'style'
           document.set_attribute 'rouge-css', 'style'
