@@ -932,7 +932,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
 
         if Asciidoctor::Helpers.uriish? target
-          # We need to add both local and remote media files to manifect
+          # We need to add both local and remote media files to manifest
           fs_path = nil
         else
           out_dir = node.attr('outdir', nil, true) || doc_option(node.document, :to_dir)
