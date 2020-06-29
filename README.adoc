@@ -26,26 +26,26 @@ endif::[]
 :project-handle: asciidoctor-epub3
 // URIs:
 :uri-project: https://github.com/asciidoctor/{project-handle}
-:uri-gem: http://rubygems.org/gems/asciidoctor-epub3
+:uri-gem: https://rubygems.org/gems/asciidoctor-epub3
 :uri-repo: {uri-project}
 :uri-issues: {uri-repo}/issues
 :uri-ci: {uri-repo}/actions?query=branch%3Amaster
-:uri-discuss: http://discuss.asciidoctor.org
+:uri-discuss: https://discuss.asciidoctor.org/
 :uri-rvm: https://rvm.io
-:uri-asciidoctor: http://asciidoctor.org
+:uri-asciidoctor: https://asciidoctor.org/
 :uri-idpf: http://www.idpf.org/
 :uri-epub: http://www.idpf.org/epub/31/spec/epub-spec.html
-:uri-epubcheck: https://github.com/idpf/epubcheck
-:uri-kindlegen: http://www.amazon.com/gp/feature.html?docId=1000765211
+:uri-epubcheck: https://github.com/w3c/epubcheck
+:uri-kindlegen: https://www.amazon.com/gp/feature.html?docId=1000765211
 :uri-kf8: http://www.amazon.com/gp/feature.html?docId=1000729511
 :uri-send-to-kindle: https://www.amazon.com/gp/sendtokindle/
 :uri-metadata-elem: http://www.idpf.org/epub/30/spec/epub30-publications.html#sec-metadata-elem
-:uri-dc: http://dublincore.org/documents/2004/12/20/dces
+:uri-dc: https://www.dublincore.org/specifications/dublin-core/dces/2004-12-20/
 :uri-github-guides: https://guides.github.com
 :uri-github-guides-fork: https://github.com/opendevise/github-guides-asciidoc
-:uri-asciidoctor-i18n: http://asciidoctor.org/docs/user-manual/#builtin-attributes-i18n
+:uri-asciidoctor-i18n: https://asciidoctor.org/docs/user-manual/#builtin-attributes-i18n
 :uri-epubreadingsystem: http://www.idpf.org/epub/301/spec/epub-contentdocs.html#app-epubReadingSystem
-:uri-android-sdk: http://developer.android.com/sdk/index.html
+:uri-android-sdk: https://developer.android.com/sdk/index.html
 
 ifdef::status[]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
