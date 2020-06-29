@@ -120,7 +120,7 @@ We may explore the use of fixed layout documents in the future if the need arise
 ifdef::env-github[]
 === Planned Features and Work In Progress
 
-See <<WORKLOG#,WORKLOG.adoc>>.
+See link:WORKLOG.adoc[].
 endif::[]
 
 == Converter Workflow
@@ -601,7 +601,7 @@ The theme's fonts are located in the [path]_data/fonts_ directory.
 The M+ Outline fonts are used for titles, headings, literal (monospace) text, and annotation numbers.
 The body text uses Noto Serif.
 Admonition icons and the end-of-chapter mark are from the Font Awesome icon font.
-Refer to the <<NOTICE#,NOTICE>> file for further information about the fonts.
+Refer to the link:NOTICE.adoc[] file for further information about the fonts.
 
 // TODO document command to generate the M+ 1p latin fonts
 
@@ -897,7 +897,7 @@ Copyright (C) 2014-2019 OpenDevise Inc. and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
 For the full text of the license, see the link:LICENSE[] file.
-Refer to the <<NOTICE#,NOTICE>> file for information about third-party Open Source software in use.
+Refer to the link:NOTICE.adoc[] file for information about third-party Open Source software in use.
 
 ////
 == Additional Points of Note
