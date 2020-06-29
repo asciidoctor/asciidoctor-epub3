@@ -39,7 +39,6 @@
 * HIGH: revisit the headshot image logic
 * HIGH: promote regexps to constants
 * HIGH: put shy marks after dashes to allow wrapping to occur in text justification
-* MEDIUM: add landmarks nav list to nav.xhtml; see https://github.com/IDPF/epub3-samples/blob/master/31/moby-dick-mo-xhtml/EPUB/toc.xhtml
 * MEDIUM: Kindle links to cover page when clicking on first chapter instead of first chapter page
 * MEDIUM: add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file and read/include from converter

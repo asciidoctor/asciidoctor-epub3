@@ -1252,6 +1252,11 @@ nav#toc ol {
   list-style-type: none;
 }
 
+/* Calibre doesn't hide <nav hidden="hidden"> for some reason */
+nav[hidden~="hidden"] {
+  display: none;
+}
+
 .icon {
   display: none;
 }

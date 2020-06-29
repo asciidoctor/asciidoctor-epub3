@@ -320,6 +320,12 @@ Volume is a number, ID probably a UUID that is constant for all volumes in the s
 |Used to control the inclusion of special content in the generated HTML.
 If set to a value other than book, the byline information (author and avatar) is included below the chapter header and a typographic end mark is added at the end of the last paragraph.
 Suggested values include: book (default), article.
+
+|toc
+|Adds table of contents at the beginning of the book. Depth is controlled by `:toclevels:` attribute.
+
+|outlinelevels
+|Sets the depth of table of contents metadata. If not set, defaults to `:toclevels:`
 |===
 
 When using the EPUB3 converter, the `ebook-format` attribute resolves to the name of the e-book format being generated (epub3 or kf8) and the corresponding attribute `ebook-format-<name>` is defined, where `<name>` is `epub3` or `kf8`.

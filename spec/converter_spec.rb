@@ -239,6 +239,20 @@ text3
       expect(meta.refiner('dcterms:identifier').content).to eq('bla')
     end
 
+    it 'adds toc to spine' do
+      book = to_epub <<~EOS
+= Title
+:toc:
+
+Text
+      EOS
+      spine = book.spine.itemref_list
+      expect(spine).to have_size(2)
+      toc = book.items[spine[0].idref]
+      expect(toc).not_to be_nil
+      expect(toc.href).to eq('toc.xhtml')
+    end
+
     it 'supports video' do
       book, = to_epub fixture_file('video/book.adoc')
       chapter = book.item_by_href '_chapter.xhtml'

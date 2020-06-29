@@ -220,8 +220,27 @@ module Asciidoctor
           series_meta.refine 'collection-type', 'series'
         end
 
-        add_cover_image node
-        add_front_matter_page node
+        # For list of supported landmark types see
+        # https://idpf.github.io/epub-vocabs/structure/
+        landmarks = []
+
+        cover_page = add_cover_page node
+        landmarks << { type: 'cover', href: cover_page.href, title: 'Cover' } unless cover_page.nil?
+
+        front_matter_page = add_front_matter_page node
+        landmarks << { type: 'frontmatter', href: front_matter_page.href, title: 'Front Matter' } unless front_matter_page.nil?
+
+        nav_item = @book.add_item('nav.xhtml', id: 'nav').nav
+
+        toclevels = [(node.attr 'toclevels', 1).to_i, 0].max
+        outlinelevels = [(node.attr 'outlinelevels', toclevels).to_i, 0].max
+
+        if node.attr? 'toc'
+          toc_item = @book.add_ordered_item 'toc.xhtml', id: 'toc'
+          landmarks << { type: 'toc', href: toc_item.href, title: node.attr('toc-title') }
+        else
+          toc_item = nil
+        end
 
         if node.doctype == 'book'
           toc_items = node.sections
@@ -231,11 +250,18 @@ module Asciidoctor
           add_chapter node
         end
 
-        nav_xhtml = @book.add_item 'nav.xhtml', content: postprocess_xhtml(nav_doc(node, toc_items)), id: 'nav'
-        nav_xhtml.nav
+        landmarks << { type: 'bodymatter', href: %(#{get_chapter_name toc_items[0]}.xhtml), title: 'Start of Content' } unless toc_items.empty?
+
+        toc_items.each do |item|
+          landmarks << { type: item.style, href: %(#{get_chapter_name item}.xhtml), title: item.title } if %w(appendix bibliography glossary index preface).include? item.style
+        end
+
+        nav_item.add_content postprocess_xhtml(nav_doc(node, toc_items, landmarks, outlinelevels))
+        # User is not supposed to see landmarks, so pass empty array here
+        toc_item&.add_content postprocess_xhtml(nav_doc(node, toc_items, [], toclevels))
 
         # NOTE gepub doesn't support building a ncx TOC with depth > 1, so do it ourselves
-        toc_ncx = ncx_doc node, toc_items
+        toc_ncx = ncx_doc node, toc_items, outlinelevels
         @book.add_item 'toc.ncx', content: toc_ncx.to_ios, id: 'ncx'
 
         docimagesdir = (node.attr 'imagesdir', '.').chomp '/'
@@ -1293,8 +1319,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         nil
       end
 
-      def add_cover_image doc
-        return if (image_path = doc.attr 'front-cover-image').nil?
+      def add_cover_page doc
+        return nil if (image_path = doc.attr 'front-cover-image').nil?
 
         imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
         imagesdir = (imagesdir == '.' ? '' : %(#{imagesdir}/))
@@ -1313,7 +1339,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         unless ::File.readable? ::File.join(workdir, image_path)
           logger.error %(#{::File.basename doc.attr('docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
-          return
+          return nil
         end
 
         unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
@@ -1322,9 +1348,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         @book.add_item(image_href, content: File.join(workdir, image_path)).cover_image
 
-        unless @format == :kf8
-          # NOTE SVG wrapper maintains aspect ratio and confines image to view box
-          content = %(<!DOCTYPE html>
+        return nil if @format == :kf8
+
+        # NOTE SVG wrapper maintains aspect ratio and confines image to view box
+        content = %(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -1354,10 +1381,7 @@ body > svg {
 </svg></body>
 </html>).to_ios
 
-          # Gitden expects a cover.xhtml, so add it to the spine
-          @book.add_ordered_item 'cover.xhtml', content: content, id: 'cover'
-        end
-        nil
+        @book.add_ordered_item 'cover.xhtml', content: content, id: 'cover'
       end
 
       def get_frontmatter_files doc, workdir
@@ -1387,19 +1411,22 @@ body > svg {
         workdir = doc.attr 'docdir'
         workdir = '.' if workdir.nil_or_empty?
 
+        result = nil
         get_frontmatter_files(doc, workdir).each do |front_matter|
           front_matter_content = ::File.read front_matter
 
           front_matter_file = File.basename front_matter, '.html'
           item = @book.add_ordered_item "#{front_matter_file}.xhtml", content: (postprocess_xhtml front_matter_content)
           item.add_property 'svg' if SvgImgSniffRx =~ front_matter_content
+          # Store link to first frontmatter page
+          result = item if result.nil?
 
           front_matter_content.scan ImgSrcScanRx do
             @book.add_item $1, content: File.join(File.dirname(front_matter), $1)
           end
         end
 
-        nil
+        result
       end
 
       def add_profile_images doc, usernames
@@ -1431,8 +1458,7 @@ body > svg {
         nil
       end
 
-      # TODO: aggregate authors of chapters into authors attribute(s) on main document
-      def nav_doc doc, items
+      def nav_doc doc, items, landmarks, depth
         lines = [%(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = doc.attr 'lang', 'en'}" lang="#{lang}">
 <head>
@@ -1442,13 +1468,29 @@ body > svg {
 <link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
 </head>
 <body>
-<h1>#{sanitize_doctitle_xml doc, :pcdata}</h1>
-<nav epub:type="toc" id="toc">
-<h2>#{doc.attr 'toc-title'}</h2>)]
-        lines << (nav_level items, [(doc.attr 'toclevels', 1).to_i, 0].max)
-        lines << %(</nav>
+<section class="chapter">
+<header>
+<div class="chapter-header"><h1 class="chapter-title"><small class="subtitle">#{doc.attr 'toc-title'}</small></h1></div>
+</header>
+<nav epub:type="toc" id="toc">)]
+        lines << (nav_level items, [depth, 0].max)
+        lines << '</nav>'
+
+        unless landmarks.empty?
+          lines << '
+<nav epub:type="landmarks" id="landmarks" hidden="hidden">
+<ol>'
+          landmarks.each do |landmark|
+            lines << %(<li><a epub:type="#{landmark[:type]}" href="#{landmark[:href]}">#{landmark[:title]}</a></li>)
+          end
+          lines << '
+</ol>
+</nav>'
+        end
+        lines << '
+</section>
 </body>
-</html>)
+</html>'
         lines * LF
       end
 
@@ -1482,7 +1524,7 @@ body > svg {
         lines * LF
       end
 
-      def ncx_doc doc, items
+      def ncx_doc doc, items, depth
         # TODO: populate docAuthor element based on unique authors in work
         lines = [%(<?xml version="1.0" encoding="utf-8"?>
 <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="#{doc.attr 'lang', 'en'}">
@@ -1494,7 +1536,7 @@ body > svg {
 </head>
 <docTitle><text>#{sanitize_doctitle_xml doc, :cdata}</text></docTitle>
 <navMap>)]
-        lines << (ncx_level items, [(doc.attr 'toclevels', 1).to_i, 0].max, state = {})
+        lines << (ncx_level items, depth, state = {})
         lines[0] = lines[0].sub '%{depth}', %(<meta name="dtb:depth" content="#{state[:max_depth]}"/>)
         lines << %(</navMap>
 </ncx>)
