@@ -301,19 +301,21 @@ module Asciidoctor
 
         chapter_item = @book.add_ordered_item %(#{docid}.xhtml)
 
-        if node.context == :document && (doctitle = node.doctitle partition: true, use_fallback: true).subtitle?
+        doctitle = node.document.doctitle partition: true, use_fallback: true
+        doctitle_sanitized = sanitize_xml doctitle.combined, :cdata
+
+        if node.context == :document && doctitle.subtitle?
           title = %(#{doctitle.main} )
           subtitle = doctitle.subtitle
         elsif node.title
           # HACK: until we get proper handling of title-only in CSS
           title = ''
           subtitle = get_numbered_title node
+          doctitle_sanitized = sanitize_xml subtitle, :cdata
         else
           title = nil
           subtitle = nil
         end
-
-        doctitle_sanitized = (node.document.doctitle sanitize: true, use_fallback: true).to_s
 
         # By default, Kindle does not allow the line height to be adjusted.
         # But if you float the elements, then the line height disappears and can be restored manually using margins.
@@ -382,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         lines << %(</head>
 <body>
-<section class="chapter" title="#{doctitle_sanitized.gsub '"', '&quot;'}" epub:type="chapter" id="#{docid}">
+<section class="chapter" title="#{doctitle_sanitized}" epub:type="chapter" id="#{docid}">
 #{header}
         #{content})
 

@@ -7,7 +7,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
-* Store syntax highlighter CSS in a separate file (#339)
+* fix chapter titles to actually be chapter titles instead of document title (#343)
+* store syntax highlighter CSS in a separate file (#339)
 
 == 1.5.0.alpha.17 (2020-05-25) - @slonopotamus
 
