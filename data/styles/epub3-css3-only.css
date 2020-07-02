@@ -75,23 +75,6 @@ body code, body kbd, body pre, pre :not(code) {
   th, td, figcaption, caption {
     text-rendering: optimizeLegibility;
   }*/
-  /* hack line height of subtitle using floats on Kindle */
-  h1.chapter-title .subtitle {
-    margin-top: -0.2em;
-    margin-bottom: 0.3em; /* compensate for reduced line height */
-  }
-
-  /* NOTE using b instead of span since Firefox ePubReader applies immutable styles to span */
-  h1.chapter-title .subtitle > b {
-    float: left;
-    display: inline-block;
-    margin-bottom: -0.3em; /* reduce the line height */
-    padding-right: 0.2em; /* spacing between words */
-  }
-
-  h1.chapter-title .subtitle > b:last-child {
-    padding-right: 0;
-  }
 
   h1.chapter-title .subtitle::after {
     display: table;
