@@ -98,6 +98,15 @@ module Asciidoctor
         basebackend 'html'
         outfilesuffix '.epub' # dummy outfilesuffix since it may be .mobi
         htmlsyntax 'xml'
+
+        attr_overrides = opts[:document].instance_variable_get :@attribute_overrides
+        if attr_overrides.nil?
+          logger.error 'Failed to prevent document from overriding epubcheck/kindlegen path attributes'
+        else
+          # Prevent document fro overriding paths to binaries that we execute
+          attr_overrides['ebook-epubcheck-path'] ||= nil
+          attr_overrides['ebook-kindlegen-path'] ||= nil
+        end
       end
 
       def convert node, name = nil, _opts = {}
