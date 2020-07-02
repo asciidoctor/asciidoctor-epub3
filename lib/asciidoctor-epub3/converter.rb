@@ -343,11 +343,6 @@ module Asciidoctor
           subtitle = nil
         end
 
-        # By default, Kindle does not allow the line height to be adjusted.
-        # But if you float the elements, then the line height disappears and can be restored manually using margins.
-        # See https://github.com/asciidoctor/asciidoctor-epub3/issues/123
-        subtitle_formatted = subtitle ? subtitle.split.map {|w| %(<b>#{w}</b>) } * ' ' : nil
-
         if node.document.doctype == 'book'
           byline = ''
         else
@@ -379,7 +374,7 @@ module Asciidoctor
 
         header = (title || subtitle) ? %(<header>
 <div class="chapter-header">
-#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %(<small class="subtitle">#{subtitle_formatted}</small>) : ''}</h1>
+#{byline}<h1 class="chapter-title">#{title}#{subtitle ? %(<small class="subtitle">#{subtitle}</small>) : ''}</h1>
 </div>
 </header>) : ''
 
