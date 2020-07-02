@@ -384,7 +384,7 @@ module Asciidoctor
 
         # NOTE kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
 <head>
 <meta charset="UTF-8"/>
 <title>#{doctitle_sanitized}</title>
@@ -594,8 +594,28 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
-      # TODO: implement proper stem support. See https://github.com/asciidoctor/asciidoctor-epub3/issues/10
-      alias convert_stem convert_listing
+      def convert_stem node
+        return convert_listing node if node.style != 'asciimath' || !asciimath_available?
+
+        id_attr = node.id ? %( id="#{node.id}") : ''
+        title_element = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>) : ''
+        equation_data = AsciiMath.parse(node.content).to_mathml 'mml:'
+
+        %(<figure#{id_attr} class="#{prepend_space node.role}">
+#{title_element}
+<div class="content">
+#{equation_data}
+</div>
+</figure>)
+      end
+
+      def asciimath_available?
+        (@asciimath_status ||= load_asciimath) == :loaded
+      end
+
+      def load_asciimath
+        Helpers.require_library('asciimath', true, :warn).nil? ? :unavailable : :loaded
+      end
 
       # QUESTION should we wrap the <pre> in either <div> or <figure>?
       def convert_literal node
@@ -1200,25 +1220,30 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def convert_inline_quoted node
         open, close, tag = QUOTE_TAGS[node.type]
 
-        # TODO: implement proper stem support. See https://github.com/asciidoctor/asciidoctor-epub3/issues/10
+        if node.type == :asciimath && asciimath_available?
+          content = AsciiMath.parse(node.text).to_mathml 'mml:'
+        else
+          content = node.text
+        end
+
         node.add_role 'literal' if [:monospaced, :asciimath, :latexmath].include? node.type
 
         if node.id
           class_attr = class_string node
           if tag
-            %(#{open.chop} id="#{node.id}"#{class_attr}>#{node.text}#{close})
+            %(#{open.chop} id="#{node.id}"#{class_attr}>#{content}#{close})
           else
-            %(<span id="#{node.id}"#{class_attr}>#{open}#{node.text}#{close}</span>)
+            %(<span id="#{node.id}"#{class_attr}>#{open}#{content}#{close}</span>)
           end
         elsif role_valid_class? node.role
           class_attr = class_string node
           if tag
-            %(#{open.chop}#{class_attr}>#{node.text}#{close})
+            %(#{open.chop}#{class_attr}>#{content}#{close})
           else
-            %(<span#{class_attr}>#{open}#{node.text}#{close}</span>)
+            %(<span#{class_attr}>#{open}#{content}#{close}</span>)
           end
         else
-          %(#{open}#{node.text}#{close})
+          %(#{open}#{content}#{close})
         end
       end
 

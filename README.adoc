@@ -107,6 +107,7 @@ Of course, there's always room for improvement, so we'll continue to work with y
 * Orphan section titles avoided (so much as it's supported by the e-reader)
 * Table border settings honored
 * Support for SVG images in the content
+* Stem blocks via AsciiMath
 
 === Project Status
 
