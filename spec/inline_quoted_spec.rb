@@ -52,14 +52,6 @@ describe 'Asciidoctor::Epub3::Converter - Inline Quoted' do
     end
   end
 
-  context 'asciimath' do
-    let(:type) { :asciimath }
-
-    it 'renders as code element' do
-      expect(subject).to eq('<code class="literal">text</code>')
-    end
-  end
-
   context 'latexmath' do
     let(:type) { :latexmath }
 

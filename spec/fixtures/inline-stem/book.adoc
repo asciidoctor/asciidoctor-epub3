@@ -1,4 +1,0 @@
-= Inline stem book
-:doctype: book
-
-include::chapter.adoc[leveloffset=+1]
