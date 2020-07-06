@@ -24,9 +24,6 @@ jobs:
           # kindlegen fails to install on 2.3 on Windows. See https://github.com/asciidoctor/asciidoctor-epub3/pull/213
           - ruby: 2.3
             platform: windows-latest
-          # TODO: nokogiri doesn't install on 2.7 on Windows: https://github.com/sparklemotion/nokogiri/issues/1961
-          - ruby: 2.7
-            platform: windows-latest
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout
