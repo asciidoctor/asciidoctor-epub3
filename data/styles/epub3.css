@@ -219,7 +219,7 @@ th.valign-bottom, td.valign-bottom, th.valign-bottom > p, td.valign-bottom > p {
   vertical-align: bottom
 }
 
-th.valign-middle, td.valign-middle, th.valign-middle p, td.valign-middle p {
+th.valign-middle, td.valign-middle, th.valign-middle > p, td.valign-middle > p {
   vertical-align: middle
 }
 
