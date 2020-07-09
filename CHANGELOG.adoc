@@ -8,6 +8,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 == Unreleased
 
 * remove <b> from chapter subtitle (#123)
+* improve tables support: cell content alignment, column width (#350)
 * fix chapter titles to actually be chapter titles instead of document title (#343)
 * store syntax highlighter CSS in a separate file (#339)
 * initial landmarks support: appendix, bibliography, bodymatter, cover, frontmatter, glossary, index, preface, toc (#174)

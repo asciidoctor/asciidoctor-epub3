@@ -198,6 +198,31 @@ td, th {
   padding: 0;
 }
 
+/* We need to apply text-align to <p> too in order to override global text-align:justify */
+th.halign-left, td.halign-left, th.halign-left > p, td.halign-left > p {
+  text-align: left
+}
+
+th.halign-right, td.halign-right, th.halign-right > p, td.halign-right > p {
+  text-align: right
+}
+
+th.halign-center, td.halign-center, th.halign-center > p, td.halign-center > p {
+  text-align: center
+}
+
+th.valign-top, td.valign-top, th.valign-top > p, td.valign-top > p {
+  vertical-align: top
+}
+
+th.valign-bottom, td.valign-bottom, th.valign-bottom > p, td.valign-bottom > p {
+  vertical-align: bottom
+}
+
+th.valign-middle, td.valign-middle, th.valign-middle p, td.valign-middle p {
+  vertical-align: middle
+}
+
 body a:link {
   color: #333332;
   /* hack for font color in iBooks and Gitden (though Gitden would accept color !important too) */
@@ -1109,8 +1134,6 @@ table.table th,
 table.table td {
   line-height: 1.4;
   padding: 0.5em 0.5em 1em 0.1em;
-  vertical-align: top;
-  text-align: left;
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -1128,17 +1151,13 @@ table.table div.embed > * {
   margin-top: 0;
 }
 
-table.table td > p {
-  text-align: left;
-}
-
 /* REVIEW */
 table.table td > p + p,
 table.table div.embed > * + * {
   margin-top: 1em;
 }
 
-table.table-framed {
+table.table-framed-all {
   border-width: 1px;
   border-style: solid;
   border-color: #80807F;
@@ -1156,19 +1175,19 @@ table.table-framed-sides {
   border-color: #80807F;
 }
 
-table.table-grid th,
-table.table-grid td {
-  border-width: 0 1px 1px 0;
+table.table-grid-all th,
+table.table-grid-all td {
+  border-width: 1px 1px 1px 1px;
   border-style: solid;
   border-color: #80807F;
 }
 
-table.table-grid thead tr > *:last-child {
+table.table-grid-all thead tr > *:last-child {
   border-right-width: 0;
 }
 
-table.table-grid tbody tr:last-child > th,
-table.table-grid tbody tr:last-child > td {
+table.table-grid-all tbody tr:last-child > th,
+table.table-grid-all tbody tr:last-child > td {
   border-bottom-width: 0;
 }
 
