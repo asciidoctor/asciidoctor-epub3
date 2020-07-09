@@ -701,41 +701,36 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines = [%(<div class="table">)]
         lines << %(<div class="content">)
         table_id_attr = node.id ? %( id="#{node.id}") : ''
-        frame_class = {
-          'all' => 'table-framed',
-          'topbot' => 'table-framed-topbot',
-          'sides' => 'table-framed-sides',
-          'none' => '',
-        }
-        grid_class = {
-          'all' => 'table-grid',
-          'rows' => 'table-grid-rows',
-          'cols' => 'table-grid-cols',
-          'none' => '',
-        }
-        table_classes = %W[table #{frame_class[node.attr 'frame'] || frame_class['topbot']} #{grid_class[node.attr 'grid'] || grid_class['rows']}]
+        table_classes = [
+          'table',
+          %(table-framed-#{node.attr 'frame', 'rows', 'table-frame'}),
+          %(table-grid-#{node.attr 'grid', 'rows', 'table-grid'}),
+        ]
         if (role = node.role)
           table_classes << role
         end
-        table_class_attr = %( class="#{table_classes * ' '}")
         table_styles = []
-        table_styles << %(width: #{node.attr 'tablepcwidth'}%) unless (node.option? 'autowidth') && !(node.attr? 'width', nil, false)
+        if (autowidth = node.option? 'autowidth') && !(node.attr? 'width')
+          table_classes << 'fit-content'
+        elsif (tablewidth = node.attr 'tablepcwidth') == 100
+          table_classes << 'stretch'
+        else
+          table_styles << %(width: #{tablewidth}%;)
+        end
+        table_class_attr = %( class="#{table_classes * ' '}")
         table_style_attr = !table_styles.empty? ? %( style="#{table_styles * '; '}") : ''
 
         lines << %(<table#{table_id_attr}#{table_class_attr}#{table_style_attr}>)
         lines << %(<caption>#{node.captioned_title}</caption>) if node.title?
         if (node.attr 'rowcount') > 0
           lines << '<colgroup>'
-          #if node.option? 'autowidth'
-          tag = %(<col/>)
-          node.columns.size.times do
-            lines << tag
+          if autowidth
+            lines += (Array.new node.columns.size, %(<col/>))
+          else
+            node.columns.each do |col|
+              lines << ((col.option? 'autowidth') ? %(<col/>) : %(<col style="width: #{col.attr 'colpcwidth'}%;" />))
+            end
           end
-          #else
-          #  node.columns.each do |col|
-          #    lines << %(<col style="width: #{col.attr 'colpcwidth'}%"/>)
-          #  end
-          #end
           lines << '</colgroup>'
           [:head, :body, :foot].reject {|tsec| node.rows[tsec].empty? }.each do |tsec|
             lines << %(<t#{tsec}>)
@@ -755,19 +750,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                   else
                     cell_content = ''
                     cell.content.each do |text|
-                      cell_content = %(#{cell_content}<p>#{text}</p>)
+                      cell_content = %(#{cell_content}<p class="tableblock">#{text}</p>)
                     end
                   end
                 end
 
                 cell_tag_name = tsec == :head || cell.style == :header ? 'th' : 'td'
-                cell_classes = []
-                if (halign = cell.attr 'halign') && halign != 'left'
-                  cell_classes << 'halign-left'
-                end
-                if (halign = cell.attr 'valign') && halign != 'top'
-                  cell_classes << 'valign-top'
-                end
+                cell_classes = [
+                  "halign-#{cell.attr 'halign'}",
+                  "valign-#{cell.attr 'valign'}",
+                ]
                 cell_class_attr = !cell_classes.empty? ? %( class="#{cell_classes * ' '}") : ''
                 cell_colspan_attr = cell.colspan ? %( colspan="#{cell.colspan}") : ''
                 cell_rowspan_attr = cell.rowspan ? %( rowspan="#{cell.rowspan}") : ''
