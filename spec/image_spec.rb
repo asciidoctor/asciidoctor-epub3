@@ -46,6 +46,11 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(cover_page.content).to include '<image width="1050" height="1600" xlink:href="jacket/cover.png"/>'
   end
 
+  it "doesn't crash if cover image points to a directory" do
+    book, = to_epub fixture_file('empty.adoc'), attributes: { 'front-cover-image' => '' }
+    expect(book).not_to be_nil
+  end
+
   it 'supports image width/height' do
     book, = to_epub fixture_file('image-dimensions/book.adoc')
     chapter = book.item_by_href '_chapter.xhtml'

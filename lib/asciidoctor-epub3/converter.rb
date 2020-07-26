@@ -1349,18 +1349,18 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         workdir = doc.attr 'docdir'
         workdir = '.' if workdir.nil_or_empty?
 
-        unless ::File.readable? ::File.join(workdir, image_path)
-          logger.error %(#{::File.basename doc.attr('docfile')}: front cover image not found or readable: #{::File.expand_path image_path, workdir})
+        begin
+          @book.add_item(image_href, content: File.join(workdir, image_path)).cover_image
+        rescue => e
+          logger.error %(#{::File.basename doc.attr('docfile')}: error adding front cover image. Make sure that :front-cover-image: attribute points to a valid image file. #{e})
           return nil
         end
+
+        return nil if @format == :kf8
 
         unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
           width, height = 1050, 1600
         end
-
-        @book.add_item(image_href, content: File.join(workdir, image_path)).cover_image
-
-        return nil if @format == :kf8
 
         # NOTE SVG wrapper maintains aspect ratio and confines image to view box
         content = %(<!DOCTYPE html>
