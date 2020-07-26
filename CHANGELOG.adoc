@@ -14,6 +14,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * initial landmarks support: appendix, bibliography, bodymatter, cover, frontmatter, glossary, index, preface, toc (#174)
 * add support for MathML (#10)
 * rescale color palette to use darker shades of gray (#338)
+* gracefully handle invalid `:front-cover-image:` value (#353)
 
 == 1.5.0.alpha.17 (2020-05-25) - @slonopotamus
 
