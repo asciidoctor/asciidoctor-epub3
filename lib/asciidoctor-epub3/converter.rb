@@ -617,9 +617,13 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         Helpers.require_library('asciimath', true, :warn).nil? ? :unavailable : :loaded
       end
 
-      # QUESTION should we wrap the <pre> in either <div> or <figure>?
       def convert_literal node
-        %(<pre class="screen">#{node.content}</pre>)
+        id_attribute = node.id ? %( id="#{node.id}") : ''
+        title_element = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>) : ''
+        %(<figure#{id_attribute} class="literalblock#{prepend_space node.role}">
+#{title_element}
+<div class="content"><pre class="screen">#{node.content}</pre></div>
+</figure>)
       end
 
       def convert_page_break _node
