@@ -79,6 +79,15 @@ describe Asciidoctor::Epub3::Converter do
       expect(appendix.content).to include('Appendix A: Appendix')
     end
 
+    it 'supports quotes in section titles' do
+      book, = to_epub <<~EOS
+= "Title"
+      EOS
+      chapter = book.item_by_href '_title.xhtml'
+      expect(chapter).not_to be_nil
+      expect(chapter.content).to include('<section class="chapter" title="&quot;Title&quot;')
+    end
+
     it 'supports section numbers' do
       book, = to_epub <<~EOS
 = Title
