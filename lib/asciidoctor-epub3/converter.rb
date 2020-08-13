@@ -328,7 +328,7 @@ module Asciidoctor
         chapter_item = @book.add_ordered_item %(#{docid}.xhtml)
 
         doctitle = node.document.doctitle partition: true, use_fallback: true
-        doctitle_sanitized = sanitize_xml doctitle.combined, :cdata
+        chapter_title = doctitle.combined
 
         if node.context == :document && doctitle.subtitle?
           title = %(#{doctitle.main} )
@@ -337,7 +337,7 @@ module Asciidoctor
           # HACK: until we get proper handling of title-only in CSS
           title = ''
           subtitle = get_numbered_title node
-          doctitle_sanitized = sanitize_xml subtitle, :cdata
+          chapter_title = subtitle
         else
           title = nil
           subtitle = nil
@@ -387,7 +387,7 @@ module Asciidoctor
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
 <head>
 <meta charset="UTF-8"/>
-<title>#{doctitle_sanitized}</title>
+<title>#{chapter_title}</title>
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
 <link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
 #{icon_css_head}<script type="text/javascript"><![CDATA[
@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         lines << %(</head>
 <body>
-<section class="chapter" title="#{doctitle_sanitized}" epub:type="chapter" id="#{docid}">
+<section class="chapter" title=#{chapter_title.encode xml: :attr} epub:type="chapter" id="#{docid}">
 #{header}
         #{content})
 
@@ -449,8 +449,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
           div_classes = [%(sect#{node.level}), node.role].compact
           title = get_numbered_title node
-          title_sanitized = xml_sanitize title
-          %(<section class="#{div_classes * ' '}" title="#{title_sanitized}"#{epub_type_attr}>
+          %(<section class="#{div_classes * ' '}" title=#{title.encode xml: :attr}#{epub_type_attr}>
 <h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? '' : %(
           #{content})}
 </section>)
