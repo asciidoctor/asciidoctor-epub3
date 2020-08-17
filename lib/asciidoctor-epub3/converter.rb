@@ -715,10 +715,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         table_styles = []
         if (autowidth = node.option? 'autowidth') && !(node.attr? 'width')
           table_classes << 'fit-content'
-        elsif (tablewidth = node.attr 'tablepcwidth') == 100
-          table_classes << 'stretch'
         else
-          table_styles << %(width: #{tablewidth}%;)
+          table_styles << %(width: #{node.attr 'tablepcwidth'}%;)
         end
         table_class_attr = %( class="#{table_classes * ' '}")
         table_style_attr = !table_styles.empty? ? %( style="#{table_styles * '; '}") : ''
