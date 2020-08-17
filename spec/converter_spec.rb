@@ -262,6 +262,14 @@ Text
       expect(toc.href).to eq('toc.xhtml')
     end
 
+    it "doesn't crash when sees inline toc" do
+      to_epub <<~EOS
+= Title
+
+toc::[]
+      EOS
+    end
+
     it 'supports video' do
       book, = to_epub fixture_file('video/book.adoc')
       chapter = book.item_by_href '_chapter.xhtml'

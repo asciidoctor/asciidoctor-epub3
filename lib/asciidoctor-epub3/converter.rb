@@ -105,7 +105,7 @@ module Asciidoctor
         if respond_to? method_name
           send method_name, node
         else
-          logger.warn %(#{::File.basename node.attr('docfile')}: conversion missing in backend #{@backend} for #{name})
+          logger.warn %(conversion missing in backend #{@backend} for #{name})
           nil
         end
       end
