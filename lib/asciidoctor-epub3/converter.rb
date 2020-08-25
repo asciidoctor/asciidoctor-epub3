@@ -39,9 +39,9 @@ module Asciidoctor
 
         if @format == :kf8
           # QUESTION shouldn't we validate this epub file too?
-          distill_epub_to_mobi epub_file, target, @compress, @kindlegen_path
+          distill_epub_to_mobi epub_file, target, @compress
         elsif @validate
-          validate_epub epub_file, @epubcheck_path
+          validate_epub epub_file
         end
       end
 
@@ -1627,10 +1627,10 @@ body > svg {
           .to_ios
       end
 
-      def get_kindlegen_command kindlegen_path
-        unless kindlegen_path.nil?
-          logger.debug %(Using ebook-kindlegen-path attribute: #{kindlegen_path})
-          return [kindlegen_path]
+      def get_kindlegen_command
+        unless @kindlegen_path.nil?
+          logger.debug %(Using ebook-kindlegen-path attribute: #{@kindlegen_path})
+          return [@kindlegen_path]
         end
 
         unless (result = ENV['KINDLEGEN']).nil?
@@ -1642,11 +1642,11 @@ body > svg {
         [%(kindlegen#{::Gem.win_platform? ? '.exe' : ''})]
       end
 
-      def distill_epub_to_mobi epub_file, target, compress, kindlegen_path
+      def distill_epub_to_mobi epub_file, target, compress
         mobi_file = ::File.basename target.sub(EpubExtensionRx, '.mobi')
         compress_flag = KindlegenCompression[compress ? (compress.empty? ? '1' : compress.to_s) : '0']
 
-        argv = get_kindlegen_command(kindlegen_path) + ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
+        argv = get_kindlegen_command + ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
         begin
           # This duplicates Kindlegen.run, but we want to override executable
           out, err, res = Open3.capture3(*argv) do |r|
@@ -1671,10 +1671,10 @@ body > svg {
         end
       end
 
-      def get_epubcheck_command epubcheck_path
-        unless epubcheck_path.nil?
-          logger.debug %(Using ebook-epubcheck-path attribute: #{epubcheck_path})
-          return [epubcheck_path]
+      def get_epubcheck_command
+        unless @epubcheck_path.nil?
+          logger.debug %(Using ebook-epubcheck-path attribute: #{@epubcheck_path})
+          return [@epubcheck_path]
         end
 
         unless (result = ENV['EPUBCHECK']).nil?
@@ -1692,8 +1692,8 @@ body > svg {
         end
       end
 
-      def validate_epub epub_file, epubcheck_path
-        argv = get_epubcheck_command(epubcheck_path) + ['-w', epub_file]
+      def validate_epub epub_file
+        argv = get_epubcheck_command + ['-w', epub_file]
         begin
           out, err, res = Open3.capture3(*argv)
         rescue Errno::ENOENT => e
