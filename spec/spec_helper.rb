@@ -69,13 +69,8 @@ RSpec.configure do |config|
     skip 'Logger is unavailable on Asciidoctor < 1.5.7' unless has_logger?
   end
 
-  def darwin_platform?
-    RbConfig::CONFIG['host_os'] =~ /darwin/
-  end
-
   def skip_unless_has_kindlegen
-    # TODO: https://github.com/asciidoctor/asciidoctor-epub3/issues/236
-    skip '#236: Kindlegen is unavailable for 64-bit MacOS' if darwin_platform?
+    skip 'KindleGen is gone: https://github.com/asciidoctor/asciidoctor-epub3/issues/363'
   end
 
   def convert input, opts = {}
