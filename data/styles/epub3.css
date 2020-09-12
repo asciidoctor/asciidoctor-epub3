@@ -248,6 +248,13 @@ body a:visited {
   -webkit-text-fill-color: #333332;
 }
 
+/* change link color for visited in iBooks Night mode */
+:root[__ibooks_internal_theme*="Night"] body a:visited {
+    color: initial;
+    /* hack for font color in iBooks */
+    -webkit-text-fill-color: initial;
+}
+
 code.literal {
   /* don't let it affect line spacing */
   /* disable since M+ 1mn won't interrupt line height */
