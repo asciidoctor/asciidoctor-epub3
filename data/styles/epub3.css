@@ -17,7 +17,6 @@ html {
   /* set the em base (and relative em anchor) by setting the font-size on html */
   /* TODO set font-size > 100% except for Kindle */
   font-size: 100%;
-  -webkit-text-size-adjust: 100%;
 }
 
 /* don't set margin on body as that's how many readers frame reading area */
