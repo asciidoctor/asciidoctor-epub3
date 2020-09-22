@@ -4,6 +4,8 @@ A
 
 image:wolpertinger.jpg[] B
 
+image:wolpertinger.jpg[] B
+
 Z
 
 [separator=¦]

@@ -153,7 +153,7 @@ module Asciidoctor
         @epubcheck_path = node.attr 'ebook-epubcheck-path'
         @xrefs_seen = ::Set.new
         @icon_names = []
-        @media_files = []
+        @media_files = {}
         @footnotes = []
 
         @book = GEPUB::Book.new 'EPUB/package.opf'
@@ -267,14 +267,14 @@ module Asciidoctor
         docimagesdir = (node.attr 'imagesdir', '.').chomp '/'
         docimagesdir = (docimagesdir == '.' ? nil : %(#{docimagesdir}/))
 
-        @media_files.each do |file|
-          if file[:name].start_with? %(#{docimagesdir}jacket/cover.)
-            logger.warn %(path is reserved for cover artwork: #{file[:name]}; skipping file found in content)
+        @media_files.each do |name, file|
+          if name.start_with? %(#{docimagesdir}jacket/cover.)
+            logger.warn %(path is reserved for cover artwork: #{name}; skipping file found in content)
           elsif file[:path].nil? || File.readable?(file[:path])
-            mime_types = MIME::Types.type_for file[:name]
+            mime_types = MIME::Types.type_for name
             mime_types.delete_if {|x| x.media_type != file[:media_type] }
             preferred_mime_type = mime_types.empty? ? nil : mime_types[0].content_type
-            @book.add_item file[:name], content: file[:path], media_type: preferred_mime_type
+            @book.add_item name, content: file[:path], media_type: preferred_mime_type
           else
             logger.error %(#{File.basename node.attr('docfile')}: media file not found or not readable: #{file[:path]})
           end
@@ -979,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           end
         end
         # We need *both* virtual and physical image paths. Unfortunately, references[:images] only has one of them.
-        @media_files << { name: target, path: fs_path, media_type: media_type }
+        @media_files[target] ||= { path: fs_path, media_type: media_type }
       end
 
       def resolve_image_attrs node

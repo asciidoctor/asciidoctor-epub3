@@ -30,6 +30,11 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(book).to have_item_with_href('imagez/wolpertinger.jpg')
   end
 
+  it 'does not duplicate images in manifest' do
+    book, = to_epub fixture_file('inline-image/book.adoc')
+    expect(book.items.keys.select {|k| k.include? 'wolpertinger' }.size).to eq(1)
+  end
+
   it 'converts font-based icons to CSS' do
     book, = to_epub fixture_file('icon/book.adoc')
     chapter = book.item_by_href '_chapter.xhtml'

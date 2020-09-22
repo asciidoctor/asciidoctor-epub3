@@ -11,6 +11,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * fix quotes not being properly escaped in section titles (#358)
 * fix crash when encountering unsupported Asciidoctor node (#360)
 * add support for 100%-wide table (#356)
+* do not add multiple entries for same media files in book manifest (#370)
 
 == 1.5.0.alpha.18 (2020-07-27) - @slonopotamus
 
