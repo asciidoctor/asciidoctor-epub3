@@ -566,6 +566,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_listing node
+        id_attribute = node.id ? %( id="#{node.id}") : ''
         nowrap = (node.option? 'nowrap') || !(node.document.attr? 'prewrap')
         if node.style == 'source'
           lang = node.attr 'language'
@@ -588,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         figure_classes = ['listing']
         figure_classes << 'coalesce' if node.option? 'unbreakable'
         title_div = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>) : ''
-        %(<figure class="#{figure_classes * ' '}">#{title_div}
+        %(<figure#{id_attribute} class="#{figure_classes * ' '}">#{title_div}
         #{syntax_hl ? (syntax_hl.format node, lang, opts) : pre_open + (node.content || '') + pre_close}
 </figure>)
       end

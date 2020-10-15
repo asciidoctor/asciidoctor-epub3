@@ -13,6 +13,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add support for 100%-wide table (#356)
 * do not add multiple entries for same media files in book manifest (#370)
 * do not add bogus entries to manifest when `:data-uri:` attribute is set (#371)
+* add id support for listing blocks (#372)
 
 == 1.5.0.alpha.18 (2020-07-27) - @slonopotamus
 
