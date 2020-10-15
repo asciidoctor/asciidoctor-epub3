@@ -532,14 +532,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         type = node.attr 'name'
         epub_type = case type
                     when 'tip'
-                      'help'
-                    when 'note'
-                      'note'
-                    when 'important', 'warning', 'caution'
-                      'warning'
+                      'tip'
+                    when 'important', 'warning', 'caution', 'note'
+                      'notice'
                     else
                       logger.warn %(unknown admonition type: #{type})
-                      'note'
+                      'notice'
                     end
         %(<aside#{id_attr} class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
 #{title_el}<div class="content">
