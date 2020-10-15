@@ -967,6 +967,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           epub_properties << 'svg' unless epub_properties.include? 'svg'
         end
 
+        return if target.start_with? 'data:'
+
         if Asciidoctor::Helpers.uriish? target
           # We need to add both local and remote media files to manifest
           fs_path = nil
