@@ -401,11 +401,13 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 ]]></script>)]
 
         syntax_hl = node.document.syntax_highlighter
+        epub_type_attr = node.respond_to?(:section) && node.sectname != 'section' ? %( epub:type="#{node.sectname}") : ''
+
         lines << (syntax_hl.docinfo :head, node, linkcss: linkcss, self_closing_tag_slash: '/') if syntax_hl&.docinfo? :head
 
         lines << %(</head>
 <body>
-<section class="chapter" title=#{chapter_title.encode xml: :attr} epub:type="chapter" id="#{docid}">
+<section class="chapter" title=#{chapter_title.encode xml: :attr}#{epub_type_attr} id="#{docid}">
 #{header}
         #{content})
 
@@ -446,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def convert_section node
         if add_chapter(node).nil?
           hlevel = node.level
-          epub_type_attr = node.special ? %( epub:type="#{node.sectname}") : ''
+          epub_type_attr = node.sectname != 'section' ? %( epub:type="#{node.sectname}") : ''
           div_classes = [%(sect#{node.level}), node.role].compact
           title = get_numbered_title node
           %(<section class="#{div_classes * ' '}" title=#{title.encode xml: :attr}#{epub_type_attr}>
