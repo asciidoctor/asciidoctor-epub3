@@ -143,6 +143,10 @@ module Asciidoctor
         title
       end
 
+      def icon_names
+        @icon_names ||= []
+      end
+
       def convert_document node
         @format = node.attr('ebook-format').to_sym
 
@@ -152,7 +156,6 @@ module Asciidoctor
         @kindlegen_path = node.attr 'ebook-kindlegen-path'
         @epubcheck_path = node.attr 'ebook-epubcheck-path'
         @xrefs_seen = ::Set.new
-        @icon_names = []
         @media_files = {}
         @footnotes = []
 
@@ -360,10 +363,10 @@ module Asciidoctor
 
         # NOTE must run after content is resolved
         # TODO perhaps create dynamic CSS file?
-        if @icon_names.empty?
+        if icon_names.empty?
           icon_css_head = ''
         else
-          icon_defs = @icon_names.map {|name|
+          icon_defs = icon_names.map {|name|
             %(.i-#{name}::before { content: "#{FontIconMap.unicode name}"; })
           } * LF
           icon_css_head = %(<style>
@@ -1169,7 +1172,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       def convert_inline_image node
         if node.type == 'icon'
-          @icon_names << (icon_name = node.target)
+          icon_names << (icon_name = node.target)
           i_classes = ['icon', %(i-#{icon_name})]
           i_classes << %(icon-#{node.attr 'size'}) if node.attr? 'size'
           i_classes << %(icon-flip-#{(node.attr 'flip')[0]}) if node.attr? 'flip'

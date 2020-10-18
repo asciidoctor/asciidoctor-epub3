@@ -124,6 +124,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * upgrade pygments.rb to 1.2.1 (#216)
 * gepub dependency is no longer locked to 1.0.2 and will use latest 1.0.x version
 * fix `-a ebook-validate` not working on Windows (#232)
+* fix crash when inline pass macro `m` contains an icon (#375)
 
 == 1.5.0.alpha.9 (2019-04-04) - @mojavelinux
 
