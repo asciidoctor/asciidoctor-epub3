@@ -34,4 +34,7 @@ jobs:
       - name: Build
         run: bundle install --jobs 4 --retry 3
       - name: Test
+        env:
+          # pygments.rb often times out on MacOS nodes, leading to CI failures
+          MENTOS_TIMEOUT: 60
         run: bundle exec rake spec
