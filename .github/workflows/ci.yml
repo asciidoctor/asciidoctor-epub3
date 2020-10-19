@@ -30,7 +30,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Set up Asciidoctor
         if: matrix.asciidoctor != ''
-        run: echo "::set-env name=ASCIIDOCTOR_VERSION::${{ matrix.asciidoctor }}"
+        run: echo "ASCIIDOCTOR_VERSION=${{ matrix.asciidoctor }}" >> "${GITHUB_ENV}"
       - name: Build
         run: bundle install --jobs 4 --retry 3
       - name: Test
