@@ -16,6 +16,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add id support for listing blocks (#372)
 * stop using deprecated `epub:type` for admonitions (#373)
 * fix `epub:type` attributes for special sections (#374)
+* fix font resize not working in iBooks (#368)
+* fix visited link color in iBooks night mode (#366)
 
 == 1.5.0.alpha.18 (2020-07-27) - @slonopotamus
 
@@ -125,7 +127,6 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * gepub dependency is no longer locked to 1.0.2 and will use latest 1.0.x version
 * fix `-a ebook-validate` not working on Windows (#232)
 * fix crash when inline pass macro `m` contains an icon (#375)
-* fix font resize not working in Apple Books (#368)
 
 == 1.5.0.alpha.9 (2019-04-04) - @mojavelinux
 
