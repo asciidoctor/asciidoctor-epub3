@@ -242,12 +242,6 @@ body:first-of-type a:link {
   background-position: 0 1.2em;
 }
 
-body a:visited {
-  color: #333332;
-  /* hack for font color in iBooks */
-  -webkit-text-fill-color: #333332;
-}
-
 code.literal {
   /* don't let it affect line spacing */
   /* disable since M+ 1mn won't interrupt line height */
@@ -682,12 +676,6 @@ div.abstract > p {
   color: #333332;
   font-size: 1.05em; /* or 1.1em? */
   line-height: 1.75;
-}
-
-div.abstract > p a:link {
-  color: #333332;
-  /* hack for font color in iBooks */
-  -webkit-text-fill-color: #333332;
 }
 
 div.abstract > p:first-child::first-line {
