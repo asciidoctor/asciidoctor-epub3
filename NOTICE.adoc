@@ -36,7 +36,7 @@ Noto Serif font::
 
   - https://code.google.com/p/noto/
 
-Font Awesome icon font (v5.12.0)::
+Font Awesome icon font (v5.15.1)::
   Font Awesome, the iconic font designed for Bootstrap by David Gandy, is used for the admonition icons and other icons in author's content and bundled in the EPUB3 archive.
   Font Awesome is fully open source and GPL compatible.
   The font is licensed under the SIL Open Font 1.1 License (OFL).
