@@ -36,7 +36,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_development_dependency 'pygments.rb', '~> 1.2.0'
   s.add_development_dependency 'rake', '~> 13.0.0'
   s.add_development_dependency 'rouge', '~> 3.0'
-  s.add_development_dependency 'rspec', '~> 3.9.0'
+  s.add_development_dependency 'rspec', '~> 3.10.0'
   s.add_development_dependency 'rubocop', '~> 0.81.0'
   s.add_development_dependency 'rubocop-rspec', '~> 1.38.0'
 
