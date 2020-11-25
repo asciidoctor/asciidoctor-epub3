@@ -3,3 +3,5 @@
 image::square.png[100x100,100,100]
 image::square.png[50x50,50,50]
 image::square.png[50x?,50]
+image::square.png[25%x?,25%]
+image::square.png[invalid,25em]

@@ -992,12 +992,21 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         img_attrs = []
         img_attrs << %(alt="#{node.attr 'alt'}") if node.attr? 'alt'
 
-        width = node.attr 'scaledwidth'
-        width = node.attr 'width' if width.nil?
-
         # Unlike browsers, Calibre/Kindle *do* scale image if only height is specified
         # So, in order to match browser behavior, we just always omit height
-        img_attrs << %(style="width: #{width}") unless width.nil?
+
+        if (scaledwidth = node.attr 'scaledwidth')
+          img_attrs << %(style="width: #{scaledwidth}")
+        elsif (width = node.attr 'width')
+          # HTML5 spec (and EPUBCheck) only allows pixels in width, but browsers also accept percents
+          # and there are multiple AsciiDoc files in the wild that have width=percents%
+          # So, for compatibility reasons, output percentage width as a CSS style
+          if width[/^\d+%$/]
+            img_attrs << %(style="width: #{width}")
+          else
+            img_attrs << %(width="#{width}")
+          end
+        end
 
         img_attrs
       end

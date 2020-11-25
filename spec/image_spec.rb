@@ -68,6 +68,8 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(chapter.content).to include '<img src="square.png" alt="100x100" width="100" />'
     expect(chapter.content).to include '<img src="square.png" alt="50x50" width="50" />'
     expect(chapter.content).to include '<img src="square.png" alt="50x?" width="50" />'
+    expect(chapter.content).to include '<img src="square.png" alt="25%x?" style="width: 25%" />'
+    expect(chapter.content).to include '<img src="square.png" alt="invalid" width="25em" />'
   end
 
   # If this test fails for you, make sure you're using gepub >= 1.0.11
