@@ -997,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         # Unlike browsers, Calibre/Kindle *do* scale image if only height is specified
         # So, in order to match browser behavior, we just always omit height
-        img_attrs << %(width="#{width}") unless width.nil?
+        img_attrs << %(style="width: #{width}") unless width.nil?
 
         img_attrs
       end
