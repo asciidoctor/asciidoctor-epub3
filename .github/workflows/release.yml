@@ -13,12 +13,6 @@ jobs:
       with:
         ruby-version: 2.7
     - name: Publish to RubyGems.org
-      run: |
-        mkdir -p $HOME/.gem
-        touch $HOME/.gem/credentials
-        chmod 0600 $HOME/.gem/credentials
-        printf -- "---\n:rubygems_api_key: ${RUBYGEMS_API_KEY}\n" > $HOME/.gem/credentials
-        gem build *.gemspec
-        gem push *.gem
-      env:
-        RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
+      uses: dawidd6/action-publish-gem@v1
+      with:
+        api_key: ${{ secrets.RUBYGEMS_API_KEY }}
