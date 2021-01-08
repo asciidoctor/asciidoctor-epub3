@@ -53,7 +53,4 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Test
-        env:
-          # pygments.rb often times out on MacOS nodes, leading to CI failures
-          MENTOS_TIMEOUT: 60
         run: bundle exec rake spec

@@ -17,8 +17,6 @@ describe 'Asciidoctor::Epub3::Converter - Highlight' do
   end
 
   it 'highlights code listings with pygments.rb' do
-    skip 'pygments.rb hangs on JRuby for Windows: https://github.com/asciidoctor/asciidoctor-epub3/issues/253' if RUBY_ENGINE == 'jruby' && Gem.win_platform?
-
     book, = to_epub fixture_file('source_highlight.adoc'), attributes: { 'source-highlighter' => 'pygments' }
     article = book.item_by_href 'source_highlight.xhtml'
     expect(article).not_to be_nil
