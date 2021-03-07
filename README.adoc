@@ -48,6 +48,7 @@ endif::[]
 :uri-android-sdk: https://developer.android.com/sdk/index.html
 
 ifdef::status[]
+image:https://img.shields.io/badge/zulip-join_chat-brightgreen.svg[project chat,link=https://asciidoctor.zulipchat.com/]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
 image:{uri-repo}/workflows/CI/badge.svg?branch=master[GitHub Actions,link={uri-ci}]
 endif::[]
