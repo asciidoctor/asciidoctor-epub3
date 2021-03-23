@@ -13,5 +13,5 @@ end
 
 group :optional do
   # epubcheck-ruby might be safe to be converted into runtime dependency, but could have issues when packaged into asciidoctorj-epub3
-  gem 'epubcheck-ruby', '~> 4.2.4.0'
+  gem 'epubcheck-ruby', '~> 4.2.5.0'
 end
