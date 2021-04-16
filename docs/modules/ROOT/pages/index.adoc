@@ -1,11 +1,10 @@
+:project-name: Asciidoctor EPUB3
+:project-handle: asciidoctor-epub3
 = {project-name} Documentation
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
 // Settings:
 :navtitle: Introduction
 :experimental:
-// Aliases:
-:project-name: Asciidoctor EPUB3
-:project-handle: asciidoctor-epub3
 // URIs:
 :uri-asciidoctor: https://asciidoctor.org/
 :uri-idpf: http://www.idpf.org/
