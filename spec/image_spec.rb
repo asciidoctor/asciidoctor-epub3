@@ -49,11 +49,20 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
 
   it 'adds front cover image' do
     book, = to_epub fixture_file('front-cover-image/book.adoc')
-    cover_image = book.item_by_href 'jacket/cover.png'
+    cover_image = book.item_by_href 'jacket/front-cover.png'
     expect(cover_image).not_to be_nil
-    cover_page = book.item_by_href 'cover.xhtml'
+    cover_page = book.item_by_href 'front-cover.xhtml'
     expect(cover_page).not_to be_nil
-    expect(cover_page.content).to include '<image width="1050" height="1600" xlink:href="jacket/cover.png"/>'
+    expect(cover_page.content).to include '<image width="1050" height="1600" xlink:href="jacket/front-cover.png"/>'
+  end
+
+  it 'adds back cover image' do
+    book, = to_epub fixture_file('back-cover-image/book.adoc')
+    cover_image = book.item_by_href 'jacket/back-cover.png'
+    expect(cover_image).not_to be_nil
+    cover_page = book.item_by_href 'back-cover.xhtml'
+    expect(cover_page).not_to be_nil
+    expect(cover_page.content).to include '<image width="1050" height="1600" xlink:href="jacket/back-cover.png"/>'
   end
 
   it "doesn't crash if cover image points to a directory" do

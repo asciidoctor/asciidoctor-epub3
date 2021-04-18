@@ -1,0 +1,5 @@
+= Book with front cover image
+:doctype: book
+:back-cover-image: default-cover.png
+
+Text

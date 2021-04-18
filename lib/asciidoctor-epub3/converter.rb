@@ -227,8 +227,8 @@ module Asciidoctor
         # https://idpf.github.io/epub-vocabs/structure/
         landmarks = []
 
-        cover_page = add_cover_page node
-        landmarks << { type: 'cover', href: cover_page.href, title: 'Cover' } unless cover_page.nil?
+        front_cover = add_cover_page node, 'front-cover'
+        landmarks << { type: 'cover', href: front_cover.href, title: 'Front Cover' } unless front_cover.nil?
 
         front_matter_page = add_front_matter_page node
         landmarks << { type: 'frontmatter', href: front_matter_page.href, title: 'Front Matter' } unless front_matter_page.nil?
@@ -252,6 +252,9 @@ module Asciidoctor
           toc_items = [node]
           add_chapter node
         end
+
+        _back_cover = add_cover_page node, 'back-cover'
+        # TODO: add landmark for back cover? But what epub:type?
 
         landmarks << { type: 'bodymatter', href: %(#{get_chapter_name toc_items[0]}.xhtml), title: 'Start of Content' } unless toc_items.empty?
 
@@ -1347,20 +1350,22 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         nil
       end
 
-      def add_cover_page doc
-        return nil if (image_path = doc.attr 'front-cover-image').nil?
+      def add_cover_page doc, name
+        image_attr_name = %(#{name}-image)
+
+        return nil if (image_path = doc.attr image_attr_name).nil?
 
         imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
         imagesdir = (imagesdir == '.' ? '' : %(#{imagesdir}/))
 
         image_attrs = {}
         if (image_path.include? ':') && image_path =~ ImageMacroRx
-          logger.warn %(deprecated block macro syntax detected in front-cover-image attribute) if image_path.start_with? 'image::'
+          logger.warn %(deprecated block macro syntax detected in :#{attr_name}: attribute) if image_path.start_with? 'image::'
           image_path = %(#{imagesdir}#{$1})
           (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
         end
 
-        image_href = %(#{imagesdir}jacket/cover#{::File.extname image_path})
+        image_href = %(#{imagesdir}jacket/#{name}#{::File.extname image_path})
 
         workdir = doc.attr 'docdir'
         workdir = '.' if workdir.nil_or_empty?
@@ -1368,7 +1373,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         begin
           @book.add_item(image_href, content: File.join(workdir, image_path)).cover_image
         rescue => e
-          logger.error %(#{::File.basename doc.attr('docfile')}: error adding front cover image. Make sure that :front-cover-image: attribute points to a valid image file. #{e})
+          logger.error %(#{::File.basename doc.attr('docfile')}: error adding cover image. Make sure that :#{image_attr_name}: attribute points to a valid image file. #{e})
           return nil
         end
 
@@ -1409,7 +1414,7 @@ body > svg {
 </svg></body>
 </html>).to_ios
 
-        @book.add_ordered_item 'cover.xhtml', content: content, id: 'cover'
+        @book.add_ordered_item %(#{name}.xhtml), content: content, id: name
       end
 
       def get_frontmatter_files doc, workdir

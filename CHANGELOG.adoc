@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * update Font Awesome Solid to 5.15.1
 * use CSS for image size scaling instead of `width` attribute. #382
 * use pygments.rb 2.0.0 in CI
+* add support for `:back-cover-image:` document attribute (#396)
 
 == 1.5.0.alpha.19 (2020-10-21) - @slonopotamus
 
