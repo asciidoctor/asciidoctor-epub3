@@ -1360,7 +1360,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         image_attrs = {}
         if (image_path.include? ':') && image_path =~ ImageMacroRx
-          logger.warn %(deprecated block macro syntax detected in :#{attr_name}: attribute) if image_path.start_with? 'image::'
+          logger.warn %(deprecated block macro syntax detected in :#{image_attr_name}: attribute) if image_path.start_with? 'image::'
           image_path = %(#{imagesdir}#{$1})
           (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
         end
