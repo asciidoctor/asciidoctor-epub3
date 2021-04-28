@@ -149,10 +149,10 @@ You can get {project-name} by <<Install the Published Gem,installing the publish
 
 === Install the Published Gem
 
-{project-name} is published as a pre-release on RubyGems.org.
+{project-name} is published on RubyGems.org.
 You can install the published gem using the following command:
 
- $ NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install asciidoctor-epub3 --pre
+ $ NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install asciidoctor-epub3
 
 This optional environment variable tells the gem installer to link against the C libraries on the system, if available, instead of compiling the libraries from scratch.
 This speeds up the installation of Nokogiri considerably.

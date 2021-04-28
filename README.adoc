@@ -26,7 +26,7 @@ You can install the published gem using the following command:
 
 [source,shell script]
 ----
-$ gem install --pre asciidoctor-epub3
+$ gem install asciidoctor-epub3
 ----
 
 Assuming the gem and its dependencies install properly, verify you can run the `{project-handle}` script:
