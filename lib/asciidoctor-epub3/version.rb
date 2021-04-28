@@ -2,6 +2,6 @@
 
 module Asciidoctor
   module Epub3
-    VERSION = '1.5.1'
+    VERSION = '1.5.2.dev'
   end
 end
