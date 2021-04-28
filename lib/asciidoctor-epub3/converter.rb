@@ -1658,8 +1658,15 @@ body > svg {
           return [result]
         end
 
-        logger.debug 'Using KindleGen from PATH'
-        [%(kindlegen#{::Gem.win_platform? ? '.exe' : ''})]
+        begin
+          require 'kindlegen' unless defined? ::Kindlegen
+          result = ::Kindlegen.command.to_s
+          logger.debug %(Using KindleGen from gem: #{result})
+          [result]
+        rescue LoadError => e
+          logger.debug %(#{e}; Using KindleGen from PATH)
+          [%(kindlegen#{::Gem.win_platform? ? '.exe' : ''})]
+        end
       end
 
       def distill_epub_to_mobi epub_file, target, compress

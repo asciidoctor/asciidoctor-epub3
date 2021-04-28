@@ -30,7 +30,8 @@ jobs:
     needs: activate
     strategy:
       matrix:
-        ruby: [jruby, '2.3', '2.4', '2.5', '2.6', '2.7', '3.0']
+        # TODO: Use 'jruby-9.2' when https://github.com/jruby/jruby/issues/6648 is fixed
+        ruby: ['jruby-9.2.16', '2.4', '2.5', '2.6', '2.7', '3.0']
         os: [ubuntu-latest, windows-latest]
         asciidoctor: ['']
         include:

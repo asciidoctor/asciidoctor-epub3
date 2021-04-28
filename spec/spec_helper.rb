@@ -70,7 +70,9 @@ RSpec.configure do |config|
   end
 
   def skip_unless_has_kindlegen
-    skip 'KindleGen is gone: https://github.com/asciidoctor/asciidoctor-epub3/issues/363'
+    require 'kindlegen'
+  rescue LoadError
+    skip 'kindlegen gem is unavailable'
   end
 
   def convert input, opts = {}
