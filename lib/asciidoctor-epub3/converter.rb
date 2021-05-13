@@ -38,7 +38,7 @@ module Asciidoctor
         end
 
         if @format == :kf8
-          # QUESTION shouldn't we validate this epub file too?
+          # QUESTION: shouldn't we validate this epub file too?
           distill_epub_to_mobi epub_file, target, @compress
         elsif @validate
           validate_epub epub_file
@@ -78,7 +78,7 @@ module Asciidoctor
       ToHtmlSpecialCharsRx = /[#{ToHtmlSpecialCharsMap.keys.join}]/
 
       EpubExtensionRx = /\.epub$/i
-      KindlegenCompression = ::Hash['0', '-c0', '1', '-c1', '2', '-c2', 'none', '-c0', 'standard', '-c1', 'huffdic', '-c2']
+      KindlegenCompression = { '0' => '-c0', '1' => '-c1', '2' => '-c2', 'none' => '-c0', 'standard' => '-c1', 'huffdic' => '-c2' }
 
       (QUOTE_TAGS = {
         monospaced: ['<code>', '</code>', true],
@@ -127,9 +127,10 @@ module Asciidoctor
           title = node.captioned_title
         elsif node.respond_to?(:numbered) && node.numbered && level <= (doc_attrs['sectnumlevels'] || 3).to_i
           if level < 2 && node.document.doctype == 'book'
-            if node.sectname == 'chapter'
+            case node.sectname
+            when 'chapter'
               title = %(#{(signifier = doc_attrs['chapter-signifier']) ? "#{signifier} " : ''}#{node.sectnum} #{node.title})
-            elsif node.sectname == 'part'
+            when 'part'
               title = %(#{(signifier = doc_attrs['part-signifier']) ? "#{signifier} " : ''}#{node.sectnum nil, ':'} #{node.title})
             else
               title = %(#{node.sectnum} #{node.title})
@@ -171,7 +172,7 @@ module Asciidoctor
         # replace with next line once the attributes argument is supported
         #unique_identifier doc.id, 'pub-id', 'uuid', 'scheme' => 'xsd:string'
 
-        # NOTE we must use :plain_text here since gepub reencodes
+        # NOTE: we must use :plain_text here since gepub reencodes
         @book.add_title sanitize_doctitle_xml(node, :plain_text), id: 'pub-title'
 
         # see https://www.w3.org/publishing/epub3/epub-packages.html#sec-opf-dccreator
@@ -181,7 +182,7 @@ module Asciidoctor
         end
 
         publisher = node.attr 'publisher'
-        # NOTE Use producer as both publisher and producer if publisher isn't specified
+        # NOTE: Use producer as both publisher and producer if publisher isn't specified
         publisher = node.attr 'producer' if publisher.nil_or_empty?
         @book.publisher = publisher unless publisher.nil_or_empty?
 
@@ -266,7 +267,7 @@ module Asciidoctor
         # User is not supposed to see landmarks, so pass empty array here
         toc_item&.add_content postprocess_xhtml(nav_doc(node, toc_items, [], toclevels))
 
-        # NOTE gepub doesn't support building a ncx TOC with depth > 1, so do it ourselves
+        # NOTE: gepub doesn't support building a ncx TOC with depth > 1, so do it ourselves
         toc_ncx = ncx_doc node, toc_items, outlinelevels
         @book.add_item 'toc.ncx', content: toc_ncx.to_ios, id: 'ncx'
 
@@ -305,10 +306,8 @@ module Asciidoctor
 
       # FIXME: move to Asciidoctor::Helpers
       def sanitize_xml content, content_spec
-        if content_spec != :pcdata && (content.include? '<')
-          if (content = (content.gsub XmlElementRx, '').strip).include? ' '
-            content = content.tr_s ' ', ' '
-          end
+        if content_spec != :pcdata && (content.include? '<') && ((content = (content.gsub XmlElementRx, '').strip).include? ' ')
+          content = content.tr_s ' ', ' '
         end
 
         case content_spec
@@ -364,7 +363,7 @@ module Asciidoctor
         @xrefs_seen.clear
         content = node.content
 
-        # NOTE must run after content is resolved
+        # NOTE: must run after content is resolved
         # TODO perhaps create dynamic CSS file?
         if icon_names.empty?
           icon_css_head = ''
@@ -388,7 +387,7 @@ module Asciidoctor
         # in order to avoid style duplication across chapter files
         linkcss = true
 
-        # NOTE kindlegen seems to mangle the <header> element, so we wrap its content in a div
+        # NOTE: kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
 <head>
@@ -420,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         unless (fns = node.document.footnotes - @footnotes).empty?
           @footnotes += fns
 
-          # NOTE kindlegen seems to mangle the <footer> element, so we wrap its content in a div
+          # NOTE: kindlegen seems to mangle the <footer> element, so we wrap its content in a div
           lines << '<footer>
 <div class="chapter-footer">
 <div class="footnotes">'
@@ -454,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def convert_section node
         if add_chapter(node).nil?
           hlevel = node.level
-          epub_type_attr = node.sectname != 'section' ? %( epub:type="#{node.sectname}") : ''
+          epub_type_attr = node.sectname == 'section' ? '' : %( epub:type="#{node.sectname}")
           div_classes = [%(sect#{node.level}), node.role].compact
           title = get_numbered_title node
           %(<section class="#{div_classes * ' '}" title=#{title.encode xml: :attr}#{epub_type_attr}>
@@ -464,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      # NOTE embedded is used for AsciiDoc table cell content
+      # NOTE: embedded is used for AsciiDoc table cell content
       def convert_embedded node
         node.content
       end
@@ -472,10 +471,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       # TODO: support use of quote block as abstract
       def convert_preamble node
         if add_chapter(node).nil?
-          if (first_block = node.blocks[0]) && first_block.style == 'abstract'
-            convert_abstract first_block
-            # REVIEW: should we treat the preamble as an abstract in general?
-          elsif first_block && node.blocks.size == 1
+          if (first_block = node.blocks[0]) && first_block.style == 'abstract' ||
+              # REVIEW: should we treat the preamble as an abstract in general?
+              first_block && node.blocks.size == 1
             convert_abstract first_block
           else
             node.content
@@ -680,8 +678,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           footer_content << %(<cite title="#{citetitle_sanitized}">#{citetitle}</cite>)
         end
 
-        footer_tag = !footer_content.empty? ? %(
-<span class="attribution">~ #{footer_content * ', '}</span>) : ''
+        footer_tag = footer_content.empty? ? '' : %(
+<span class="attribution">~ #{footer_content * ', '}</span>)
         %(<div#{id_attr}#{class_attr}>
 <pre>#{node.content}#{footer_tag}</pre>
 </div>)
@@ -726,7 +724,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           table_styles << %(width: #{node.attr 'tablepcwidth'}%;)
         end
         table_class_attr = %( class="#{table_classes * ' '}")
-        table_style_attr = !table_styles.empty? ? %( style="#{table_styles * '; '}") : ''
+        table_style_attr = table_styles.empty? ? '' : %( style="#{table_styles * '; '}")
 
         lines << %(<table#{table_id_attr}#{table_class_attr}#{table_style_attr}>)
         lines << %(<caption>#{node.captioned_title}</caption>) if node.title?
@@ -768,7 +766,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                   "halign-#{cell.attr 'halign'}",
                   "valign-#{cell.attr 'valign'}",
                 ]
-                cell_class_attr = !cell_classes.empty? ? %( class="#{cell_classes * ' '}") : ''
+                cell_class_attr = cell_classes.empty? ? '' : %( class="#{cell_classes * ' '}")
                 cell_colspan_attr = cell.colspan ? %( colspan="#{cell.colspan}") : ''
                 cell_rowspan_attr = cell.rowspan ? %( rowspan="#{cell.rowspan}") : ''
                 cell_style_attr = (node.document.attr? 'cellbgcolor') ? %( style="background-color: #{node.document.attr 'cellbgcolor'}") : ''
@@ -806,7 +804,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                   when 'horizontal'
                     ['hdlist', node.role]
                   when 'itemized', 'ordered'
-                    # QUESTION should we just use itemized-list and ordered-list as the class here? or just list?
+                    # QUESTION: should we just use itemized-list and ordered-list as the class here? or just list?
                     ['dlist', %(#{node.style}-list), node.role]
                   else
                     ['description-list']
@@ -826,7 +824,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           lines << %(<#{list_tag_name}#{list_class_attr}#{list_tag_name == 'ol' && (node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
           node.items.each do |subjects, dd|
             # consists of one term (a subject) and supporting content
-            subject = [*subjects].first.text
+            subject = Array(subjects).first.text
             subject_plain = xml_sanitize subject, :plain
             subject_element = %(<strong class="subject">#{subject}#{subject_stop && subject_plain !~ TrailingPunctRx ? subject_stop : ''}</strong>)
             lines << '<li>'
@@ -874,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         else
           lines << '<dl>'
           node.items.each do |terms, dd|
-            [*terms].each do |dt|
+            Array(terms).each do |dt|
               lines << %(<dt>
 <span class="term">#{dt.text}</span>
 </dt>)
@@ -1107,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           id_attr = ''
 
           if (path = node.attributes['path'])
-            # NOTE non-nil path indicates this is an inter-document xref that's not included in current document
+            # NOTE: non-nil path indicates this is an inter-document xref that's not included in current document
             text = node.text || path
           elsif refid == '#'
             logger.warn %(#{::File.basename doc.attr('docfile')}: <<chapter#>> xref syntax isn't supported anymore. Use either <<chapter>> or <<chapter#anchor>>)
@@ -1140,12 +1138,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
           %(<a#{id_attr} href="#{target}" class="xref">#{text || "[#{refid}]"}</a>)
         when :ref
-          # NOTE id is used instead of target starting in Asciidoctor 2.0.0
+          # NOTE: id is used instead of target starting in Asciidoctor 2.0.0
           %(<a id="#{node.target || node.id}"></a>)
         when :link
           %(<a href="#{node.target}" class="link">#{node.text}</a>)
         when :bibref
-          # NOTE reftext is no longer enclosed in [] starting in Asciidoctor 2.0.0
+          # NOTE: reftext is no longer enclosed in [] starting in Asciidoctor 2.0.0
           # NOTE id is used instead of target starting in Asciidoctor 2.0.0
           if (reftext = node.reftext)
             reftext = %([#{reftext}]) unless reftext.start_with? '['
@@ -1216,7 +1214,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       def convert_inline_menu node
         menu = node.attr 'menu'
-        # NOTE we swap right angle quote with chevron right from FontAwesome using CSS
+        # NOTE: we swap right angle quote with chevron right from FontAwesome using CSS
         caret = %(#{NoBreakSpace}<span class="caret">#{RightAngleQuote}</span> )
         if !(submenus = node.attr 'submenus').empty?
           submenu_path = submenus.map {|submenu| %(<span class="submenu">#{submenu}</span>#{caret}) }.join.chop
@@ -1308,7 +1306,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         # TODO: improve design/UX of custom theme functionality, including custom fonts
 
         if format == :kf8
-          # NOTE add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
+          # NOTE: add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
           @book.add_item 'styles/epub3.css', content: '@import url("epub3-proxied.css");'.to_ios
           @book.add_item 'styles/epub3-css3-only.css', content: '@import url("epub3-css3-only-proxied.css");'.to_ios
           @book.add_item 'styles/epub3-proxied.css', content: (postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
@@ -1334,7 +1332,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         font_files, font_css = select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
         @book.add_item 'styles/epub3-fonts.css', content: font_css
         unless font_files.empty?
-          # NOTE metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
+          # NOTE: metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
           #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
           @book.add_optional_file 'META-INF/com.apple.ibooks.display-options.xml', '<?xml version="1.0" encoding="UTF-8"?>
 <display_options>
@@ -1383,7 +1381,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           width, height = 1050, 1600
         end
 
-        # NOTE SVG wrapper maintains aspect ratio and confines image to view box
+        # NOTE: SVG wrapper maintains aspect ratio and confines image to view box
         content = %(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
 <head>
@@ -1536,7 +1534,7 @@ body > svg {
             item_label = sanitize_xml get_numbered_title(item), :pcdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
-            # NOTE we sanitize the chapter titles because we use formatting to control layout
+            # NOTE: we sanitize the chapter titles because we use formatting to control layout
             if item.context == :document
               item_label = sanitize_doctitle_xml item, :cdata
             else
@@ -1633,7 +1631,7 @@ body > svg {
           .to_ios
       end
 
-      # NOTE Kindle requires that
+      # NOTE: Kindle requires that
       #      <meta charset="utf-8"/>
       #      be converted to
       #      <meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8"/>
@@ -1740,11 +1738,12 @@ body > svg {
       def log_line line
         line = line.strip
 
-        if line =~ /^fatal/i
+        case line
+        when /^fatal/i
           logger.fatal line
-        elsif line =~ /^error/i
+        when /^error/i
           logger.error line
-        elsif line =~ /^warning/i
+        when /^warning/i
           logger.warn line
         else
           logger.info line
@@ -1782,7 +1781,7 @@ body > svg {
         def generate_id doc, pre = nil, sep = nil
           synthetic = false
           unless (id = doc.id)
-            # NOTE we assume pre is a valid ID prefix and that pre and sep only contain valid ID chars
+            # NOTE: we assume pre is a valid ID prefix and that pre and sep only contain valid ID chars
             pre ||= '_'
             sep = sep ? sep.chr : '_'
             if doc.header?
@@ -1848,7 +1847,7 @@ body > svg {
         when 'mobi'
           ebook_format = document.attributes['ebook-format'] = 'kf8'
         else
-          # QUESTION should we display a warning?
+          # QUESTION: should we display a warning?
           ebook_format = document.attributes['ebook-format'] = 'epub3'
         end
         document.attributes[%(ebook-format-#{ebook_format})] = ''
