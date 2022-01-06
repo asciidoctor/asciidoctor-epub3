@@ -33,7 +33,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_development_dependency 'asciidoctor-diagram', '>= 1.5.0', '< 3.0.0'
   s.add_development_dependency 'asciimath', '~> 2.0'
   s.add_development_dependency 'coderay', '~> 1.1.0'
-  s.add_development_dependency 'pygments.rb', '~> 2.2.0'
+  s.add_development_dependency 'pygments.rb', '~> 2.3.0'
   s.add_development_dependency 'rake', '~> 13.0.0'
   s.add_development_dependency 'rouge', '~> 3.0'
   s.add_development_dependency 'rspec', '~> 3.10.0'
