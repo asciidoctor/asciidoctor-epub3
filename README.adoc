@@ -16,7 +16,7 @@ image:{uri-project}/workflows/CI/badge.svg?branch=master[GitHub Actions,link={ur
 
 == Documentation
 
-Detailed installation and usage instructions can be found on the https://docs.asciidoctor.org/asciidoctor-epub3/latest/[Asciidoctor Docs site].
+Detailed installation and usage instructions can be found on the https://docs.asciidoctor.org/epub3-converter/latest/[Asciidoctor Docs site].
 
 == Installation
 
