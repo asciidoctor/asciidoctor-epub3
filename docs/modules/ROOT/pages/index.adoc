@@ -30,7 +30,7 @@ Rather, it's a tool for creating highly aesthetic, professional, _easy-to-read_ 
 Let's face it, many of the technical e-books out there--especially those produced from software documentation--are *_hideous_*.
 {project-name} is on a mission to disrupt the status quo.
 
-.An excerpt from an e-book produced by {project-name} shown in Day, Night and Sepia mode.
+.An excerpt from an e-book produced by {project-name} shown in Day, Night, and Sepia modes.
 image::text.png[]
 
 === Project Mission
@@ -99,11 +99,11 @@ An EPUB3 archive is composed of multiple files. The content of each “chapter�
 Therefore, the {project-name} converter “chunks” the AsciiDoc source document into multiple XHTML files to add to the EPUB3 archive.
 Like other converters, Asciidoctor EPUB3 handles this chunking task by automatically slicing up the XHTML output at predetermined heading levels.
 
-When `doctype` attribute is set to `book`, each top-level section will become a separate ebook "chapter" file.
+When the `doctype` attribute is set to `book`, each top-level section will become a separate e-book "chapter" file.
 This includes preface, bibliography, appendix, etc.
-This behavior can be configured via `epub-chapter-level` document attribute.
+This behavior can be configured via the `epub-chapter-level` document attribute.
 
-Otherwise, whole document is converted to a single ebook chapter.
+Otherwise, the whole document is converted to a single ebook chapter.
 
 You may specify custom chapter filenames by assigning IDs to sections:
 
@@ -132,8 +132,8 @@ Some interesting text here.
 Even more exciting stuff.
 ----
 
-In older Asciidoctor EPUB3 versions, there were strict rules on document organization: 'spine' master document with chapter includes.
-This is no longer the case. If you followed old rules, chances are your document will work with newer Asciidoctor EPUB3 either as-is or after minor adjustments.
+In older Asciidoctor EPUB3 versions, there were strict rules on document organization: a 'spine' master document with chapter includes.
+This is no longer the case. If you followed the old rules, chances are your document will work with the newer Asciidoctor EPUB3 either as-is or after minor adjustments.
 
 == Prerequisites
 
@@ -157,7 +157,7 @@ You can install the published gem using the following command:
 This optional environment variable tells the gem installer to link against the C libraries on the system, if available, instead of compiling the libraries from scratch.
 This speeds up the installation of Nokogiri considerably.
 
-If you want to syntax highlight source listings, you'll also want to install Rouge, CodeRay or Pygments.
+If you want to syntax highlight source listings, you'll also want to install Rouge, CodeRay, or Pygments.
 Choose one (or more) of the following:
 
 .Rouge
@@ -302,7 +302,7 @@ With that out of the way, it's time to convert the AsciiDoc document directly to
 
 == Performing the Conversion
 
-You can convert AsciiDoc documents to EPUB3 and KF8/MOBI from the commandline using the `asciidoctor-epub3` script provided with the {project-name} project.
+You can convert AsciiDoc documents to EPUB3 and KF8/MOBI from the command line using the `asciidoctor-epub3` script provided with the {project-name} project.
 
 === Convert AsciiDoc to EPUB3
 
@@ -318,7 +318,7 @@ Open that file with an EPUB reader (aka e-reader) to view the result.
 
 Below are several screenshots of this sample book as it appears on an Android phone.
 
-.An example of a chapter title and abstract shown side-by-side in Day and Night mode
+.An example of a chapter title and abstract shown side-by-side in Day and Night modes
 image::chapter-title.png[]
 
 .An example of a section title followed by paragraph text separated by a literal block
@@ -402,7 +402,7 @@ That's why we refer to the format in this project as KF8/MOBI.
 
 === Tuning Listing Captions
 
-Unlike the built-in converters, the EPUB3 converter is configured to add a signifier (e.g., `Listing`) at the start the caption for all listing and source blocks that have a title.
+Unlike the built-in converters, the EPUB3 converter is configured to add a signifier (e.g., `Listing`) at the start of the caption for all listing and source blocks that have a title.
 This behavior is triggered because the `listing-caption` attribute is set by default.
 
 If you don't want the signifier to be included at the beginning of the caption on listing and source blocks, simply unset the `listing-caption` when invoking Asciidoctor EPUB3.
@@ -505,14 +505,14 @@ If this attribute is not set, the images catalog defaults to the directory of th
 
 === Default Images
 
-The sample book contains placeholder image for an author avatar.
+The sample book contains a placeholder image for the author avatar.
 
 // TODO explain the avatar and book cover images
 
 === Adding the Cover Image
 
-Ereaders have different image resolution and file size limits regarding a book's cover.
-Kindle covers tend to be 1050x1600 (16:9 resolution).
+E-readers have different image resolution and file size limits regarding a book's cover.
+Kindle covers tend to be 1050x1600 (16:9 aspect ratio).
 To ensure your cover displays correctly, you'll want to review the documentation or publisher guidelines for the e-reading platform you're targeting.
 
 WARNING: We've found that if the book cover is more than 1600px on any side, Aldiko will not render it and may even crash.
@@ -534,7 +534,7 @@ If you don't specify a width and height, then the dimensions are assumed to be 1
 
 === How to Organize Images by Chapter
 
-You can set the `imagesdir` attribute per chapter (as long as the attribute is not overridden by the API).
+You can set the `imagesdir` attribute by chapter (as long as the attribute is not overridden by the API).
 To do so, use an attribute entry to set the value of the `imagesdir` attribute on the line above the include directive for a chapter.
 
 [source,asciidoc]
@@ -586,7 +586,7 @@ While it's certainly possible to view the EPUB3 on your desktop/laptop, you'll p
 Assuming you have an Android device available, transferring the EPUB3 to the device is easy once you get a bit of setup out of the way.
 
 You transfer files from your computer to an Android phone over a USB connection using a command from the Android SDK Tools called `adb`.
-Follow these steps to get it setup:
+Follow these steps to get it set up:
 
 . Download the Android SDK Tools zip from the table labeled *SDK Tools Only* on the {uri-android-sdk}[Get the Android SDK] page
 . Extract the archive
@@ -600,7 +600,7 @@ Now you can use the `adb-push-ebook` script provided by {project-name} to push t
 .Publish both EPUB3 and KF8 files to Android device
  $ adb-push-ebook output/sample-book
 
-IMPORTANT: Don't include the file extension since the script will check for both the .epub and .mobi files.
+IMPORTANT: Don't include the file extension since the script will check for both .epub and .mobi files.
 
 The `adb-push-ebook` script copies the files to the following locations on the device:
 
@@ -616,7 +616,7 @@ You'll have to manually import the EPUB3 into your e-reader of choice.
 
 == E-book Reader Recommendations and Quirks
 
-EPUB3 e-readers will provide the best reading experience when viewing the book generated by {project-name}.
+EPUB3 e-readers will provide the best reading experience when viewing a book generated by {project-name}.
 Here's a list of some of the e-readers we know to have good EPUB3 support and the systems on which they run:
 
 * http://www.amazon.com/gp/feature.html?docId=1000493771[Amazon Kindle] (most platforms)
@@ -632,8 +632,8 @@ Different e-readers word this setting in different ways.
 Look for the option screen that allows you to set the fonts and font colors and disable it.
 With publisher's styles active, you'll still be able to adjust the relative size of the fonts and margins and toggle between day, night and sepia mode.
 
-When the book is viewed in EPUB2 e-readers and Kindle apps/devices which have reached their end-of-life (EOL), the e-book relies on the strong semantics of the HTML and some fallback styles to render properly.
-EPUB2 e-readers, such as Aldiko, don't understand CSS3 styles and therefore miss out on some of subtleties in the formatting.
+When the book is viewed in EPUB2 e-readers and Kindle apps/devices which have reached their end-of-life (EOL), the e-book relies on the strong semantics of HTML and some fallback styles to render properly.
+EPUB2 e-readers, such as Aldiko, don't understand CSS3 styles and therefore miss out on some of the subtleties in the formatting.
 
 As mentioned in the <<About the Theme,theme section>>, the stylesheet attempts to provide as consistent a reading experience as possible in the common EPUB3 e-readers, despite the different CSS implementation rules and limitations unique to each e-book application.
 Most of these obstacles were addressed using media queries or explicit classes.
