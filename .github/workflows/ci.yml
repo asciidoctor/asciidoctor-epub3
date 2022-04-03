@@ -22,7 +22,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.1'
           bundler-cache: true
       - name: Lint
         run: bundle exec rake lint
@@ -31,14 +31,14 @@ jobs:
     strategy:
       matrix:
         # TODO: Use 'jruby-9.2' when https://github.com/jruby/jruby/issues/6648 is fixed
-        ruby: ['jruby-9.2.16', '2.4', '2.5', '2.6', '2.7', '3.0']
+        ruby: ['jruby-9.2.16', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
         os: [ubuntu-latest, windows-latest]
         asciidoctor: ['']
         include:
-          - ruby: '3.0'
+          - ruby: '3.1'
             os: ubuntu-latest
             asciidoctor: '1.5.6'
-          - ruby: '3.0'
+          - ruby: '3.1'
             os: macos-latest
             asciidoctor: ''
     runs-on: ${{ matrix.os }}
