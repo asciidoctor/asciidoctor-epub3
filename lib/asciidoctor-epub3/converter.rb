@@ -388,10 +388,10 @@ module Asciidoctor
         linkcss = true
 
         # NOTE: kindlegen seems to mangle the <header> element, so we wrap its content in a div
-        lines = [%(<!DOCTYPE html>
+        lines = [%(<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
 <head>
-<meta charset="UTF-8"/>
 <title>#{chapter_title}</title>
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
 <link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
@@ -1382,10 +1382,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
 
         # NOTE: SVG wrapper maintains aspect ratio and confines image to view box
-        content = %(<!DOCTYPE html>
+        content = %(<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
 <head>
-<meta charset="UTF-8"/>
 <title>#{sanitize_doctitle_xml doc, :cdata}</title>
 <style type="text/css">
 @page {
@@ -1490,10 +1490,10 @@ body > svg {
       end
 
       def nav_doc doc, items, landmarks, depth
-        lines = [%(<!DOCTYPE html>
+        lines = [%(<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = doc.attr 'lang', 'en'}" lang="#{lang}">
 <head>
-<meta charset="UTF-8"/>
 <title>#{sanitize_doctitle_xml doc, :cdata}</title>
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
 <link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
@@ -1631,15 +1631,10 @@ body > svg {
           .to_ios
       end
 
-      # NOTE: Kindle requires that
-      #      <meta charset="utf-8"/>
-      #      be converted to
-      #      <meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8"/>
       def postprocess_xhtml content
         return content.to_ios unless @format == :kf8
         # TODO: convert regular expressions to constants
         content
-          .gsub(/<meta charset="(.+?)"\/>/, '<meta http-equiv="Content-Type" content="application/xml+xhtml; charset=\1"/>')
           .gsub(/<img([^>]+) style="width: (\d\d)%;"/, '<img\1 style="width: \2%; height: \2%;"')
           .gsub(/<script type="text\/javascript">.*?<\/script>\n?/m, '')
           .to_ios
