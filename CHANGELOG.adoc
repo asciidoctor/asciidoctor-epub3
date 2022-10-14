@@ -5,6 +5,10 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== Unreleased
+
+* add XML declarations to XHTML files (#424 by @abbrev)
+
 == 1.5.1 (2021-04-29) - @slonopotamus
 
 * update Font Awesome Solid to 5.15.1
