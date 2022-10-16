@@ -52,7 +52,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler: 2.3.11
+          bundler: 2.3.14
           bundler-cache: true
       - name: Test
         run: bundle exec rake spec
