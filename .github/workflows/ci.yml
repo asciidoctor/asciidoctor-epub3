@@ -23,7 +23,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.1'
-      - run: bundle install -j4
+          bundler-cache: true
       - name: Lint
         run: bundle exec rake lint
   test:
@@ -52,6 +52,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-      - run: bundle install -j4
+          bundler: 2.3.11
+          bundler-cache: true
       - name: Test
         run: bundle exec rake spec
