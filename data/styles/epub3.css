@@ -394,6 +394,7 @@ i.conum {
   color: #468C54;
   font-family: "M+ 1mn", monospace;
   font-style: normal;
+  user-select: none;
 }
 
 /* don't let conum affect line spacing; REVIEW may not need this! */
