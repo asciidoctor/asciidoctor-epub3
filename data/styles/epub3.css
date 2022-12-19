@@ -915,7 +915,7 @@ pre {
   font-size: 0.85em;
   line-height: 1.4; /* matches what Kindle uses and can't go less */
   background-color: #E0E0E0;
-  padding: 0.6em 0.9em; /* this is supposed to be '0.5rem 0.75rem' but Sony Readers crash when see that (at least, PRS-350, PRS-505, PRS-T1) */
+  padding: 8px 12px; /* this is supposed to be '0.5rem 0.75rem' but Sony Readers crash when see that (at least, PRS-350, PRS-505, PRS-T1) */
   border-top: 1px solid #C8C8C8;
   border-right: 1px solid #C8C8C8;
 }
