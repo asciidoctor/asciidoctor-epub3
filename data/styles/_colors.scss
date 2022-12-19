@@ -1,0 +1,111 @@
+$black: #000000;
+$off-black: #101010;
+$deep-gray: #202020;
+$dark-gray: #333332;
+$tuatara-gray: #40403E;
+$medium-gray: #707070;
+$friar-gray: #7F7F7D;
+$nobel-gray: #B3B3B3;
+$gray-x11: #BEBEBC;
+$gray: #C8C8C8;
+$quill-gray: #D0D0CF;
+$lighter-gray: #DCDCDE;
+$alto-gray: #DFDFDF;
+$off-white: #E0E0E0;
+$lighter-off-white: #F7F7F7;
+$papaya-white: #FFF0D4;
+$white: #FFFFFF;
+
+$mahogany-red: #C83737;
+$flamingo-orange: #F2642A;
+$light-yellow: #FFC14F;
+$beauty-pink: #F1CECE;
+$cinderella-pink: #FCD9CA;
+
+$green: #57AD68;
+$medium-green: #468C54;
+$light-green: #A9D8B2;
+
+// =========================
+// === assign the colors ===
+// =========================
+
+$body-text: $off-black;
+
+// white bg disables night mode in Aldiko, hoo-ha!
+$body-background: $white;
+
+$header-text: $off-black;
+$h4-header-text: $deep-gray;
+$h5-header-text: $dark-gray;
+
+$chapter-header-background: $off-black;
+$chapter-header-title-text: $dark-gray;
+$chapter-header-title-border: $dark-gray;
+$chapter-header-subtitle-text: $white;
+
+$chapter-header-em: $green;
+$chapter-header-byline: $lighter-gray;
+
+$link-text: $off-black;
+$link-border: $dark-gray;
+$link-visited-text: $dark-gray;
+$link-first-background: $dark-gray;
+
+$blockquote-text: $black;
+$para-first-text: $dark-gray;
+
+$list-lvl1: $dark-gray;
+$list-lvl2: $green;
+$list-lvl3: $dark-gray;
+$list-lvl4: $green;
+
+$footer-context: $dark-gray;
+
+$abstract-text: $dark-gray;
+$abstract-link: $dark-gray;
+
+$caption-text: $dark-gray;
+
+$aside-background: $off-white;
+$aside-border: $gray;
+
+$aside-header-background: $white;
+
+$button-text: $black;
+$button-shadow: $gray;
+
+$pre-text: $off-black;
+// matches what Kindle uses and can't go less
+$pre-background: $off-white;
+$pre-border: $gray;
+
+$kbd-background: $lighter-off-white;
+$kbd-border: $gray-x11;
+
+$mark-text: $black;
+$mark-background: $light-yellow;
+
+$last-mark-text: $green;
+
+$i-conum-text: $medium-green;
+
+$table-border: $medium-gray;
+
+$note-border: $light-yellow;
+$note-background: $papaya-white;
+
+$tip-border: $tuatara-gray;
+$tip-background: $quill-gray;
+
+$caution-border: $friar-gray;
+$caution-background: $alto-gray;
+
+$warning-border: $mahogany-red;
+$warning-background: $beauty-pink;
+
+$important-border: $flamingo-orange;
+$important-background: $cinderella-pink;
+
+$about-author-border: $nobel-gray;
+$headshot-border: $medium-gray;
