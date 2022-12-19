@@ -81,7 +81,7 @@ b, strong {
 
 b.button {
   font-weight: normal;
-  text-shadow: 1px 0 0 $dark-gray;
+  text-shadow: 1px 0 0 $button-shadow;
   color: $button-text;
   white-space: nowrap;
 }
@@ -232,15 +232,6 @@ body a:link {
   /*
   word-break: break-all;
   */
-}
-
-body:first-of-type a:link {
-  border-bottom: none;
-  background-repeat: no-repeat;
-  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255, 255, 255, 0) 100%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255, 255, 255, 0) 100%);
-  background-size: 100% 1px;
-  background-position: 0 1.2em;
 }
 
 code.literal {
@@ -820,7 +811,7 @@ aside.sidebar > h2 {
   border: 1px solid $aside-border;
   padding: 1.5em .75em .5em .75em;
   margin: -1em 0.5em -0.25em 0.5em;
-  background-color: $aside-header-background;
+  background-color: $body-background;
   /*
   -webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
   box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);

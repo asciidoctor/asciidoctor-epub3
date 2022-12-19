@@ -4,15 +4,8 @@ $deep-gray: #202020;
 $dark-gray: #333332;
 $tuatara-gray: #40403E;
 $medium-gray: #707070;
-$friar-gray: #7F7F7D;
-$nobel-gray: #B3B3B3;
-$gray-x11: #BEBEBC;
 $gray: #C8C8C8;
-$quill-gray: #D0D0CF;
-$lighter-gray: #DCDCDE;
-$alto-gray: #DFDFDF;
 $off-white: #E0E0E0;
-$lighter-off-white: #F7F7F7;
 $papaya-white: #FFF0D4;
 $white: #FFFFFF;
 
@@ -24,7 +17,6 @@ $cinderella-pink: #FCD9CA;
 
 $green: #57AD68;
 $medium-green: #468C54;
-$light-green: #A9D8B2;
 
 // =========================
 // === assign the colors ===
@@ -39,18 +31,11 @@ $header-text: $off-black;
 $h4-header-text: $deep-gray;
 $h5-header-text: $dark-gray;
 
-$chapter-header-background: $off-black;
 $chapter-header-title-text: $dark-gray;
 $chapter-header-title-border: $dark-gray;
-$chapter-header-subtitle-text: $white;
-
 $chapter-header-em: $green;
-$chapter-header-byline: $lighter-gray;
 
-$link-text: $off-black;
 $link-border: $dark-gray;
-$link-visited-text: $dark-gray;
-$link-first-background: $dark-gray;
 
 $blockquote-text: $black;
 $para-first-text: $dark-gray;
@@ -70,18 +55,15 @@ $caption-text: $dark-gray;
 $aside-background: $off-white;
 $aside-border: $gray;
 
-$aside-header-background: $white;
-
 $button-text: $black;
 $button-shadow: $gray;
 
 $pre-text: $off-black;
-// matches what Kindle uses and can't go less
 $pre-background: $off-white;
 $pre-border: $gray;
 
-$kbd-background: $lighter-off-white;
-$kbd-border: $gray-x11;
+$kbd-background: $off-white;
+$kbd-border: $gray;
 
 $mark-text: $black;
 $mark-background: $light-yellow;
@@ -96,10 +78,10 @@ $note-border: $light-yellow;
 $note-background: $papaya-white;
 
 $tip-border: $tuatara-gray;
-$tip-background: $quill-gray;
+$tip-background: $off-white;
 
-$caution-border: $friar-gray;
-$caution-background: $alto-gray;
+$caution-border: $medium-gray;
+$caution-background: $off-white;
 
 $warning-border: $mahogany-red;
 $warning-background: $beauty-pink;
@@ -107,5 +89,5 @@ $warning-background: $beauty-pink;
 $important-border: $flamingo-orange;
 $important-background: $cinderella-pink;
 
-$about-author-border: $nobel-gray;
+$about-author-border: $gray;
 $headshot-border: $medium-gray;
