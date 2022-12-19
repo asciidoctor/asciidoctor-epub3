@@ -2,6 +2,7 @@
 
 require 'mime/types'
 require 'open3'
+require 'sass'
 require_relative 'font_icon_map'
 
 module Asciidoctor
@@ -1304,16 +1305,15 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                   end
 
         # TODO: improve design/UX of custom theme functionality, including custom fonts
-
-        if format == :kf8
-          # NOTE: add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
-          @book.add_item 'styles/epub3.css', content: '@import url("epub3-proxied.css");'.to_ios
-          @book.add_item 'styles/epub3-css3-only.css', content: '@import url("epub3-css3-only-proxied.css");'.to_ios
-          @book.add_item 'styles/epub3-proxied.css', content: (postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
-          @book.add_item 'styles/epub3-css3-only-proxied.css', content: (postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
-        else
-          @book.add_item 'styles/epub3.css', content: (postprocess_css_file ::File.join(workdir, 'epub3.css'), format)
-          @book.add_item 'styles/epub3-css3-only.css', content: (postprocess_css_file ::File.join(workdir, 'epub3-css3-only.css'), format)
+        %w(epub3 epub3-css3-only).each do |f|
+          css = load_css_file File.join(workdir, %(#{f}.scss))
+          if format == :kf8
+            # NOTE: add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
+            @book.add_item %(styles/#{f}.css), content: %(@import url("#{f}-proxied.css");).to_ios
+            @book.add_item %(styles/#{f}-proxied.css), content: css.to_ios
+          else
+            @book.add_item %(styles/#{f}.css), content: css.to_ios
+          end
         end
 
         syntax_hl = doc.syntax_highlighter
@@ -1329,8 +1329,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           end
         end
 
-        font_files, font_css = select_fonts ::File.join(DATA_DIR, 'styles/epub3-fonts.css'), (doc.attr 'scripts', 'latin')
-        @book.add_item 'styles/epub3-fonts.css', content: font_css
+        font_files, font_css = select_fonts load_css_file(File.join(DATA_DIR, 'styles/epub3-fonts.scss')), (doc.attr 'scripts', 'latin')
+        @book.add_item 'styles/epub3-fonts.css', content: font_css.to_ios
         unless font_files.empty?
           # NOTE: metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
           #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
@@ -1605,8 +1605,7 @@ body > svg {
 
       # Swap fonts in CSS based on the value of the document attribute 'scripts',
       # then return the list of fonts as well as the font CSS.
-      def select_fonts filename, scripts = 'latin'
-        font_css = ::File.read filename
+      def select_fonts font_css, scripts = 'latin'
         font_css = font_css.gsub(/(?<=-)latin(?=\.ttf\))/, scripts) unless scripts == 'latin'
 
         # match CSS font urls in the forms of:
@@ -1614,21 +1613,14 @@ body > svg {
         # src: url(../fonts/notoserif-regular-latin.ttf) format("truetype");
         font_list = font_css.scan(/url\(\.\.\/([^)]+\.ttf)\)/).flatten
 
-        [font_list, font_css.to_ios]
+        [font_list, font_css]
       end
 
-      def postprocess_css_file filename, format
-        return filename unless format == :kf8
-        postprocess_css ::File.read(filename), format
-      end
-
-      def postprocess_css content, format
-        return content.to_ios unless format == :kf8
-        # TODO: convert regular expressions to constants
-        content
-          .gsub(/^  -webkit-column-break-.*\n/, '')
-          .gsub(/^  max-width: .*\n/, '')
-          .to_ios
+      def load_css_file filename
+        template = File.read filename
+        load_paths = [File.dirname(filename)]
+        sass_engine = Sass::Engine.new template, syntax: :scss, cache: false, load_paths: load_paths, style: :expanded
+        sass_engine.render
       end
 
       def postprocess_xhtml content

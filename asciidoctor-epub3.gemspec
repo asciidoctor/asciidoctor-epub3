@@ -44,4 +44,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_runtime_dependency 'asciidoctor', '>= 1.5.6', '< 3.0.0'
   s.add_runtime_dependency 'gepub', '~> 1.0.0'
   s.add_runtime_dependency 'mime-types', '~> 3.0'
+
+  # TODO: switch to 'sass-embedded' when we drop Ruby 2.5 support
+  s.add_runtime_dependency 'sass'
 end

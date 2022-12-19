@@ -1,3 +1,4 @@
+@import "colors";
 @import url("epub3-fonts.css");
 
 *, *:before, *:after {
@@ -34,7 +35,7 @@ body {
 
 /* disables night mode in Aldiko, hoo-ha! */
 html body {
-  background-color: #FFFFFF;
+  background-color: $body-background;
 }
 
 /* @page only applies to EPUB2 readers; not supported by EPUB3 readers such as Kindle and Gitden */
@@ -80,8 +81,8 @@ b, strong {
 
 b.button {
   font-weight: normal;
-  text-shadow: 1px 0 0 #333332;
-  color: #101010;
+  text-shadow: 1px 0 0 $dark-gray;
+  color: $button-text;
   white-space: nowrap;
 }
 
@@ -93,8 +94,8 @@ kbd {
   display: inline-block;
   font-size: 0.8em;
   line-height: 1;
-  background-color: #F7F7F7; /* #FAFAFA */
-  border: 1px solid #BEBEBC;
+  background-color: $kbd-background;
+  border: 1px solid $kbd-border;
   -webkit-border-radius: 3px;
   border-radius: 3px;
   -webkit-box-shadow: 1px 1px 0 rgba(102, 102, 101, 0.25), 0 0 0 1px white inset;
@@ -141,8 +142,8 @@ img {
 }
 
 mark {
-  background-color: #FFC14F;
-  color: #101010;
+  background-color: $mark-background;
+  color: $mark-text;
 }
 
 small {
@@ -226,7 +227,7 @@ body a:link {
   /* Kindle requires the !important on text-decoration */
   /* In night mode, the only indicator of a link is the underline, so we need it or a background image */
   text-decoration: none !important;
-  border-bottom: 1px dashed #333332;
+  border-bottom: 1px dashed $link-border;
   /* allow URLs to break anywhere if they don't fit on a line; but how do we know it's a URL? */
   /*
   word-break: break-all;
@@ -236,8 +237,8 @@ body a:link {
 body:first-of-type a:link {
   border-bottom: none;
   background-repeat: no-repeat;
-  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #666665 5%, #666665 95%, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, $link-first-background 5%, $link-first-background 95%, rgba(255, 255, 255, 0) 100%);
   background-size: 100% 1px;
   background-position: 0 1.2em;
 }
@@ -295,7 +296,7 @@ body p, li, dt, dd, footer {
 }
 
 code, kbd, pre {
-  color: #101010;
+  color: $pre-text;
   font-family: "M+ 1mn", monospace;
   -webkit-hyphens: none; /* disable hyphenation where supported (e.g., iBooks) */
 }
@@ -313,7 +314,7 @@ th, td, figcaption, caption {
 }
 
 p.last::after {
-  color: #57AD68;
+  color: $last-mark-text;
   display: inline-block;
   font-family: "FontAwesome";
   font-size: 1em;
@@ -391,7 +392,7 @@ div.callout-list ol li {
 }
 
 i.conum {
-  color: #468C54;
+  color: $i-conum-text;
   font-family: "M+ 1mn", monospace;
   font-style: normal;
   user-select: none;
@@ -477,22 +478,22 @@ ul > li::before {
 
 ul > li::before {
   content: "\25AA"; /* small black square */
-  color: #333332;
+  color: $list-lvl1;
 }
 
 ul ul > li::before {
   content: "\25E6"; /* small white circle */
-  color: #57AD68;
+  color: $list-lvl2;
 }
 
 ul ul ul > li::before {
   content: "\2022"; /* small black circle */
-  color: #333332;
+  color: $list-lvl3;
 }
 
 ul ul ul ul > li::before {
   content: "\25AB"; /* small white square */
-  color: #57AD68;
+  color: $list-lvl4;
 }
 
 ol {
@@ -562,7 +563,7 @@ h3 {
 }
 
 h4 {
-  color: #202020;
+  color: $h4-header-text;
   font-weight: 200;
 
   font-size: 1.1em;
@@ -572,12 +573,13 @@ h4 {
   font-size: 1.2em;
   margin-top: .917em; /* 1.1rem */
   margin-top: 0.875em; /* 1.05rem */
-  /*margin-bottom: -0.75em;*/ /* -0.9rem, 0.1rem to content */
+  /*margin-bottom: -0.75em;*/
+  /* -0.9rem, 0.1rem to content */
   margin-bottom: -0.625em; /* -0.75rem, 0.25rem to content */
 }
 
 h5 {
-  color: #333332;
+  color: $h5-header-text;
   /*
   font-size: 1em;
   text-transform: uppercase;
@@ -607,7 +609,7 @@ h5 code {
   /*padding: 0.75em 1.5em 0.25em 1.5em;*/
   padding: 0.25em 0;
   margin-bottom: 2.5em;
-  border-bottom: 1px solid #333332;
+  border-bottom: 1px solid $chapter-header-title-border;
   /* TODO maybe what we need to get articles to start in left column
   -webkit-column-break-before: left;
   page-break-before: left;
@@ -620,7 +622,7 @@ h1.chapter-title {
   margin-top: 3.5em; /* 4.2rem - would like to use 9vh */
   margin-bottom: 0;
   padding-bottom: 0.8333em; /* 1.2rem */
-  color: #333332;
+  color: $chapter-header-title-text;
   text-transform: uppercase; /* not supported in Adobe Digital Editions */
   word-spacing: -0.075em;
   letter-spacing: -0.01em;
@@ -635,7 +637,7 @@ h1.chapter-title .subtitle {
 }
 
 h1.chapter-title em {
-  color: #57AD68;
+  color: $chapter-header-em;
   font-style: normal;
 }
 
@@ -674,7 +676,7 @@ div.abstract {
 }
 
 div.abstract > p {
-  color: #333332;
+  color: $abstract-text;
   font-size: 1.05em; /* or 1.1em? */
   line-height: 1.75;
 }
@@ -753,7 +755,7 @@ figcaption,
 caption {
   font-size: 0.9em;
   font-style: italic;
-  color: #333332;
+  color: $caption-text;
   letter-spacing: -0.01em;
   line-height: 1.4;
   text-align: left;
@@ -785,10 +787,10 @@ figure.listing > figcaption + pre {
 }
 
 aside.sidebar {
-  border: 1px solid #C8C8C8;
+  border: 1px solid $aside-border;
   padding: 0 1.5em;
   font-size: 0.9em;
-  background-color: #E0E0E0;
+  background-color: $aside-background;
   text-align: right; /* aligns heading to right */
   /*
   -webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.15);
@@ -798,7 +800,6 @@ aside.sidebar {
 
 body:first-of-type aside.sidebar {
   background-color: rgba(0, 0, 0, 0.05); /* using transparency is night-mode friendly */
-  /*background-color: rgba(51, 51, 50, 0.06);*/ /* using transparency is night-mode friendly */
 }
 
 /* a bit of a cheat; could use aside.sidebar[title] instead, but not on Aldiko */
@@ -816,10 +817,10 @@ aside.sidebar > h2 {
   letter-spacing: 0;
   display: inline-block;
   white-space: nowrap; /* for some reason it's wrapping prematurely */
-  border: 1px solid #C8C8C8;
+  border: 1px solid $aside-border;
   padding: 1.5em .75em .5em .75em;
   margin: -1em 0.5em -0.25em 0.5em;
-  background-color: #FFFFFF;
+  background-color: $aside-header-background;
   /*
   -webkit-box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
   box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
@@ -853,7 +854,7 @@ div[class~="blockquote"] {
 }
 
 blockquote > p {
-  color: #101010;
+  color: $blockquote-text;
   font-style: italic;
 
   /*
@@ -870,13 +871,14 @@ blockquote > p {
 
 blockquote > p:first-of-type::before {
   display: inline-block;
-  color: #333332;
+  color: $para-first-text;
   text-shadow: 0 1px 2px rgba(102, 102, 101, 0.3);
 
   /* using serif quote from entypo */
   font-family: "FontIcons";
 
-  /*content: "\f10e";*/ /* quote-right from Entypo */
+  /*content: "\f10e";*/
+  /* quote-right from Entypo */
   /*
   -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
@@ -903,26 +905,28 @@ blockquote footer {
 blockquote footer .context {
   font-size: 0.9em;
   letter-spacing: -0.05em;
-  color: #333332;
+  color: $footer-context;
 }
 
 pre {
   text-align: left; /* fix for Namo */
   margin-top: 1em; /* 0.85rem */
-  /*margin-top: 1.176em;*/ /* 1rem */
+  /*margin-top: 1.176em;*/
+  /* 1rem */
   white-space: pre-wrap;
   overflow-wrap: break-word; /* break in middle of long word if no other break opportunities are available */
   font-size: 0.85em;
   line-height: 1.4; /* matches what Kindle uses and can't go less */
-  background-color: #E0E0E0;
+  background-color: $pre-background;
   padding: 8px 12px; /* this is supposed to be '0.5rem 0.75rem' but Sony Readers crash when see that (at least, PRS-350, PRS-505, PRS-T1) */
-  border-top: 1px solid #C8C8C8;
-  border-right: 1px solid #C8C8C8;
+  border-top: 1px solid $pre-border;
+  border-right: 1px solid $pre-border;
 }
 
 body:first-of-type pre {
   background-color: rgba(0, 0, 0, 0.05); /* using transparency is night-mode friendly */
-  /*background-color: rgba(51, 51, 50, 0.06);*/ /* using transparency is night-mode friendly */
+  /*background-color: rgba(51, 51, 50, 0.06);*/
+  /* using transparency is night-mode friendly */
 }
 
 /* TODO what we really want is for pre w/o caption to be unbreakable */
@@ -975,28 +979,28 @@ aside[class~="admonition"] {
 }
 
 aside.note {
-  border-left-color: #FFC14F;
-  background-color: #FFF0D4; /* 25% opacity of border */
+  border-left-color: $note-border;
+  background-color: $note-background; /* 25% opacity of border */
 }
 
 aside.tip {
-  border-left-color: #40403E;
-  background-color: #D0D0CF; /* 25% opacity of border */
+  border-left-color: $tip-border;
+  background-color: $tip-background; /* 25% opacity of border */
 }
 
 aside.caution {
-  border-left-color: #7F7F7D;
-  background-color: #DFDFDF; /* 25% opacity of border */
+  border-left-color: $caution-border;
+  background-color: $caution-background; /* 25% opacity of border */
 }
 
 aside.warning {
-  border-left-color: #C83737;
-  background-color: #F1CECE; /* 25% opacity of border */
+  border-left-color: $warning-border;
+  background-color: $warning-background; /* 25% opacity of border */
 }
 
 aside.important {
-  border-left-color: #F2642A;
-  background-color: #FCD9CA; /* 25% opacity of border */
+  border-left-color: $important-border;
+  background-color: $important-background; /* 25% opacity of border */
 }
 
 aside.admonition::before {
@@ -1030,52 +1034,52 @@ aside[class~="admonition"] > div[class~="content"] {
 
 aside.note::before {
   content: "\f303"; /* fa-pencil-alt */
-  color: #FFC14F;
+  color: $note-border;
 }
 
 aside[class~="note"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #FFC14F 45%, #FFC14F 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $note-border 45%, $note-border 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $note-border 45%, $note-border 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.tip::before {
   content: "\f0eb"; /* fa-lightbulb */
-  color: #40403E;
+  color: $tip-border;
 }
 
 aside[class~="tip"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #40403E 45%, #40403E 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $tip-border 45%, $tip-border 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $tip-border 45%, $tip-border 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.caution::before {
   content: "\f0c2"; /* fa-cloud */
-  color: #7F7F7D;
+  color: $caution-border;
 }
 
 aside[class~="caution"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #7F7F7D 45%, #7F7F7D 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $caution-border 45%, $caution-border 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $caution-border 45%, $caution-border 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.warning::before {
   content: "\f0e7"; /* fa-bolt */
-  color: #C83737;
+  color: $warning-border;
 }
 
 aside[class~="warning"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #C83737 45%, #C83737 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $warning-border 45%, $warning-border 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $warning-border 45%, $warning-border 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.important::before {
   content: "\f12a"; /* fa-exclamation */
-  color: #F2642A;
+  color: $important-border;
 }
 
 aside[class~="important"] > div[class~="content"] {
-  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, #F2642A 45%, #F2642A 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 42.5%, $important-border 45%, $important-border 55%, rgba(255, 255, 255, 0) 57.5%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 42.5%, $important-border 45%, $important-border 55%, rgba(255, 255, 255, 0) 57.5%);
 }
 
 aside.admonition > h2 {
@@ -1119,7 +1123,7 @@ table.table th {
 }
 
 table.table thead th {
-  border-bottom: 1px solid #707070;
+  border-bottom: 1px solid $table-border;
 }
 
 table.table td > p,
@@ -1136,26 +1140,26 @@ table.table div.embed > * + * {
 table.table-framed-all {
   border-width: 1px;
   border-style: solid;
-  border-color: #707070;
+  border-color: $table-border;
 }
 
 table.table-framed-topbot {
   border-width: 1px 0;
   border-style: solid;
-  border-color: #707070;
+  border-color: $table-border;
 }
 
 table.table-framed-sides {
   border-width: 0 1px;
   border-style: solid;
-  border-color: #707070;
+  border-color: $table-border;
 }
 
 table.table-grid-all th,
 table.table-grid-all td {
   border-width: 1px 1px 1px 1px;
   border-style: solid;
-  border-color: #707070;
+  border-color: $table-border;
 }
 
 table.table-grid-all thead tr > *:last-child {
@@ -1171,14 +1175,14 @@ table.table-grid-rows tbody th,
 table.table-grid-rows tbody td {
   border-width: 1px 0 0 0;
   border-style: solid;
-  border-color: #707070;
+  border-color: $table-border;
 }
 
 table.table-grid-cols th,
 table.table-grid-cols td {
   border-width: 0 1px 0 0;
   border-style: solid;
-  border-color: #707070;
+  border-color: $table-border;
 }
 
 table.table-grid-cols thead th:last-child {
@@ -1204,12 +1208,12 @@ hr.pagebreak + * {
 #_about_the_author {
   -webkit-column-break-before: always;
   page-break-before: always;
-  border-bottom: 1px solid #B3B3B3;
+  border-bottom: 1px solid $about-author-border;
 }
 
 img.headshot {
   float: left;
-  border: 1px solid #707070;
+  border: 1px solid $headshot-border;
   padding: 1px;
   margin: 0.35em 1em 0.15em 0;
   height: 5em !important;
