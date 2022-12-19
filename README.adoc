@@ -4,7 +4,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://g
 :project-handle: asciidoctor-epub3
 :uri-project: https://github.com/asciidoctor/{project-handle}
 :uri-gem: https://rubygems.org/gems/asciidoctor-epub3
-:uri-ci: {uri-project}/actions?query=branch%3Amaster
+:uri-ci: {uri-project}/actions?query=branch%3Amain
 :uri-issues: {uri-project}/issues
 :uri-rvm: https://rvm.io
 
