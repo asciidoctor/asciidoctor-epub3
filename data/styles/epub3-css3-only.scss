@@ -25,7 +25,7 @@ h1 :not(code), h2 :not(code), h3:not(.list-heading) :not(code), h4 :not(code), h
 }
 
 /* QUESTION what about nested elements inside code? */
-body code, body kbd, body pre, pre :not(code) {
+body code, body kbd, body :not(.verse) > pre, :not(.verse) > pre :not(code) {
   /* !important required to override custom font setting in Kindle / Gitden / Namo */
   /* Gitden requires the extra weight of a parent selector */
   /* Kindle and Gitden require the override on pre child elements */
