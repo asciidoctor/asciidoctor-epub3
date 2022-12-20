@@ -1611,7 +1611,7 @@ body > svg {
         # match CSS font urls in the forms of:
         # src: url(../fonts/notoserif-regular-latin.ttf);
         # src: url(../fonts/notoserif-regular-latin.ttf) format("truetype");
-        font_list = font_css.scan(/url\(\.\.\/([^)]+\.ttf)\)/).flatten
+        font_list = font_css.scan(/url\(\.\.\/([^)]+?\.ttf)\)/).flatten
 
         [font_list, font_css]
       end
@@ -1619,7 +1619,7 @@ body > svg {
       def load_css_file filename
         template = File.read filename
         load_paths = [File.dirname(filename)]
-        sass_engine = Sass::Engine.new template, syntax: :scss, cache: false, load_paths: load_paths, style: :expanded
+        sass_engine = Sass::Engine.new template, syntax: :scss, cache: false, load_paths: load_paths, style: :compressed
         sass_engine.render
       end
 
