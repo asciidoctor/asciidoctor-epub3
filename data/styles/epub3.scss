@@ -1,42 +1,6 @@
+@import "reset";
 @import "colors";
 @import url("epub3-fonts.css");
-
-*, *:before, *:after {
-  box-sizing: border-box;
-}
-
-/* educate older readers about tags introduced in HTML5 */
-article, aside, details, figcaption, figure,
-footer, header, nav, section, summary {
-  display: block;
-}
-
-/* html and body declarations must be separate entries for some readers */
-html {
-  margin: 0 !important;
-  padding: 0 !important;
-  /* set the em base (and relative em anchor) by setting the font-size on html */
-  /* TODO set font-size > 100% except for Kindle */
-  font-size: 100%;
-}
-
-/* don't set margin on body as that's how many readers frame reading area */
-/* can't set the font-family on body in Kindle */
-body {
-  padding: 0 !important;
-  /* add margin to ~ match Kindle's narrow setting */
-  /* don't use !important on margin as it interferes with reader overrides (Calibre and Kindle) */
-  margin: 0;
-  font-size: 100%;
-  /* NOTE putting optimizeLegibility on the body slows down rendering considerably */
-  text-rendering: optimizeSpeed;
-  /* -webkit-font-smoothing has no noticable effect and is controversial, so leaving it off */
-}
-
-/* disables night mode in Aldiko, hoo-ha! */
-html body {
-  background-color: $body-background;
-}
 
 /* @page only applies to EPUB2 readers; not supported by EPUB3 readers such as Kindle and Gitden */
 @page {
@@ -45,38 +9,12 @@ html body {
   margin: 1cm;
 }
 
-div, p, blockquote, pre, figure, figcaption,
-h1, h2, h3, h4, h5, h6,
-dl, dt, dd, ol, ul, li,
-table, caption, thead, tfoot, tbody, tr, th, td {
-  margin: 0;
-  padding: 0;
-  font-size: 100%;
-  vertical-align: baseline;
-}
-
-a, abbr, address, cite, code, em, kbd, span, strong {
-  font-size: 100%;
-}
-
-a {
-  background: transparent;
-}
-
-a:active, a:hover {
-  outline: 0;
-}
-
 abbr[title] {
   border-bottom: 1px dotted;
 }
 
 address {
   white-space: pre-line;
-}
-
-b, strong {
-  font-weight: bold;
 }
 
 b.button {
@@ -136,11 +74,6 @@ kbd {
   padding-right: 0.15em;
 }
 
-img {
-  border: 0;
-  max-width: 100%;
-}
-
 mark {
   background-color: $mark-background;
   color: $mark-text;
@@ -187,15 +120,6 @@ sub {
   /* alternate approach #2 */
   line-height: 1;
   vertical-align: text-bottom;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-td, th {
-  padding: 0;
 }
 
 /* We need to apply text-align to <p> too in order to override global text-align:justify */
@@ -324,19 +248,6 @@ ul li, ol li {
   margin-top: 1em;
 }
 
-/* squeeze content in complex lists */
-/*
-li > figure,
-li > p {
-  margin-top: 0.4em;
-}
-*/
-
-dl {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
 dt {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
@@ -439,68 +350,53 @@ div.stack-subject li strong.subject {
 ul {
   /* QUESTION do we need important here? */
   margin-left: 1em !important;
-  list-style-type: square;
-}
 
-ul ul {
-  list-style-type: circle;
-}
+  > li::before {
+    float: left;
+    margin-left: -1em;
+    margin-top: -0.05em;
+    padding-left: 0.25em;
+    /* guarantee it's out of the flow */
+    width: 0;
+    display: block;
 
-ul ul ul {
-  list-style-type: disc;
-}
+    content: "▪";
+    color: $list-lvl1;
+  }
 
-/* disable list style type for CSS3-enabled clients */
-body:first-of-type ul,
-body:first-of-type ul ul,
-body:first-of-type ul ul ul {
-  list-style-type: none;
-}
+  ul {
+    > li::before {
+      content: "◦";
+      color: $list-lvl2;
+    }
 
-ul > li::before {
-  float: left;
-  margin-left: -1em;
-  margin-top: -0.05em;
-  padding-left: 0.25em;
-  /* guarantee it's out of the flow */
-  width: 0;
-  display: block;
-}
+    ul {
+      > li::before {
+        content: "•";
+        color: $list-lvl3;
+      }
 
-ul > li::before {
-  content: "\25AA"; /* small black square */
-  color: $list-lvl1;
-}
-
-ul ul > li::before {
-  content: "\25E6"; /* small white circle */
-  color: $list-lvl2;
-}
-
-ul ul ul > li::before {
-  content: "\2022"; /* small black circle */
-  color: $list-lvl3;
-}
-
-ul ul ul ul > li::before {
-  content: "\25AB"; /* small white square */
-  color: $list-lvl4;
-}
-
-ol {
-  margin-left: 1.75em !important;
+      ul {
+        > li::before {
+          content: "▫";
+          color: $list-lvl4;
+        }
+      }
+    }
+  }
 }
 
 ol {
   list-style-type: decimal;
-}
+  margin-left: 1.75em !important;
 
-ol ol {
-  list-style-type: lower-alpha;
-}
+  ol {
+    list-style-type: lower-alpha;
 
-ol ol ol {
-  list-style-type: lower-roman;
+    ol {
+      list-style-type: lower-roman;
+    }
+  }
 }
 
 /* REVIEW */
@@ -789,10 +685,6 @@ aside.sidebar {
   */
 }
 
-body:first-of-type aside.sidebar {
-  background-color: rgba(0, 0, 0, 0.05); /* using transparency is night-mode friendly */
-}
-
 /* a bit of a cheat; could use aside.sidebar[title] instead, but not on Aldiko */
 aside.sidebar.titled {
   margin-top: 2em;
@@ -817,12 +709,6 @@ aside.sidebar > h2 {
   box-shadow: 0px 1px 1px rgba(102, 102, 101, 0.1);
   */
 }
-
-/* doesn't work
-body:first-of-type aside.sidebar > h2 {
-  background-color: rgba(255, 255, 255, 1);
-}
-*/
 
 aside.sidebar > div.content {
   margin-bottom: 1em;
@@ -912,12 +798,6 @@ pre {
   padding: 8px 12px; /* this is supposed to be '0.5rem 0.75rem' but Sony Readers crash when see that (at least, PRS-350, PRS-505, PRS-T1) */
   border-top: 1px solid $pre-border;
   border-right: 1px solid $pre-border;
-}
-
-body:first-of-type pre {
-  background-color: rgba(0, 0, 0, 0.05); /* using transparency is night-mode friendly */
-  /*background-color: rgba(51, 51, 50, 0.06);*/
-  /* using transparency is night-mode friendly */
 }
 
 /* TODO what we really want is for pre w/o caption to be unbreakable */
