@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                       logger.warn %(unknown admonition type: #{type})
                       'notice'
                     end
-        %(<aside#{id_attr} class="admonition #{type}"#{title_attr} epub:type="#{epub_type}">
+        %(<aside#{id_attr} class="admonition #{type}#{(role = node.role) ? " #{role}" : ''}"#{title_attr} epub:type="#{epub_type}">
 #{title_el}<div class="content">
 #{output_content node}
 </div>
