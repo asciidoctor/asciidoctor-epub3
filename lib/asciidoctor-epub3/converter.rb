@@ -1348,6 +1348,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         nil
       end
 
+      # @param doc [Asciidoctor::Document]
+      # @param name [String]
+      # @return [nil]
       def add_cover_page doc, name
         image_attr_name = %(#{name}-image)
 
@@ -1368,8 +1371,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         workdir = doc.attr 'docdir'
         workdir = '.' if workdir.nil_or_empty?
 
+        image_path = File.join workdir, image_path unless File.absolute_path? image_path
+
         begin
-          @book.add_item(image_href, content: File.join(workdir, image_path)).cover_image
+          @book.add_item(image_href, content: image_path).cover_image
         rescue => e
           logger.error %(#{::File.basename doc.attr('docfile')}: error adding cover image. Make sure that :#{image_attr_name}: attribute points to a valid image file. #{e})
           return nil
