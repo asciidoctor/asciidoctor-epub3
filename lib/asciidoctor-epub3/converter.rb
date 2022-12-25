@@ -455,9 +455,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         chapter_item
       end
 
+      # @param node [Asciidoctor::Section]
       def convert_section node
         if add_chapter(node).nil?
-          hlevel = node.level
+          hlevel = node.level.clamp 1, 6
           epub_type_attr = node.sectname == 'section' ? '' : %( epub:type="#{node.sectname}")
           div_classes = [%(sect#{node.level}), node.role].compact
           title = get_numbered_title node
