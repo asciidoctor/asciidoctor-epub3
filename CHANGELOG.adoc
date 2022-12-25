@@ -7,6 +7,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+* fix handling of chapters with Unicode titles for Mobi (#417)
 * add XML declarations to XHTML files (#424 by @abbrev)
 * bump the oldest supported Ruby to 2.6
 * bump the oldest supported Asciidoctor to 2.0

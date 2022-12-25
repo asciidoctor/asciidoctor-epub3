@@ -123,15 +123,10 @@ module Asciidoctor
         end
       end
 
-      # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
-      def get_chapter_name(node)
-        if node.document.doctype != 'book'
-          return node.is_a?(Asciidoctor::Document) ? node.attr('docname') || node.id : nil
-        end
-        return (node.id || 'preamble') if node.context == :preamble && node.level.zero?
-
-        chapter_level = [node.document.attr('epub-chapter-level', 1).to_i, 1].max
-        node.is_a?(Asciidoctor::Section) && node.level <= chapter_level ? node.id : nil
+      # @param node [Asciidoctor::AbstractNode]
+      # @return [String, nil]
+      def get_chapter_filename(node)
+        node.id if node.chapter?
       end
 
       def get_numbered_title(node)
@@ -280,13 +275,18 @@ module Asciidoctor
         # TODO: add landmark for back cover? But what epub:type?
 
         unless toc_items.empty?
-          landmarks << { type: 'bodymatter', href: %(#{get_chapter_name toc_items[0]}.xhtml),
+          landmarks << { type: 'bodymatter', href: %(#{get_chapter_filename toc_items[0]}.xhtml),
                          title: 'Start of Content' }
         end
 
         toc_items.each do |item|
-          landmarks << { type: item.style, href: %(#{get_chapter_name item}.xhtml), title: item.title } if %w[appendix
-                                                                                                              bibliography glossary index preface].include? item.style
+          next unless %w[appendix bibliography glossary index preface].include? item.style
+
+          landmarks << {
+            type: item.style,
+            href: %(#{get_chapter_filename item}.xhtml),
+            title: item.title
+          }
         end
 
         nav_item.add_content postprocess_xhtml(nav_doc(node, toc_items, landmarks, outlinelevels))
@@ -353,11 +353,12 @@ module Asciidoctor
         content
       end
 
+      # @param node [Asciidoctor::AbstractBlock]
       def add_chapter(node)
-        docid = get_chapter_name node
-        return nil if docid.nil?
+        filename = get_chapter_filename node
+        return nil if filename.nil?
 
-        chapter_item = @book.add_ordered_item %(#{docid}.xhtml)
+        chapter_item = @book.add_ordered_item %(#{filename}.xhtml)
 
         doctitle = node.document.doctitle partition: true, use_fallback: true
         chapter_title = doctitle.combined
@@ -447,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         lines << %(</head>
 <body>
-<section class="chapter" title=#{chapter_title.encode xml: :attr}#{epub_type_attr} id="#{docid}">
+<section class="chapter" title=#{chapter_title.encode xml: :attr}#{epub_type_attr} id="#{filename}">
 #{header}
         #{content})
 
@@ -1169,7 +1170,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def get_enclosing_chapter(node)
         loop do
           return nil if node.nil?
-          return node unless get_chapter_name(node).nil?
+          return node unless get_chapter_filename(node).nil?
 
           node = node.parent
         end
@@ -1194,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             our_chapter = get_enclosing_chapter node
             ref_chapter = get_enclosing_chapter ref
             if ref_chapter
-              ref_docname = get_chapter_name ref_chapter
+              ref_docname = get_chapter_filename ref_chapter
               if ref_chapter == our_chapter
                 # ref within same chapter file
                 id_attr = %( id="xref-#{refid}")
@@ -1644,7 +1645,7 @@ body > svg {
         lines << '<ol>'
         items.each do |item|
           # index = (state[:index] = (state.fetch :index, 0) + 1)
-          if (chapter_name = get_chapter_name item).nil?
+          if (chapter_filename = get_chapter_filename item).nil?
             item_label = sanitize_xml get_numbered_title(item), :pcdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
@@ -1654,7 +1655,7 @@ body > svg {
                          else
                            sanitize_xml get_numbered_title(item), :cdata
                          end
-            item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
+            item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
           end
           lines << %(<li><a href="#{item_href}">#{item_label}</a>)
           if depth.zero? || (child_sections = item.sections).empty?
@@ -1663,7 +1664,7 @@ body > svg {
             lines << (nav_level child_sections, depth - 1, state)
             lines << '</li>'
           end
-          state.delete :content_doc_href unless chapter_name.nil?
+          state.delete :content_doc_href unless chapter_filename.nil?
         end
         lines << '</ol>'
         lines * LF
@@ -1694,7 +1695,7 @@ body > svg {
         items.each do |item|
           index = (state[:index] = (state.fetch :index, 0) + 1)
           item_id = %(nav_#{index})
-          if (chapter_name = get_chapter_name item).nil?
+          if (chapter_filename = get_chapter_filename item).nil?
             item_label = sanitize_xml get_numbered_title(item), :cdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
@@ -1703,7 +1704,7 @@ body > svg {
                          else
                            sanitize_xml get_numbered_title(item), :cdata
                          end
-            item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
+            item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
           end
           lines << %(<navPoint id="#{item_id}" playOrder="#{index}">)
           lines << %(<navLabel><text>#{item_label}</text></navLabel>)
@@ -1712,7 +1713,7 @@ body > svg {
             lines << (ncx_level child_sections, depth - 1, state)
           end
           lines << %(</navPoint>)
-          state.delete :content_doc_href unless chapter_name.nil?
+          state.delete :content_doc_href unless chapter_filename.nil?
         end
         lines * LF
       end
@@ -1874,73 +1875,23 @@ body > svg {
       end
     end
 
-    class DocumentIdGenerator
-      RESERVED_IDS = %w[cover nav ncx].freeze
-      CHAR_REF_RX = /&(?:([a-zA-Z][a-zA-Z]+\d{0,2})|#(\d\d\d{0,4})|#x([\da-fA-F][\da-fA-F][\da-fA-F]{0,3}));/.freeze
-      if defined? __dir__
-        INVALID_CHARS_RX = /[^\p{Word}]+/.freeze
-        LEADING_DIGIT_RX = /^\p{Nd}/.freeze
-      else
-        INVALID_CHARS_RX = /[^[:word:]]+/.freeze
-        LEADING_DIGIT_RX = /^[[:digit:]]/.freeze
+    class NumericIdGenerator
+      def initialize
+        @counter = 1
       end
 
-      class << self
-        def generate_id(doc, pre = nil, sep = nil)
-          synthetic = false
-          unless (id = doc.id)
-            # NOTE: we assume pre is a valid ID prefix and that pre and sep only contain valid ID chars
-            pre ||= '_'
-            sep = sep ? sep.chr : '_'
-            if doc.header?
-              id = doc.doctitle sanitize: true
-              if id.include? '&'
-                id = id.gsub CHAR_REF_RX do
-                  if ::Regexp.last_match(1)
-                    ::Regexp.last_match(1) == 'amp' ? 'and' : sep
-                  else
-                    (if (d = ::Regexp.last_match(2) ? ::Regexp.last_match(2).to_i : ::Regexp.last_match(3).hex) == 8217
-                       ''
-                     else
-                       ([d].pack 'U*')
-                     end)
-                  end
-                end
-              end
-              id = id.downcase.gsub INVALID_CHARS_RX, sep
-              if id.empty?
-                id = nil
-                synthetic = true
-              else
-                unless sep.empty?
-                  if (id = id.tr_s sep, sep).end_with? sep
-                    if id == sep
-                      id = nil
-                      synthetic = true
-                    else
-                      id = id.start_with?(sep) ? id[1..-2] : id.chop
-                    end
-                  elsif id.start_with? sep
-                    id = id[1..]
-                  end
-                end
-                unless synthetic
-                  if pre.empty?
-                    id = %(_#{id}) if LEADING_DIGIT_RX =~ id
-                  elsif !(id.start_with? pre)
-                    id = %(#{pre}#{id})
-                  end
-                end
-              end
-            elsif (first_section = doc.first_section)
-              id = first_section.id
-            else
-              synthetic = true
-            end
-            id = %(#{pre}document#{sep}#{doc.object_id}) if synthetic
-          end
-          logger.error %(chapter uses a reserved ID: #{id}) if !synthetic && (RESERVED_IDS.include? id)
-          id
+      # @param node [Asciidoctor::AbstractNode]
+      # @return [void]
+      def generate_id(node)
+        if node.chapter? || node.is_a?(Asciidoctor::Document)
+          node.id = %(_generated_id_#{@counter})
+          @counter += 1
+        end
+
+        # Recurse
+        node.blocks.each do |subnode|
+          # dlist contains array of *arrays* of blocks, so just skip them
+          generate_id subnode if subnode.is_a?(Asciidoctor::AbstractBlock)
         end
       end
     end
@@ -1963,9 +1914,23 @@ body > svg {
           ebook_format = document.attributes['ebook-format'] = 'epub3'
         end
         document.attributes[%(ebook-format-#{ebook_format})] = ''
+
+        # Enable generation of section ids because we use them for chapter filenames
+        document.set_attribute 'sectids'
         treeprocessor do
           process do |doc|
-            doc.id = DocumentIdGenerator.generate_id doc, (doc.attr 'idprefix'), (doc.attr 'idseparator')
+            if ebook_format == 'kf8'
+              # Kindlegen doesn't support unicode ids
+              NumericIdGenerator.new.generate_id doc
+            else
+              # :sectids: doesn't generate id for top-level section (why?), do it manually
+              doc.id = Section.generate_id(doc.first_section&.title || doc.attr('docname') || 'document', doc) if doc.id.nil_or_empty?
+
+              if (preamble = doc.blocks[0]) && preamble.context == :preamble && preamble.id.nil_or_empty?
+                # :sectids: doesn't generate id for preamble (because it is not a section), do it manually
+                preamble.id = Section.generate_id(preamble.title || 'preamble', doc)
+              end
+            end
             nil
           end
         end

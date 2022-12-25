@@ -63,7 +63,7 @@ describe Asciidoctor::Epub3::Converter do
 
       preamble = book.items[spine[0].idref]
       expect(preamble).not_to be_nil
-      expect(preamble.href).to eq('preamble.xhtml')
+      expect(preamble.href).to eq('_preamble.xhtml')
       expect(preamble.content).to include %(I am a preamble)
     end
 

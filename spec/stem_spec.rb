@@ -5,7 +5,7 @@ require_relative 'spec_helper'
 describe 'Asciidoctor::Epub3::Converter - Stem' do
   it 'supports mathml stem blocks' do
     book, = to_epub fixture_file('stem.adoc')
-    chapter = book.item_by_href 'stem.xhtml'
+    chapter = book.item_by_href '_article.xhtml'
     expect(chapter).not_to be_nil
     expect(chapter.content).to include '<figcaption>Math</figcaption>
 <div class="content">
@@ -16,7 +16,7 @@ describe 'Asciidoctor::Epub3::Converter - Stem' do
 
   it 'supports inline mathml' do
     book, = to_epub fixture_file('inline-stem.adoc')
-    chapter = book.item_by_href 'inline-stem.xhtml'
+    chapter = book.item_by_href '_article.xhtml'
     expect(chapter).not_to be_nil
     expect(chapter.content).to include 'Inline stem: <code class="literal"><mml:math><mml:mi>y</mml:mi><mml:mo>=</mml:mo><mml:msup><mml:mi>x</mml:mi><mml:mn>2</mml:mn></mml:msup><mml:msqrt><mml:mn>4</mml:mn></mml:msqrt></mml:math></code>'
   end
