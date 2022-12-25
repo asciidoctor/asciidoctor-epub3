@@ -718,6 +718,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         if (role = node.role)
           table_classes << role
         end
+        if (float = node.attr 'float')
+          table_classes << float
+        end
         table_styles = []
         if (autowidth = node.option? 'autowidth') && !(node.attr? 'width')
           table_classes << 'fit-content'
@@ -1069,7 +1072,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           poster_attr = %( poster="#{poster}")
         end
 
-        %(<figure#{id_attr} class="video#{prepend_space node.role}">#{title_element}
+        %(<figure#{id_attr} class="video#{prepend_space node.role}#{prepend_space node.attr('float')}">#{title_element}
 <div class="content">
 <video src="#{target}#{time_anchor}"#{width_attr}#{height_attr}#{autoplay_attr}#{poster_attr}#{controls_attr}#{loop_attr}>
 <div>Your Reading System does not support (this) video.</div>
@@ -1084,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         id_attr = node.id ? %( id="#{node.id}") : ''
         title_element = node.title? ? %(\n<figcaption>#{node.captioned_title}</figcaption>) : ''
         img_attrs = resolve_image_attrs node
-        %(<figure#{id_attr} class="image#{prepend_space node.role}">
+        %(<figure#{id_attr} class="image#{prepend_space node.role}#{prepend_space node.attr('float')}">
 <div class="content">
 <img src="#{target}"#{prepend_space img_attrs * ' '} />
 </div>#{title_element}
@@ -1189,13 +1192,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           i_classes << %(icon-flip-#{(node.attr 'flip')[0]}) if node.attr? 'flip'
           i_classes << %(icon-rotate-#{node.attr 'rotate'}) if node.attr? 'rotate'
           i_classes << node.role if node.role?
+          i_classes << node.attr('float') if node.attr 'float'
           %(<i class="#{i_classes * ' '}"></i>)
         else
           target = node.image_uri node.target
           register_media_file node, target, 'image'
 
           img_attrs = resolve_image_attrs node
-          img_attrs << %(class="inline#{prepend_space node.role}")
+          img_attrs << %(class="inline#{prepend_space node.role}#{prepend_space node.attr('float')}")
           %(<img src="#{target}"#{prepend_space img_attrs * ' '}/>)
         end
       end
