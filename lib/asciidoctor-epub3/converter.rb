@@ -230,6 +230,10 @@ module Asciidoctor
         landmarks = []
 
         front_cover = add_cover_page node, 'front-cover'
+        if front_cover.nil? && @format != :kf8 && node.doctype == 'book'
+          # TODO(#352): add textual front cover similar to PDF
+        end
+
         landmarks << { type: 'cover', href: front_cover.href, title: 'Front Cover' } unless front_cover.nil?
 
         front_matter_page = add_front_matter_page node
@@ -1354,7 +1358,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       # @param doc [Asciidoctor::Document]
       # @param name [String]
-      # @return [nil]
+      # @return [GEPUB::Item, nil]
       def add_cover_page doc, name
         image_attr_name = %(#{name}-image)
 
