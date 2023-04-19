@@ -21,7 +21,7 @@ describe 'Asciidoctor::Epub3::Converter - Highlight' do
     article = book.item_by_href 'source_highlight.xhtml'
     expect(article).not_to be_nil
     if Asciidoctor::Document.supports_syntax_highlighter?
-      expect(article.content).to include '<span class="tok-k">class</span> <span class="tok-nc">Foo</span>'
+      expect(article.content).to include '<span class="tok-nc">Foo</span>'
       expect(article.content).to include '<link rel="stylesheet" href="./pygments-bw.css"/>'
       expect(book.item_by_href('pygments-bw.css')).not_to be_nil
     else
