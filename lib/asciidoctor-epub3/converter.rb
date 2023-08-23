@@ -1000,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       def resolve_image_attrs node
         img_attrs = []
-        img_attrs << %(alt="#{node.attr 'alt'}") if node.attr? 'alt'
+        img_attrs << %(alt="#{encode_alt_text node, (node.attr 'alt'), true}") if node.attr? 'alt'
 
         # Unlike browsers, Calibre/Kindle *do* scale image if only height is specified
         # So, in order to match browser behavior, we just always omit height
@@ -1764,6 +1764,11 @@ body > svg {
       # Handles asciidoctor 1.5.6 quirk when role can be parent
       def role_valid_class? role
         role.is_a? String
+      end
+
+      def encode_alt_text node, val, to_attr = false
+        val = node.sub_specialchars val if (val.include? '<') || (val.include? '&') || (val.include? '>')
+        to_attr && (val.include? '"') ? (val.gsub '"', '&quot;') : val
       end
     end
 
