@@ -1241,8 +1241,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         %(#{node.text}<br/>)
       end
 
+      # @param node [Asciidoctor::Inline]
+      # @return [String]
       def convert_inline_button(node)
-        %(<b class="button">[<span class="label">#{node.text}</span>]</b>)
+        %(<b class="button">#{node.text}</b>)
       end
 
       def convert_inline_callout(node)
