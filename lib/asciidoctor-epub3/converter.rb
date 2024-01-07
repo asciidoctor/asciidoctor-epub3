@@ -1057,9 +1057,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         @media_files[target] ||= { path: fs_path, media_type: media_type }
       end
 
+      # @param node [Asciidoctor::Block]
+      # @return [Array<String>]
       def resolve_image_attrs(node)
         img_attrs = []
-        img_attrs << %(alt="#{node.attr 'alt'}") if node.attr? 'alt'
+
+        unless (alt = encode_attribute_value(node.alt)).empty?
+          img_attrs << %(alt="#{alt}")
+        end
 
         # Unlike browsers, Calibre/Kindle *do* scale image if only height is specified
         # So, in order to match browser behavior, we just always omit height
@@ -1145,6 +1150,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
+      # @param node [Asciidoctor::Block]
+      # @return [String]
       def convert_image(node)
         target = node.image_uri node.attr 'target'
         register_media_file node, target, 'image'
@@ -1331,6 +1338,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       def output_content(node)
         node.content_model == :simple ? %(<p>#{node.content}</p>) : node.content
+      end
+
+      def encode_attribute_value(val)
+        val.gsub '"', '&quot;'
       end
 
       # FIXME: merge into with xml_sanitize helper
