@@ -6,7 +6,8 @@ source 'https://rubygems.org'
 gemspec
 
 group :optional do
-  # epubcheck-ruby might be safe to be converted into runtime dependency, but could have issues when packaged into asciidoctorj-epub3
+  # epubcheck-ruby might be safe to be converted into runtime dependency,
+  # but could have issues when packaged into asciidoctorj-epub3
   gem 'epubcheck-ruby', '~> 5.1.0.0'
 
   # Kindlegen is unavailable neither for 64-bit x86 macOS nor for ARM

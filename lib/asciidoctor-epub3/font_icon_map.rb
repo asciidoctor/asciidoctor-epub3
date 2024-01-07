@@ -17,7 +17,7 @@ module Asciidoctor
           @shims ||= YAML.load_file File.join(FONT_AWESOME_DIR, 'shims.yml')
         end
 
-        def unicode icon_name
+        def unicode(icon_name)
           shim = shims[icon_name]
           icon_name = shim['name'] unless shim.nil?
           icon_data = icons[icon_name]

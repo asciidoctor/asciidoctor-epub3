@@ -51,18 +51,18 @@ describe 'Asciidoctor::Epub3::Converter - Xref' do
 
   it 'adds xref id to paragraph' do
     book = to_epub <<~EOS
-= Article
+      = Article
 
-[id=one]
-One
+      [id=one]
+      One
 
-[[two]]
-Two
+      [[two]]
+      Two
 
-[#three]
-Three
+      [#three]
+      Three
 
-More text
+      More text
     EOS
     article = book.item_by_href '_article.xhtml'
     expect(article).not_to be_nil
@@ -73,11 +73,11 @@ More text
 
   it 'displays anchor text' do
     book = to_epub <<~EOS
-= Article
+      = Article
 
-<<_subsection,link text>>
+      <<_subsection,link text>>
 
-== Subsection
+      == Subsection
     EOS
     article = book.item_by_href '_article.xhtml'
     expect(article).not_to be_nil

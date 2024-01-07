@@ -13,13 +13,12 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it 'converts empty heredoc document to epub without exceptions' do
-      to_epub <<~EOS
-      EOS
+      to_epub ''
     end
 
     it 'converts minimal heredoc document to epub without exceptions' do
       book = to_epub <<~EOS
-      = Title
+        = Title
       EOS
       expect(book).to be_a(GEPUB::Book)
     end
@@ -81,7 +80,7 @@ describe Asciidoctor::Epub3::Converter do
 
     it 'supports quotes in section titles' do
       book, = to_epub <<~EOS
-= "Title"
+        = "Title"
       EOS
       chapter = book.item_by_href '_title.xhtml'
       expect(chapter).not_to be_nil
@@ -90,11 +89,11 @@ describe Asciidoctor::Epub3::Converter do
 
     it 'supports section numbers' do
       book, = to_epub <<~EOS
-= Title
-:sectnums:
-:doctype: book
+        = Title
+        :sectnums:
+        :doctype: book
 
-== Chapter
+        == Chapter
       EOS
       chapter = book.item_by_href '_chapter.xhtml'
       expect(chapter).not_to be_nil
@@ -117,7 +116,7 @@ describe Asciidoctor::Epub3::Converter do
     it 'populates ebook subject from keywords' do
       book, = to_epub fixture_file('keywords/book.adoc')
       keywords = book.subject_list.map(&:content)
-      expect(keywords).to eq(%w(a b c))
+      expect(keywords).to eq(%w[a b c])
     end
 
     it 'adds front matter page with images' do
@@ -167,23 +166,23 @@ describe Asciidoctor::Epub3::Converter do
 
     it 'supports custom epub-chapter-level' do
       book = to_epub <<~EOS
-= Book
-:epub-chapter-level: 2
-:doctype: book
+        = Book
+        :epub-chapter-level: 2
+        :doctype: book
 
-text0
+        text0
 
-== Level 1
+        == Level 1
 
-text1
+        text1
 
-=== Level 2
+        === Level 2
 
-text2
+        text2
 
-==== Level 3
+        ==== Level 3
 
-text3
+        text3
       EOS
 
       spine = book.spine.itemref_list
@@ -235,10 +234,10 @@ text3
 
     it 'adds book series metadata' do
       book = to_epub <<~EOS
-= Article
-:series-name: My Series
-:series-volume: 42
-:series-id: bla
+        = Article
+        :series-name: My Series
+        :series-volume: 42
+        :series-id: bla
       EOS
       meta = book.metadata.meta_list[1]
       expect(meta).not_to be_nil
@@ -250,10 +249,10 @@ text3
 
     it 'adds toc to spine' do
       book = to_epub <<~EOS
-= Title
-:toc:
+        = Title
+        :toc:
 
-Text
+        Text
       EOS
       spine = book.spine.itemref_list
       expect(spine).to have_size(2)
@@ -264,19 +263,19 @@ Text
 
     it "doesn't crash when sees inline toc" do
       to_epub <<~EOS
-= Title
+        = Title
 
-toc::[]
+        toc::[]
       EOS
     end
 
     it 'does not crash when sees inline pass macro `m` with an icon' do
       to_epub <<~EOS
-= Test
-:icons: font
-:call-to-action: pass:m,q[icon:hand-o-right[] *Call to Action*]
+        = Test
+        :icons: font
+        :call-to-action: pass:m,q[icon:hand-o-right[] *Call to Action*]
 
-{call-to-action}
+        {call-to-action}
       EOS
     end
 
@@ -292,9 +291,9 @@ toc::[]
 
     it 'supports remote video' do
       book, = to_epub <<~EOS
-= Article
+        = Article
 
-video::http://nonexistent/small.webm[]
+        video::http://nonexistent/small.webm[]
       EOS
       article = book.item_by_href '_article.xhtml'
       expect(article).not_to be_nil
@@ -317,9 +316,9 @@ video::http://nonexistent/small.webm[]
 
     it 'supports remote audio' do
       book, = to_epub <<~EOS
-= Article
+        = Article
 
-audio::http://nonexistent/small.mp3[]
+        audio::http://nonexistent/small.mp3[]
       EOS
       article = book.item_by_href '_article.xhtml'
       expect(article).not_to be_nil
@@ -332,27 +331,27 @@ audio::http://nonexistent/small.mp3[]
 
     it 'supports horizontal dlist' do
       book = to_epub <<~EOS
-= Article
+        = Article
 
-[horizontal]
-CPU:: The brain of the computer.
-Hard drive:: Permanent storage for operating system and/or user files.
-RAM:: Temporarily stores information the CPU uses during operation.
+        [horizontal]
+        CPU:: The brain of the computer.
+        Hard drive:: Permanent storage for operating system and/or user files.
+        RAM:: Temporarily stores information the CPU uses during operation.
       EOS
 
       chapter = book.item_by_href '_article.xhtml'
       expect(chapter).not_to be_nil
       expect(chapter.content).to include <<~EOS
-<tr>
-<td class="hdlist1">
-<p>
-CPU
-</p>
-</td>
-<td class="hdlist2">
-<p>The brain of the computer.</p>
-</td>
-</tr>
+        <tr>
+        <td class="hdlist1">
+        <p>
+        CPU
+        </p>
+        </td>
+        <td class="hdlist2">
+        <p>The brain of the computer.</p>
+        </td>
+        </tr>
       EOS
     end
   end
