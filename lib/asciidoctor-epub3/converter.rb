@@ -620,6 +620,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         %(<#{tag_name}#{id_attribute} class="#{['discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
       end
 
+      # @param node [Asciidoctor::Block]
       def convert_listing(node)
         id_attribute = node.id ? %( id="#{node.id}") : ''
         nowrap = (node.option? 'nowrap') || !(node.document.attr? 'prewrap')
@@ -1944,14 +1945,6 @@ body > svg {
         # TODO: bw theme for CodeRay
         document.set_attribute 'pygments-style', 'bw' unless document.attr? 'pygments-style'
         document.set_attribute 'rouge-style', 'bw' unless document.attr? 'rouge-style'
-
-        # Old asciidoctor versions do not have public API for writing highlighter CSS file
-        # So just use inline CSS there.
-        unless Document.supports_syntax_highlighter?
-          document.set_attribute 'coderay-css', 'style'
-          document.set_attribute 'pygments-css', 'style'
-          document.set_attribute 'rouge-css', 'style'
-        end
 
         case (ebook_format = document.attributes['ebook-format'])
         when 'epub3', 'kf8'
