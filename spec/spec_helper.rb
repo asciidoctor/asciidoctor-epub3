@@ -13,7 +13,7 @@ RSpec.configure do |config|
     FileUtils.rm_r temp_dir, force: true, secure: true
   end
 
-  def bin_script name, opts = {}
+  def bin_script(name, opts = {})
     path = Gem.bin_path (opts.fetch :gem, 'asciidoctor-epub3'), name
     [Gem.ruby, path]
   end
@@ -28,7 +28,7 @@ RSpec.configure do |config|
 
   def run_command cmd, *args
     Dir.chdir __dir__ do
-      if Array === cmd
+      if cmd.is_a?(Array)
         args.unshift(*cmd)
         cmd = args.shift
       end
@@ -67,13 +67,13 @@ RSpec.configure do |config|
     skip 'kindlegen gem is unavailable'
   end
 
-  def convert input, opts = {}
+  def convert(input, opts = {})
     opts[:backend] = 'epub3'
     opts[:header_footer] = true
     opts[:mkdirs] = true
     opts[:safe] = Asciidoctor::SafeMode::UNSAFE unless opts.key? :safe
 
-    if Pathname === input
+    if input.is_a?(Pathname)
       opts[:to_dir] = temp_dir.to_s unless opts.key?(:to_dir) || opts.key?(:to_file)
       Asciidoctor.convert_file input.to_s, opts
     else
@@ -81,15 +81,16 @@ RSpec.configure do |config|
     end
   end
 
-  def to_epub input, opts = {}
+  def to_epub(input, opts = {})
     result = convert input, opts
-    return result if GEPUB::Book === result
+    return result if result.is_a?(GEPUB::Book)
+
     output = Pathname.new result.attr('outfile')
     book = GEPUB::Book.parse output
     [book, output]
   end
 
-  def to_mobi input, opts = {}
+  def to_mobi(input, opts = {})
     skip_unless_has_kindlegen
     (opts[:attributes] ||= {})['ebook-format'] = 'mobi'
     doc = convert input, opts
@@ -100,11 +101,11 @@ RSpec.configure do |config|
 end
 
 RSpec::Matchers.define :have_size do |expected|
-  match {|actual| actual.size == expected }
-  failure_message {|actual| %(expected #{actual} to have size #{expected}, but was #{actual.size}) }
+  match { |actual| actual.size == expected }
+  failure_message { |actual| %(expected #{actual} to have size #{expected}, but was #{actual.size}) }
 end
 
 RSpec::Matchers.define :have_item_with_href do |expected|
-  match {|actual| actual.item_by_href expected }
-  failure_message {|actual| %(expected '#{actual.title}' to have item with href #{expected}) }
+  match { |actual| actual.item_by_href expected }
+  failure_message { |actual| %(expected '#{actual.title}' to have item with href #{expected}) }
 end

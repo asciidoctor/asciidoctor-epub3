@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version = Asciidoctor::Epub3::VERSION
 
   s.summary = 'Converts AsciiDoc documents to EPUB3 and KF8/MOBI (Kindle) e-book formats'
-  s.description = <<-EOS
-An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/MOBI (Kindle) e-book archives.
+  s.description = <<~EOS
+    An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/MOBI (Kindle) e-book archives.
   EOS
 
   s.authors = ['Dan Allen', 'Sarah White']
@@ -20,13 +20,12 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.required_ruby_version = '>= 2.6.0'
 
   files = begin
-    (result = Open3.popen3('git ls-files -z') {|_, out| out.read }.split %(\0)).empty? ? Dir['**/*'] : result
-  rescue
+    (result = Open3.popen3('git ls-files -z') { |_, out| out.read }.split %(\0)).empty? ? Dir['**/*'] : result
+  rescue StandardError
     Dir['**/*']
   end
-  s.files = files.grep %r/^(?:(?:data\/(?:fonts|images|styles)|lib)\/.+|Gemfile|Rakefile|LICENSE|(?:CHANGELOG|NOTICE|README)\.adoc|\.yardopts|#{s.name}\.gemspec)$/
-  s.executables = %w(asciidoctor-epub3 adb-push-ebook)
-  s.test_files = s.files.grep(/^(?:test|spec|feature)\/.*$/)
+  s.files = files.grep %r{^(?:(?:data/(?:fonts|images|styles)|lib)/.+|Gemfile|Rakefile|LICENSE|(?:CHANGELOG|NOTICE|README)\.adoc|\.yardopts|#{s.name}\.gemspec)$}
+  s.executables = %w[asciidoctor-epub3 adb-push-ebook]
 
   s.require_paths = ['lib']
 
@@ -37,7 +36,7 @@ An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/M
   s.add_development_dependency 'rake', '~> 13.1.0'
   s.add_development_dependency 'rouge', '~> 3.0'
   s.add_development_dependency 'rspec', '~> 3.12.0'
-  s.add_development_dependency 'rubocop', '~> 1.28.2'
+  s.add_development_dependency 'rubocop', '~> 1.50.2'
   s.add_development_dependency 'rubocop-rake', '~> 0.6.0'
   s.add_development_dependency 'rubocop-rspec', '~> 2.11.1'
 

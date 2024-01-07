@@ -3,7 +3,9 @@
 require 'stringio' unless defined? StringIO
 
 class String
-  def to_ios
-    StringIO.new self
-  end unless method_defined? :to_ios
+  unless method_defined? :to_ios
+    def to_ios
+      StringIO.new self
+    end
+  end
 end

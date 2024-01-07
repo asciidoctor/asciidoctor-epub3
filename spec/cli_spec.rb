@@ -12,15 +12,15 @@ describe 'asciidoctor-epub3' do
   it 'exits with 1 when given nonexistent path' do
     _, err, res = to_epub Pathname.new('/nonexistent')
     expect(res.exitstatus).to eq(1)
-    expect(err).to match(/input file \/nonexistent( is)? missing/)
+    expect(err).to match(%r{input file /nonexistent( is)? missing})
   end
 
   it 'exits with 1 when epub validation fails with --failure-level=ERROR' do
     _, err, res = run_command asciidoctor_epub3_bin,
-        '--failure-level=ERROR',
-        '-a', 'ebook-validate',
-        fixture_file('invalid.adoc').to_s,
-        '-o', temp_file('invalid.epub').to_s
+                              '--failure-level=ERROR',
+                              '-a', 'ebook-validate',
+                              fixture_file('invalid.adoc').to_s,
+                              '-o', temp_file('invalid.epub').to_s
     expect(res.exitstatus).to eq(1)
     # Error from epubcheck
     expect(err).to include 'ERROR(RSC-012)'
@@ -63,12 +63,12 @@ describe 'asciidoctor-epub3' do
     expect(res.exitstatus).to eq(0)
   end
 
-  def to_mobi in_file, out_file
+  def to_mobi(in_file, out_file)
     skip_unless_has_kindlegen
     run_command asciidoctor_epub3_bin, '-a', 'ebook-format=mobi', in_file.to_s, '-o', out_file.to_s
   end
 
-  def to_epub in_file, out_file = nil
+  def to_epub(in_file, out_file = nil)
     argv = asciidoctor_epub3_bin + ['-a', 'ebook-validate', in_file.to_s]
     argv += ['-o', out_file.to_s] unless out_file.nil?
     run_command argv

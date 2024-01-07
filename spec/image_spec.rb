@@ -32,12 +32,12 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
 
   it 'does not duplicate images in manifest' do
     book, = to_epub fixture_file('inline-image/book.adoc')
-    expect(book.items.keys.select {|k| k.include? 'wolpertinger' }.size).to eq(1)
+    expect(book.items.keys.select { |k| k.include? 'wolpertinger' }.size).to eq(1)
   end
 
   it 'does not add data-uri images to manifest' do
     book, = to_epub fixture_file('inline-image/book.adoc'), attributes: { 'data-uri' => '' }
-    expect(book.manifest.items.select {|_, v| v.href.start_with? 'data:' }).to be_empty
+    expect(book.manifest.items.select { |_, v| v.href.start_with? 'data:' }).to be_empty
   end
 
   it 'converts font-based icons to CSS' do

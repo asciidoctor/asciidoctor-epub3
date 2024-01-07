@@ -5,11 +5,11 @@ require_relative 'spec_helper'
 describe 'Asciidoctor::Epub3::Converter - Table' do
   it 'supports halign' do
     book = to_epub <<~EOS
-= Article
+      = Article
 
-|===
->| Text
-|===
+      |===
+      >| Text
+      |===
     EOS
     article = book.item_by_href '_article.xhtml'
     expect(article).not_to be_nil
@@ -18,11 +18,11 @@ describe 'Asciidoctor::Epub3::Converter - Table' do
 
   it 'supports valign' do
     book = to_epub <<~EOS
-= Article
+      = Article
 
-|===
-.>| Text
-|===
+      |===
+      .>| Text
+      |===
     EOS
     article = book.item_by_href '_article.xhtml'
     expect(article).not_to be_nil
@@ -31,12 +31,12 @@ describe 'Asciidoctor::Epub3::Converter - Table' do
 
   it 'supports colwidth' do
     book = to_epub <<~EOS
-= Article
+      = Article
 
-[cols="3,1"]
-|===
-| A | B
-|===
+      [cols="3,1"]
+      |===
+      | A | B
+      |===
     EOS
     article = book.item_by_href '_article.xhtml'
     expect(article).not_to be_nil

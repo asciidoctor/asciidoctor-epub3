@@ -16,18 +16,19 @@ module Asciidoctor
 
       register_for 'epub3'
 
-      def write output, target
+      def write(output, target)
         epub_file = @format == :kf8 ? %(#{::Asciidoctor::Helpers.rootname target}-kf8.epub) : target
         output.generate_epub epub_file
         logger.debug %(Wrote #{@format.upcase} to #{epub_file})
         if @extract
-          extract_dir = epub_file.sub EpubExtensionRx, ''
+          extract_dir = epub_file.sub EPUB_EXTENSION_RX, ''
           ::FileUtils.remove_dir extract_dir if ::File.directory? extract_dir
           ::Dir.mkdir extract_dir
           ::Dir.chdir extract_dir do
             ::Zip::File.open epub_file do |entries|
               entries.each do |entry|
                 next unless entry.file?
+
                 unless (entry_dir = ::File.dirname entry.name) == '.' || (::File.directory? entry_dir)
                   ::FileUtils.mkdir_p entry_dir
                 end
@@ -46,62 +47,73 @@ module Asciidoctor
         end
       end
 
-      CsvDelimiterRx = /\s*,\s*/
+      CSV_DELIMITED_RX = /\s*,\s*/.freeze
 
       DATA_DIR = ::File.expand_path ::File.join(__dir__, '..', '..', 'data')
-      ImageMacroRx = /^image::?(.*?)\[(.*?)\]$/
-      ImgSrcScanRx = /<img src="(.+?)"/
-      SvgImgSniffRx = /<img src=".+?\.svg"/
+      IMAGE_MACRO_RX = /^image::?(.*?)\[(.*?)\]$/.freeze
+      IMAGE_SRC_SCAN_RX = /<img src="(.+?)"/.freeze
+      SVG_IMG_SNIFF_RX = /<img src=".+?\.svg"/.freeze
 
-      LF = ?\n
-      NoBreakSpace = '&#xa0;'
-      RightAngleQuote = '&#x203a;'
-      CalloutStartNum = %(\u2460)
+      LF = "\n"
+      NO_BREAK_SPACE = '&#xa0;'
+      RIGHT_ANGLE_QUOTE = '&#x203a;'
+      CALLOUT_START_NUM = %(\u2460)
 
-      CharEntityRx = /&#(\d{2,6});/
-      XmlElementRx = /<\/?.+?>/
-      TrailingPunctRx = /[[:punct:]]$/
+      CHAR_ENTITY_RX = /&#(\d{2,6});/.freeze
+      XML_ELEMENT_RX = %r{</?.+?>}.freeze
+      TRAILING_PUNCT_RX = /[[:punct:]]$/.freeze
 
-      FromHtmlSpecialCharsMap = {
+      FROM_HTML_SPECIAL_CHARS_MAP = {
         '&lt;' => '<',
         '&gt;' => '>',
-        '&amp;' => '&',
-      }
+        '&amp;' => '&'
+      }.freeze
 
-      FromHtmlSpecialCharsRx = /(?:#{FromHtmlSpecialCharsMap.keys * '|'})/
+      FROM_HTML_SPECIAL_CHARS_RX = /(?:#{FROM_HTML_SPECIAL_CHARS_MAP.keys * '|'})/.freeze
 
-      ToHtmlSpecialCharsMap = {
+      TO_HTML_SPECIAL_CHARS_MAP = {
         '&' => '&amp;',
         '<' => '&lt;',
-        '>' => '&gt;',
-      }
+        '>' => '&gt;'
+      }.freeze
 
-      ToHtmlSpecialCharsRx = /[#{ToHtmlSpecialCharsMap.keys.join}]/
+      TO_HTML_SPECIAL_CHARS_RX = /[#{TO_HTML_SPECIAL_CHARS_MAP.keys.join}]/.freeze
 
-      EpubExtensionRx = /\.epub$/i
-      KindlegenCompression = { '0' => '-c0', '1' => '-c1', '2' => '-c2', 'none' => '-c0', 'standard' => '-c1', 'huffdic' => '-c2' }
+      EPUB_EXTENSION_RX = /\.epub$/i.freeze
+      KINDLEGEN_COMPRESSION = {
+        '0' => '-c0',
+        '1' => '-c1',
+        '2' => '-c2',
+        'none' => '-c0',
+        'standard' => '-c1',
+        'huffdic' => '-c2'
+      }.freeze
 
-      (QUOTE_TAGS = {
-        monospaced: ['<code>', '</code>', true],
-        emphasis: ['<em>', '</em>', true],
-        strong: ['<strong>', '</strong>', true],
-        double: ['“', '”'],
-        single: ['‘', '’'],
-        mark: ['<mark>', '</mark>', true],
-        superscript: ['<sup>', '</sup>', true],
-        subscript: ['<sub>', '</sub>', true],
-        asciimath: ['<code>', '</code>', true],
-        latexmath: ['<code>', '</code>', true],
-      }).default = ['', '']
+      QUOTE_TAGS = begin
+        tags = {
+          monospaced: ['<code>', '</code>', true],
+          emphasis: ['<em>', '</em>', true],
+          strong: ['<strong>', '</strong>', true],
+          double: ['“', '”'],
+          single: ['‘', '’'],
+          mark: ['<mark>', '</mark>', true],
+          superscript: ['<sup>', '</sup>', true],
+          subscript: ['<sub>', '</sub>', true],
+          asciimath: ['<code>', '</code>', true],
+          latexmath: ['<code>', '</code>', true]
+        }
+        tags.default = ['', '']
+        tags.freeze
+      end
 
-      def initialize backend, opts = {}
+      def initialize(backend, opts = {})
         super
         basebackend 'html'
         outfilesuffix '.epub' # dummy outfilesuffix since it may be .mobi
         htmlsyntax 'xml'
       end
 
-      def convert node, name = nil, _opts = {}
+      def convert(node, name = nil, _opts = {})
         method_name = %(convert_#{name ||= node.node_name})
         if respond_to? method_name
           send method_name, node
@@ -112,44 +124,45 @@ module Asciidoctor
       end
 
       # See https://asciidoctor.org/docs/user-manual/#book-parts-and-chapters
-      def get_chapter_name node
+      def get_chapter_name(node)
         if node.document.doctype != 'book'
-          return Asciidoctor::Document === node ? node.attr('docname') || node.id : nil
+          return node.is_a?(Asciidoctor::Document) ? node.attr('docname') || node.id : nil
         end
-        return (node.id || 'preamble') if node.context == :preamble && node.level == 0
+        return (node.id || 'preamble') if node.context == :preamble && node.level.zero?
+
         chapter_level = [node.document.attr('epub-chapter-level', 1).to_i, 1].max
-        Asciidoctor::Section === node && node.level <= chapter_level ? node.id : nil
+        node.is_a?(Asciidoctor::Section) && node.level <= chapter_level ? node.id : nil
       end
 
-      def get_numbered_title node
+      def get_numbered_title(node)
         doc_attrs = node.document.attributes
         level = node.level
         if node.caption
-          title = node.captioned_title
+          node.captioned_title
         elsif node.respond_to?(:numbered) && node.numbered && level <= (doc_attrs['sectnumlevels'] || 3).to_i
           if level < 2 && node.document.doctype == 'book'
             case node.sectname
             when 'chapter'
-              title = %(#{(signifier = doc_attrs['chapter-signifier']) ? "#{signifier} " : ''}#{node.sectnum} #{node.title})
+              %(#{(signifier = doc_attrs['chapter-signifier']) ? "#{signifier} " : ''}#{node.sectnum} #{node.title})
             when 'part'
-              title = %(#{(signifier = doc_attrs['part-signifier']) ? "#{signifier} " : ''}#{node.sectnum nil, ':'} #{node.title})
+              %(#{(signifier = doc_attrs['part-signifier']) ? "#{signifier} " : ''}#{node.sectnum nil,
+                                                                                                  ':'} #{node.title})
             else
-              title = %(#{node.sectnum} #{node.title})
+              %(#{node.sectnum} #{node.title})
             end
           else
-            title = %(#{node.sectnum} #{node.title})
+            %(#{node.sectnum} #{node.title})
           end
         else
-          title = node.title
+          node.title
         end
-        title
       end
 
       def icon_names
         @icon_names ||= []
       end
 
-      def convert_document node
+      def convert_document(node)
         @format = node.attr('ebook-format').to_sym
 
         @validate = node.attr? 'ebook-validate'
@@ -171,7 +184,7 @@ module Asciidoctor
           @book.primary_identifier node.id, 'pub-identifier', 'uuid'
         end
         # replace with next line once the attributes argument is supported
-        #unique_identifier doc.id, 'pub-id', 'uuid', 'scheme' => 'xsd:string'
+        # unique_identifier doc.id, 'pub-id', 'uuid', 'scheme' => 'xsd:string'
 
         # NOTE: we must use :plain_text here since gepub reencodes
         @book.add_title sanitize_doctitle_xml(node, :plain_text), id: 'pub-title'
@@ -209,7 +222,7 @@ module Asciidoctor
         @book.source = node.attr 'source' if node.attr? 'source'
         @book.rights = node.attr 'copyright' if node.attr? 'copyright'
 
-        (node.attr 'keywords', '').split(CsvDelimiterRx).each do |s|
+        (node.attr 'keywords', '').split(CSV_DELIMITED_RX).each do |s|
           @book.metadata.add_metadata 'subject', s
         end
 
@@ -218,7 +231,8 @@ module Asciidoctor
           series_volume = node.attr 'series-volume', 1
           series_id = node.attr 'series-id'
 
-          series_meta = @book.metadata.add_metadata 'meta', series_name, id: 'pub-collection', group_position: series_volume
+          series_meta = @book.metadata.add_metadata 'meta', series_name, id: 'pub-collection',
+                                                                         group_position: series_volume
           series_meta['property'] = 'belongs-to-collection'
           series_meta.refine 'dcterms:identifier', series_id unless series_id.nil?
           # Calibre only understands 'series'
@@ -237,7 +251,10 @@ module Asciidoctor
         landmarks << { type: 'cover', href: front_cover.href, title: 'Front Cover' } unless front_cover.nil?
 
         front_matter_page = add_front_matter_page node
-        landmarks << { type: 'frontmatter', href: front_matter_page.href, title: 'Front Matter' } unless front_matter_page.nil?
+        unless front_matter_page.nil?
+          landmarks << { type: 'frontmatter', href: front_matter_page.href,
+                         title: 'Front Matter' }
+        end
 
         nav_item = @book.add_item('nav.xhtml', id: 'nav').nav
 
@@ -262,10 +279,14 @@ module Asciidoctor
         _back_cover = add_cover_page node, 'back-cover'
         # TODO: add landmark for back cover? But what epub:type?
 
-        landmarks << { type: 'bodymatter', href: %(#{get_chapter_name toc_items[0]}.xhtml), title: 'Start of Content' } unless toc_items.empty?
+        unless toc_items.empty?
+          landmarks << { type: 'bodymatter', href: %(#{get_chapter_name toc_items[0]}.xhtml),
+                         title: 'Start of Content' }
+        end
 
         toc_items.each do |item|
-          landmarks << { type: item.style, href: %(#{get_chapter_name item}.xhtml), title: item.title } if %w(appendix bibliography glossary index preface).include? item.style
+          landmarks << { type: item.style, href: %(#{get_chapter_name item}.xhtml), title: item.title } if %w[appendix
+                                                                                                              bibliography glossary index preface].include? item.style
         end
 
         nav_item.add_content postprocess_xhtml(nav_doc(node, toc_items, landmarks, outlinelevels))
@@ -284,7 +305,7 @@ module Asciidoctor
             logger.warn %(path is reserved for cover artwork: #{name}; skipping file found in content)
           elsif file[:path].nil? || File.readable?(file[:path])
             mime_types = MIME::Types.type_for name
-            mime_types.delete_if {|x| x.media_type != file[:media_type] }
+            mime_types.delete_if { |x| x.media_type != file[:media_type] }
             preferred_mime_type = mime_types.empty? ? nil : mime_types[0].content_type
             @book.add_item name, content: file[:path], media_type: preferred_mime_type
           else
@@ -292,11 +313,11 @@ module Asciidoctor
           end
         end
 
-        #add_metadata 'ibooks:specified-fonts', true
+        # add_metadata 'ibooks:specified-fonts', true
 
         add_theme_assets node
         if node.doctype != 'book'
-          usernames = [node].map {|item| item.attr 'username' }.compact.uniq
+          usernames = [node].map { |item| item.attr 'username' }.compact.uniq
           add_profile_images node, usernames
         end
 
@@ -304,14 +325,15 @@ module Asciidoctor
       end
 
       # FIXME: move to Asciidoctor::Helpers
-      def sanitize_doctitle_xml doc, content_spec
+      def sanitize_doctitle_xml(doc, content_spec)
         doctitle = doc.doctitle use_fallback: true
         sanitize_xml doctitle, content_spec
       end
 
       # FIXME: move to Asciidoctor::Helpers
-      def sanitize_xml content, content_spec
-        if content_spec != :pcdata && (content.include? '<') && ((content = (content.gsub XmlElementRx, '').strip).include? ' ')
+      def sanitize_xml(content, content_spec)
+        if content_spec != :pcdata && (content.include? '<') && ((content = (content.gsub XML_ELEMENT_RX,
+                                                                                          '').strip).include? ' ')
           content = content.tr_s ' ', ' '
         end
 
@@ -322,8 +344,8 @@ module Asciidoctor
           # noop
         when :plain_text
           if content.include? ';'
-            content = content.gsub(CharEntityRx) { [$1.to_i].pack 'U*' } if content.include? '&#'
-            content = content.gsub FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap
+            content = content.gsub(CHAR_ENTITY_RX) { [::Regexp.last_match(1).to_i].pack 'U*' } if content.include? '&#'
+            content = content.gsub FROM_HTML_SPECIAL_CHARS_RX, FROM_HTML_SPECIAL_CHARS_MAP
           end
         else
           raise ::ArgumentError, %(Unknown content spec: #{content_spec})
@@ -331,7 +353,7 @@ module Asciidoctor
         content
       end
 
-      def add_chapter node
+      def add_chapter(node)
         docid = get_chapter_name node
         return nil if docid.nil?
 
@@ -373,7 +395,7 @@ module Asciidoctor
         if icon_names.empty?
           icon_css_head = ''
         else
-          icon_defs = icon_names.map {|name|
+          icon_defs = icon_names.map { |name|
             %(.i-#{name}::before { content: "#{FontIconMap.unicode name}"; })
           } * LF
           icon_css_head = %(<style>
@@ -382,11 +404,15 @@ module Asciidoctor
 )
         end
 
-        header = (title || subtitle) ? %(<header>
+        header = if title || subtitle
+                   %(<header>
 <div class="chapter-header">
 #{byline}<h1 class="chapter-title">#{title}#{subtitle ? %(<small class="subtitle">#{subtitle}</small>) : ''}</h1>
 </div>
-</header>) : ''
+</header>)
+                 else
+                   ''
+                 end
 
         # We want highlighter CSS to be stored in a separate file
         # in order to avoid style duplication across chapter files
@@ -395,7 +421,8 @@ module Asciidoctor
         # NOTE: kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang', 'en'}" lang="#{lang}">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang',
+                                                                                                                                                                          'en'}" lang="#{lang}">
 <head>
 <title>#{chapter_title}</title>
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
@@ -413,7 +440,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         syntax_hl = node.document.syntax_highlighter
         epub_type_attr = node.respond_to?(:section) && node.sectname != 'section' ? %( epub:type="#{node.sectname}") : ''
 
-        lines << (syntax_hl.docinfo :head, node, linkcss: linkcss, self_closing_tag_slash: '/') if syntax_hl&.docinfo? :head
+        if syntax_hl&.docinfo? :head
+          lines << (syntax_hl.docinfo :head, node, linkcss: linkcss,
+                                                   self_closing_tag_slash: '/')
+        end
 
         lines << %(</head>
 <body>
@@ -440,7 +470,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         lines << '</section>'
 
-        lines << (syntax_hl.docinfo :footer, node.document, linkcss: linkcss, self_closing_tag_slash: '/') if syntax_hl&.docinfo? :footer
+        if syntax_hl&.docinfo? :footer
+          lines << (syntax_hl.docinfo :footer, node.document, linkcss: linkcss,
+                                                              self_closing_tag_slash: '/')
+        end
 
         lines << '</body>
 </html>'
@@ -456,38 +489,42 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # @param node [Asciidoctor::Section]
-      def convert_section node
-        if add_chapter(node).nil?
-          hlevel = node.level.clamp 1, 6
-          epub_type_attr = node.sectname == 'section' ? '' : %( epub:type="#{node.sectname}")
-          div_classes = [%(sect#{node.level}), node.role].compact
-          title = get_numbered_title node
-          %(<section class="#{div_classes * ' '}" title=#{title.encode xml: :attr}#{epub_type_attr}>
-<h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{(content = node.content).empty? ? '' : %(
-          #{content})}
+      def convert_section(node)
+        return unless add_chapter(node).nil?
+
+        hlevel = node.level.clamp 1, 6
+        epub_type_attr = node.sectname == 'section' ? '' : %( epub:type="#{node.sectname}")
+        div_classes = [%(sect#{node.level}), node.role].compact
+        title = get_numbered_title node
+        %(<section class="#{div_classes * ' '}" title=#{title.encode xml: :attr}#{epub_type_attr}>
+<h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{if (content = node.content).empty?
+                                                     ''
+                                                   else
+                                                     %(
+          #{content})
+                                                   end}
 </section>)
-        end
       end
 
       # NOTE: embedded is used for AsciiDoc table cell content
-      def convert_embedded node
+      def convert_embedded(node)
         node.content
       end
 
       # TODO: support use of quote block as abstract
-      def convert_preamble node
-        if add_chapter(node).nil?
-          if (first_block = node.blocks[0]) && first_block.style == 'abstract' ||
-              # REVIEW: should we treat the preamble as an abstract in general?
-              first_block && node.blocks.size == 1
-            convert_abstract first_block
-          else
-            node.content
-          end
+      def convert_preamble(node)
+        return unless add_chapter(node).nil?
+
+        if ((first_block = node.blocks[0]) && first_block.style == 'abstract') ||
+           # REVIEW: should we treat the preamble as an abstract in general?
+           (first_block && node.blocks.size == 1)
+          convert_abstract first_block
+        else
+          node.content
         end
       end
 
-      def convert_open node
+      def convert_open(node)
         id_attr = node.id ? %( id="#{node.id}") : nil
         class_attr = node.role ? %( class="#{node.role}") : nil
         if id_attr || class_attr
@@ -499,18 +536,22 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_abstract node
+      def convert_abstract(node)
         %(<div class="abstract" epub:type="preamble">
 #{output_content node}
 </div>)
       end
 
-      def convert_paragraph node
+      def convert_paragraph(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
         role = node.role
         # stack-head is the alternative to the default, inline-head (where inline means "run-in")
         head_stop = node.attr 'head-stop', (role && (node.has_role? 'stack-head') ? nil : '.')
-        head = node.title? ? %(<strong class="head">#{title = node.title}#{head_stop && title !~ TrailingPunctRx ? head_stop : ''}</strong> ) : ''
+        head = if node.title?
+                 %(<strong class="head">#{title = node.title}#{head_stop && title !~ TRAILING_PUNCT_RX ? head_stop : ''}</strong> )
+               else
+                 ''
+               end
         if role
           node.set_option 'hardbreaks' if node.has_role? 'signature'
           %(<p#{id_attr} class="#{role}">#{head}#{node.content}</p>)
@@ -519,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_pass node
+      def convert_pass(node)
         content = node.content
         if content == '<?hard-pagebreak?>'
           '<hr epub:type="pagebreak" class="pagebreak"/>'
@@ -528,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_admonition node
+      def convert_admonition(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
         if node.title?
           title = node.title
@@ -558,10 +599,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </aside>)
       end
 
-      def convert_example node
+      def convert_example(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
-        title_div = node.title? ? %(<div class="example-title">#{node.title}</div>
-) : ''
+        title_div = if node.title?
+                      %(<div class="example-title">#{node.title}</div>
+)
+                    else
+                      ''
+                    end
         %(<div#{id_attr} class="example">
 #{title_div}<div class="example-content">
 #{output_content node}
@@ -569,23 +614,27 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </div>)
       end
 
-      def convert_floating_title node
+      def convert_floating_title(node)
         tag_name = %(h#{node.level + 1})
         id_attribute = node.id ? %( id="#{node.id}") : ''
         %(<#{tag_name}#{id_attribute} class="#{['discrete', node.role].compact * ' '}">#{node.title}</#{tag_name}>)
       end
 
-      def convert_listing node
+      def convert_listing(node)
         id_attribute = node.id ? %( id="#{node.id}") : ''
         nowrap = (node.option? 'nowrap') || !(node.document.attr? 'prewrap')
         if node.style == 'source'
           lang = node.attr 'language'
           syntax_hl = node.document.syntax_highlighter
           if syntax_hl
-            opts = syntax_hl.highlight? ? {
-              css_mode: ((doc_attrs = node.document.attributes)[%(#{syntax_hl.name}-css)] || :class).to_sym,
-              style: doc_attrs[%(#{syntax_hl.name}-style)],
-            } : {}
+            opts = if syntax_hl.highlight?
+                     {
+                       css_mode: ((doc_attrs = node.document.attributes)[%(#{syntax_hl.name}-css)] || :class).to_sym,
+                       style: doc_attrs[%(#{syntax_hl.name}-style)]
+                     }
+                   else
+                     {}
+                   end
             opts[:nowrap] = nowrap
           else
             pre_open = %(<pre class="highlight#{nowrap ? ' nowrap' : ''}"><code#{lang ? %( class="language-#{lang}" data-lang="#{lang}") : ''}>)
@@ -604,7 +653,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
-      def convert_stem node
+      def convert_stem(node)
         return convert_listing node if node.style != 'asciimath' || !asciimath_available?
 
         id_attr = node.id ? %( id="#{node.id}") : ''
@@ -627,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         Helpers.require_library('asciimath', true, :warn).nil? ? :unavailable : :loaded
       end
 
-      def convert_literal node
+      def convert_literal(node)
         id_attribute = node.id ? %( id="#{node.id}") : ''
         title_element = node.title? ? %(<figcaption>#{node.captioned_title}</figcaption>) : ''
         %(<figure#{id_attribute} class="literalblock#{prepend_space node.role}">
@@ -636,15 +685,15 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
-      def convert_page_break _node
+      def convert_page_break(_node)
         '<hr epub:type="pagebreak" class="pagebreak"/>'
       end
 
-      def convert_thematic_break _node
+      def convert_thematic_break(_node)
         '<hr class="thematicbreak"/>'
       end
 
-      def convert_quote node
+      def convert_quote(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
         class_attr = (role = node.role) ? %( class="blockquote #{role}") : ' class="blockquote"'
 
@@ -660,8 +709,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         footer_content << %(<span class="context">#{node.title}</span>) if node.title?
 
-        footer_tag = footer_content.empty? ? '' : %(
+        footer_tag = if footer_content.empty?
+                       ''
+                     else
+                       %(
 <footer>~ #{footer_content * ' '}</footer>)
+                     end
         content = (output_content node).strip
         %(<div#{id_attr}#{class_attr}>
 <blockquote>
@@ -670,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </div>)
       end
 
-      def convert_verse node
+      def convert_verse(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
         class_attr = (role = node.role) ? %( class="verse #{role}") : ' class="verse"'
 
@@ -684,14 +737,18 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           footer_content << %(<cite title="#{citetitle_sanitized}">#{citetitle}</cite>)
         end
 
-        footer_tag = footer_content.empty? ? '' : %(
+        footer_tag = if footer_content.empty?
+                       ''
+                     else
+                       %(
 <span class="attribution">~ #{footer_content * ', '}</span>)
+                     end
         %(<div#{id_attr}#{class_attr}>
 <pre>#{node.content}#{footer_tag}</pre>
 </div>)
       end
 
-      def convert_sidebar node
+      def convert_sidebar(node)
         classes = ['sidebar']
         if node.title?
           classes << 'titled'
@@ -711,14 +768,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </aside>)
       end
 
-      def convert_table node
+      def convert_table(node)
         lines = [%(<div class="table">)]
         lines << %(<div class="content">)
         table_id_attr = node.id ? %( id="#{node.id}") : ''
         table_classes = [
           'table',
           %(table-framed-#{node.attr 'frame', 'rows', 'table-frame'}),
-          %(table-grid-#{node.attr 'grid', 'rows', 'table-grid'}),
+          %(table-grid-#{node.attr 'grid', 'rows', 'table-grid'})
         ]
         if (role = node.role)
           table_classes << role
@@ -737,17 +794,17 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         lines << %(<table#{table_id_attr}#{table_class_attr}#{table_style_attr}>)
         lines << %(<caption>#{node.captioned_title}</caption>) if node.title?
-        if (node.attr 'rowcount') > 0
+        if (node.attr 'rowcount').positive?
           lines << '<colgroup>'
           if autowidth
             lines += (Array.new node.columns.size, %(<col/>))
           else
             node.columns.each do |col|
-              lines << ((col.option? 'autowidth') ? %(<col/>) : %(<col style="width: #{col.attr 'colpcwidth'}%;" />))
+              lines << (col.option?('autowidth') ? %(<col/>) : %(<col style="width: #{col.attr 'colpcwidth'}%;" />))
             end
           end
           lines << '</colgroup>'
-          [:head, :body, :foot].reject {|tsec| node.rows[tsec].empty? }.each do |tsec|
+          %i[head body foot].reject { |tsec| node.rows[tsec].empty? }.each do |tsec|
             lines << %(<t#{tsec}>)
             node.rows[tsec].each do |row|
               lines << '<tr>'
@@ -773,12 +830,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                 cell_tag_name = tsec == :head || cell.style == :header ? 'th' : 'td'
                 cell_classes = [
                   "halign-#{cell.attr 'halign'}",
-                  "valign-#{cell.attr 'valign'}",
+                  "valign-#{cell.attr 'valign'}"
                 ]
                 cell_class_attr = cell_classes.empty? ? '' : %( class="#{cell_classes * ' '}")
                 cell_colspan_attr = cell.colspan ? %( colspan="#{cell.colspan}") : ''
                 cell_rowspan_attr = cell.rowspan ? %( rowspan="#{cell.rowspan}") : ''
-                cell_style_attr = (node.document.attr? 'cellbgcolor') ? %( style="background-color: #{node.document.attr 'cellbgcolor'}") : ''
+                cell_style_attr = node.document.attr?('cellbgcolor') ? %( style="background-color: #{node.document.attr 'cellbgcolor'}") : ''
                 lines << %(<#{cell_tag_name}#{cell_class_attr}#{cell_colspan_attr}#{cell_rowspan_attr}#{cell_style_attr}>#{cell_content}</#{cell_tag_name}>)
               end
               lines << '</tr>'
@@ -792,10 +849,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def convert_colist node
+      def convert_colist(node)
         lines = ['<div class="callout-list">
 <ol>']
-        num = CalloutStartNum
+        num = CALLOUT_START_NUM
         node.items.each_with_index do |item, i|
           lines << %(<li><i class="conum" data-value="#{i + 1}">#{num}</i> #{item.text}</li>)
           num = num.next
@@ -805,7 +862,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # TODO: add complex class if list has nested blocks
-      def convert_dlist node
+      def convert_dlist(node)
         lines = []
         id_attribute = node.id ? %( id="#{node.id}") : ''
 
@@ -829,13 +886,13 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           list_tag_name = style == 'itemized' ? 'ul' : 'ol'
           role = node.role
           subject_stop = node.attr 'subject-stop', (role && (node.has_role? 'stack') ? nil : ':')
-          list_class_attr = (node.option? 'brief') ? ' class="brief"' : ''
+          list_class_attr = node.option?('brief') ? ' class="brief"' : ''
           lines << %(<#{list_tag_name}#{list_class_attr}#{list_tag_name == 'ol' && (node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
           node.items.each do |subjects, dd|
             # consists of one term (a subject) and supporting content
             subject = Array(subjects).first.text
             subject_plain = xml_sanitize subject, :plain
-            subject_element = %(<strong class="subject">#{subject}#{subject_stop && subject_plain !~ TrailingPunctRx ? subject_stop : ''}</strong>)
+            subject_element = %(<strong class="subject">#{subject}#{subject_stop && subject_plain !~ TRAILING_PUNCT_RX ? subject_stop : ''}</strong>)
             lines << '<li>'
             if dd
               # NOTE: must wrap remaining text in a span to help webkit justify the text properly
@@ -851,15 +908,15 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           lines << '<table>'
           if (node.attr? 'labelwidth') || (node.attr? 'itemwidth')
             lines << '<colgroup>'
-            col_style_attribute = (node.attr? 'labelwidth') ? %( style="width: #{(node.attr 'labelwidth').chomp '%'}%;") : ''
+            col_style_attribute = node.attr?('labelwidth') ? %( style="width: #{(node.attr 'labelwidth').chomp '%'}%;") : ''
             lines << %(<col#{col_style_attribute} />)
-            col_style_attribute = (node.attr? 'itemwidth') ? %( style="width: #{(node.attr 'itemwidth').chomp '%'}%;") : ''
+            col_style_attribute = node.attr?('itemwidth') ? %( style="width: #{(node.attr 'itemwidth').chomp '%'}%;") : ''
             lines << %(<col#{col_style_attribute} />)
             lines << '</colgroup>'
           end
           node.items.each do |terms, dd|
             lines << '<tr>'
-            lines << %(<td class="hdlist1#{(node.option? 'strong') ? ' strong' : ''}">)
+            lines << %(<td class="hdlist1#{node.option?('strong') ? ' strong' : ''}">)
             first_term = true
             terms.each do |dt|
               lines << %(<br />) unless first_term
@@ -887,6 +944,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </dt>)
             end
             next unless dd
+
             lines << '<dd>'
             if dd.blocks?
               lines << %(<span class="principal">#{dd.text}</span>) if dd.text?
@@ -903,22 +961,22 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def convert_olist node
+      def convert_olist(node)
         complex = false
         div_classes = ['ordered-list', node.style, node.role].compact
-        ol_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
+        ol_classes = [node.style, (node.option?('brief') ? 'brief' : nil)].compact
         ol_class_attr = ol_classes.empty? ? '' : %( class="#{ol_classes * ' '}")
-        ol_start_attr = (node.attr? 'start') ? %( start="#{node.attr 'start'}") : ''
+        ol_start_attr = node.attr?('start') ? %( start="#{node.attr 'start'}") : ''
         id_attribute = node.id ? %( id="#{node.id}") : ''
         lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
         lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
-        lines << %(<ol#{ol_class_attr}#{ol_start_attr}#{(node.option? 'reversed') ? ' reversed="reversed"' : ''}>)
+        lines << %(<ol#{ol_class_attr}#{ol_start_attr}#{node.option?('reversed') ? ' reversed="reversed"' : ''}>)
         node.items.each do |item|
           lines << %(<li>
 <span class="principal">#{item.text}</span>)
           if item.blocks?
             lines << item.content
-            complex = true unless item.blocks.size == 1 && ::Asciidoctor::List === item.blocks[0]
+            complex = true unless item.blocks.size == 1 && item.blocks[0].is_a?(::Asciidoctor::List)
           end
           lines << '</li>'
         end
@@ -931,10 +989,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def convert_ulist node
+      def convert_ulist(node)
         complex = false
         div_classes = ['itemized-list', node.style, node.role].compact
-        ul_classes = [node.style, ((node.option? 'brief') ? 'brief' : nil)].compact
+        ul_classes = [node.style, (node.option?('brief') ? 'brief' : nil)].compact
         ul_class_attr = ul_classes.empty? ? '' : %( class="#{ul_classes * ' '}")
         id_attribute = node.id ? %( id="#{node.id}") : ''
         lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
@@ -945,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <span class="principal">#{item.text}</span>)
           if item.blocks?
             lines << item.content
-            complex = true unless item.blocks.size == 1 && ::Asciidoctor::List === item.blocks[0]
+            complex = true unless item.blocks.size == 1 && item.blocks[0].is_a?(::Asciidoctor::List)
           end
           lines << '</li>'
         end
@@ -958,22 +1016,23 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines * LF
       end
 
-      def doc_option document, key
+      def doc_option(document, key)
         loop do
           value = document.options[key]
           return value unless value.nil?
+
           document = document.parent_document
           break if document.nil?
         end
         nil
       end
 
-      def root_document document
+      def root_document(document)
         document = document.parent_document until document.parent_document.nil?
         document
       end
 
-      def register_media_file node, target, media_type
+      def register_media_file(node, target, media_type)
         if target.end_with?('.svg') || target.start_with?('data:image/svg+xml')
           chapter = get_enclosing_chapter node
           chapter.set_attr 'epub-properties', [] unless chapter.attr? 'epub-properties'
@@ -998,7 +1057,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         @media_files[target] ||= { path: fs_path, media_type: media_type }
       end
 
-      def resolve_image_attrs node
+      def resolve_image_attrs(node)
         img_attrs = []
         img_attrs << %(alt="#{node.attr 'alt'}") if node.attr? 'alt'
 
@@ -1011,33 +1070,33 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           # HTML5 spec (and EPUBCheck) only allows pixels in width, but browsers also accept percents
           # and there are multiple AsciiDoc files in the wild that have width=percents%
           # So, for compatibility reasons, output percentage width as a CSS style
-          if width[/^\d+%$/]
-            img_attrs << %(style="width: #{width}")
-          else
-            img_attrs << %(width="#{width}")
-          end
+          img_attrs << if width[/^\d+%$/]
+                         %(style="width: #{width}")
+                       else
+                         %(width="#{width}")
+                       end
         end
 
         img_attrs
       end
 
-      def convert_audio node
+      def convert_audio(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
         target = node.media_uri node.attr 'target'
         register_media_file node, target, 'audio'
         title_element = node.title? ? %(\n<figcaption>#{node.captioned_title}</figcaption>) : ''
 
-        autoplay_attr = (node.option? 'autoplay') ? ' autoplay="autoplay"' : ''
-        controls_attr = (node.option? 'nocontrols') ? '' : ' controls="controls"'
-        loop_attr = (node.option? 'loop') ? ' loop="loop"' : ''
+        autoplay_attr = node.option?('autoplay') ? ' autoplay="autoplay"' : ''
+        controls_attr = node.option?('nocontrols') ? '' : ' controls="controls"'
+        loop_attr = node.option?('loop') ? ' loop="loop"' : ''
 
         start_t = node.attr 'start'
         end_t = node.attr 'end'
-        if start_t || end_t
-          time_anchor = %(#t=#{start_t || ''}#{end_t ? ",#{end_t}" : ''})
-        else
-          time_anchor = ''
-        end
+        time_anchor = if start_t || end_t
+                        %(#t=#{start_t || ''}#{end_t ? ",#{end_t}" : ''})
+                      else
+                        ''
+                      end
 
         %(<figure#{id_attr} class="audioblock#{prepend_space node.role}">#{title_element}
 <div class="content">
@@ -1049,25 +1108,25 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # TODO: Support multiple video files in different formats for a single video
-      def convert_video node
+      def convert_video(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
         target = node.media_uri node.attr 'target'
         register_media_file node, target, 'video'
         title_element = node.title? ? %(\n<figcaption>#{node.captioned_title}</figcaption>) : ''
 
-        width_attr = (node.attr? 'width') ? %( width="#{node.attr 'width'}") : ''
-        height_attr = (node.attr? 'height') ? %( height="#{node.attr 'height'}") : ''
-        autoplay_attr = (node.option? 'autoplay') ? ' autoplay="autoplay"' : ''
-        controls_attr = (node.option? 'nocontrols') ? '' : ' controls="controls"'
-        loop_attr = (node.option? 'loop') ? ' loop="loop"' : ''
+        width_attr = node.attr?('width') ? %( width="#{node.attr 'width'}") : ''
+        height_attr = node.attr?('height') ? %( height="#{node.attr 'height'}") : ''
+        autoplay_attr = node.option?('autoplay') ? ' autoplay="autoplay"' : ''
+        controls_attr = node.option?('nocontrols') ? '' : ' controls="controls"'
+        loop_attr = node.option?('loop') ? ' loop="loop"' : ''
 
         start_t = node.attr 'start'
         end_t = node.attr 'end'
-        if start_t || end_t
-          time_anchor = %(#t=#{start_t || ''}#{end_t ? ",#{end_t}" : ''})
-        else
-          time_anchor = ''
-        end
+        time_anchor = if start_t || end_t
+                        %(#t=#{start_t || ''}#{end_t ? ",#{end_t}" : ''})
+                      else
+                        ''
+                      end
 
         if (poster = node.attr 'poster').nil_or_empty?
           poster_attr = ''
@@ -1086,7 +1145,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
-      def convert_image node
+      def convert_image(node)
         target = node.image_uri node.attr 'target'
         register_media_file node, target, 'image'
         id_attr = node.id ? %( id="#{node.id}") : ''
@@ -1099,18 +1158,22 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </figure>)
       end
 
-      def get_enclosing_chapter node
+      def get_enclosing_chapter(node)
         loop do
           return nil if node.nil?
           return node unless get_chapter_name(node).nil?
+
           node = node.parent
         end
       end
 
-      def convert_inline_anchor node
+      def convert_inline_anchor(node)
         case node.type
         when :xref
-          doc, refid, target, text = node.document, node.attr('refid'), node.target, node.text
+          doc = node.document
+          refid = node.attr('refid')
+          target = node.target
+          text = node.text
           id_attr = ''
 
           if (path = node.attributes['path'])
@@ -1166,22 +1229,22 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_inline_break node
+      def convert_inline_break(node)
         %(#{node.text}<br/>)
       end
 
-      def convert_inline_button node
+      def convert_inline_button(node)
         %(<b class="button">[<span class="label">#{node.text}</span>]</b>)
       end
 
-      def convert_inline_callout node
-        num = CalloutStartNum
+      def convert_inline_callout(node)
+        num = CALLOUT_START_NUM
         int_num = node.text.to_i
         (int_num - 1).times { num = num.next }
         %(<i class="conum" data-value="#{int_num}">#{num}</i>)
       end
 
-      def convert_inline_footnote node
+      def convert_inline_footnote(node)
         if (index = node.attr 'index')
           %(<sup class="noteref">[<a id="noteref-#{index}" href="#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
         elsif node.type == :xref
@@ -1189,7 +1252,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_inline_image node
+      def convert_inline_image(node)
         if node.type == 'icon'
           icon_names << (icon_name = node.target)
           i_classes = ['icon', %(i-#{icon_name})]
@@ -1209,25 +1272,25 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_inline_indexterm node
+      def convert_inline_indexterm(node)
         node.type == :visible ? node.text : ''
       end
 
-      def convert_inline_kbd node
+      def convert_inline_kbd(node)
         if (keys = node.attr 'keys').size == 1
           %(<kbd>#{keys[0]}</kbd>)
         else
-          key_combo = keys.map {|key| %(<kbd>#{key}</kbd>) }.join '+'
+          key_combo = keys.map { |key| %(<kbd>#{key}</kbd>) }.join '+'
           %(<span class="keyseq">#{key_combo}</span>)
         end
       end
 
-      def convert_inline_menu node
+      def convert_inline_menu(node)
         menu = node.attr 'menu'
         # NOTE: we swap right angle quote with chevron right from FontAwesome using CSS
-        caret = %(#{NoBreakSpace}<span class="caret">#{RightAngleQuote}</span> )
+        caret = %(#{NO_BREAK_SPACE}<span class="caret">#{RIGHT_ANGLE_QUOTE}</span> )
         if !(submenus = node.attr 'submenus').empty?
-          submenu_path = submenus.map {|submenu| %(<span class="submenu">#{submenu}</span>#{caret}) }.join.chop
+          submenu_path = submenus.map { |submenu| %(<span class="submenu">#{submenu}</span>#{caret}) }.join.chop
           %(<span class="menuseq"><span class="menu">#{menu}</span>#{caret}#{submenu_path} <span class="menuitem">#{node.attr 'menuitem'}</span></span>)
         elsif (menuitem = node.attr 'menuitem')
           %(<span class="menuseq"><span class="menu">#{menu}</span>#{caret}<span class="menuitem">#{menuitem}</span></span>)
@@ -1236,16 +1299,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def convert_inline_quoted node
+      def convert_inline_quoted(node)
         open, close, tag = QUOTE_TAGS[node.type]
 
-        if node.type == :asciimath && asciimath_available?
-          content = AsciiMath.parse(node.text).to_mathml 'mml:'
-        else
-          content = node.text
-        end
+        content = if node.type == :asciimath && asciimath_available?
+                    AsciiMath.parse(node.text).to_mathml 'mml:'
+                  else
+                    node.text
+                  end
 
-        node.add_role 'literal' if [:monospaced, :asciimath, :latexmath].include? node.type
+        node.add_role 'literal' if %i[monospaced asciimath latexmath].include? node.type
 
         if node.id
           class_attr = class_string node
@@ -1266,16 +1329,20 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         end
       end
 
-      def output_content node
+      def output_content(node)
         node.content_model == :simple ? %(<p>#{node.content}</p>) : node.content
       end
 
       # FIXME: merge into with xml_sanitize helper
-      def xml_sanitize value, target = :attribute
-        sanitized = (value.include? '<') ? value.gsub(XmlElementRx, '').strip.tr_s(' ', ' ') : value
+      def xml_sanitize(value, target = :attribute)
+        sanitized = value.include?('<') ? value.gsub(XML_ELEMENT_RX, '').strip.tr_s(' ', ' ') : value
         if target == :plain && (sanitized.include? ';')
-          sanitized = sanitized.gsub(CharEntityRx) { [$1.to_i].pack 'U*' } if sanitized.include? '&#'
-          sanitized = sanitized.gsub FromHtmlSpecialCharsRx, FromHtmlSpecialCharsMap
+          if sanitized.include? '&#'
+            sanitized = sanitized.gsub(CHAR_ENTITY_RX) do
+              [::Regexp.last_match(1).to_i].pack 'U*'
+            end
+          end
+          sanitized = sanitized.gsub FROM_HTML_SPECIAL_CHARS_RX, FROM_HTML_SPECIAL_CHARS_MAP
         elsif target == :attribute
           sanitized = sanitized.gsub '"', '&quot;' if sanitized.include? '"'
         end
@@ -1283,8 +1350,9 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # TODO: make check for last content paragraph a feature of Asciidoctor
-      def mark_last_paragraph root
+      def mark_last_paragraph(root)
         return unless (last_block = root.blocks[-1])
+
         last_block = last_block.blocks[-1] while last_block.context == :section && last_block.blocks?
         if last_block.context == :paragraph
           last_block.attributes['role'] = last_block.role? ? %(#{last_block.role} last) : 'last'
@@ -1293,11 +1361,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       # Prepend a space to the value if it's non-nil, otherwise return empty string.
-      def prepend_space value
+      def prepend_space(value)
         value ? %( #{value}) : ''
       end
 
-      def add_theme_assets doc
+      def add_theme_assets(doc)
         format = @format
         workdir = if doc.attr? 'epub3-stylesdir'
                     stylesdir = doc.attr 'epub3-stylesdir'
@@ -1314,7 +1382,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                   end
 
         # TODO: improve design/UX of custom theme functionality, including custom fonts
-        %w(epub3 epub3-css3-only).each do |f|
+        %w[epub3 epub3-css3-only].each do |f|
           css = load_css_file File.join(workdir, %(#{f}.scss))
           if format == :kf8
             # NOTE: add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
@@ -1329,26 +1397,31 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         if syntax_hl&.write_stylesheet? doc
           Dir.mktmpdir do |dir|
             syntax_hl.write_stylesheet doc, dir
-            Pathname.glob(dir + '/**/*').map do |filename|
+            Pathname.glob("#{dir}/**/*").map do |filename|
               # Workaround for https://github.com/skoji/gepub/pull/117
+              next unless filename.file?
+
               filename.open do |f|
                 @book.add_item filename.basename.to_s, content: f
-              end if filename.file?
+              end
             end
           end
         end
 
-        font_files, font_css = select_fonts load_css_file(File.join(DATA_DIR, 'styles/epub3-fonts.scss')), (doc.attr 'scripts', 'latin')
+        font_files, font_css = select_fonts load_css_file(File.join(DATA_DIR, 'styles/epub3-fonts.scss')),
+                                            (doc.attr 'scripts', 'latin')
         @book.add_item 'styles/epub3-fonts.css', content: font_css.to_ios
         unless font_files.empty?
           # NOTE: metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
-          #(@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
-          @book.add_optional_file 'META-INF/com.apple.ibooks.display-options.xml', '<?xml version="1.0" encoding="UTF-8"?>
+          # (@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
+          unless format == :kf8
+            @book.add_optional_file 'META-INF/com.apple.ibooks.display-options.xml', '<?xml version="1.0" encoding="UTF-8"?>
 <display_options>
 <platform name="*">
 <option name="specified-fonts">true</option>
 </platform>
-</display_options>'.to_ios unless format == :kf8
+</display_options>'.to_ios
+          end
 
           font_files.each do |font_file|
             @book.add_item font_file, content: File.join(DATA_DIR, font_file)
@@ -1360,7 +1433,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       # @param doc [Asciidoctor::Document]
       # @param name [String]
       # @return [GEPUB::Item, nil]
-      def add_cover_page doc, name
+      def add_cover_page(doc, name)
         image_attr_name = %(#{name}-image)
 
         return nil if (image_path = doc.attr image_attr_name).nil?
@@ -1369,10 +1442,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         imagesdir = (imagesdir == '.' ? '' : %(#{imagesdir}/))
 
         image_attrs = {}
-        if (image_path.include? ':') && image_path =~ ImageMacroRx
+        if (image_path.include? ':') && image_path =~ IMAGE_MACRO_RX
           logger.warn %(deprecated block macro syntax detected in :#{image_attr_name}: attribute) if image_path.start_with? 'image::'
-          image_path = %(#{imagesdir}#{$1})
-          (::Asciidoctor::AttributeList.new $2).parse_into image_attrs, %w(alt width height) unless $2.empty?
+          image_path = %(#{imagesdir}#{::Regexp.last_match(1)})
+          unless ::Regexp.last_match(2).empty?
+            (::Asciidoctor::AttributeList.new ::Regexp.last_match(2)).parse_into image_attrs,
+                                                                                 %w[alt width
+                                                                                    height]
+          end
         end
 
         image_href = %(#{imagesdir}jacket/#{name}#{::File.extname image_path})
@@ -1384,7 +1461,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
         begin
           @book.add_item(image_href, content: image_path).cover_image
-        rescue => e
+        rescue StandardError => e
           logger.error %(#{::File.basename doc.attr('docfile')}: error adding cover image. Make sure that :#{image_attr_name}: attribute points to a valid image file. #{e})
           return nil
         end
@@ -1392,7 +1469,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         return nil if @format == :kf8
 
         unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
-          width, height = 1050, 1600
+          width = 1050
+          height = 1600
         end
 
         # NOTE: SVG wrapper maintains aspect ratio and confines image to view box
@@ -1429,7 +1507,7 @@ body > svg {
         @book.add_ordered_item %(#{name}.xhtml), content: content, id: name
       end
 
-      def get_frontmatter_files doc, workdir
+      def get_frontmatter_files(doc, workdir)
         if doc.attr? 'epub3-frontmatterdir'
           fmdir = doc.attr 'epub3-frontmatterdir'
           fmglob = 'front-matter.*\.html'
@@ -1438,7 +1516,7 @@ body > svg {
             logger.warn %(#{File.basename doc.attr('docfile')}: directory specified by 'epub3-frontmattderdir' doesn't exist! Ignoring ...)
             return []
           end
-          fms = Dir.entries(fm_path).delete_if {|x| !x.match fmglob }.sort.map {|y| File.join fm_path, y }
+          fms = Dir.entries(fm_path).delete_if { |x| !x.match fmglob }.sort.map { |y| File.join fm_path, y }
           if fms && !fms.empty?
             fms
           else
@@ -1452,7 +1530,7 @@ body > svg {
         end
       end
 
-      def add_front_matter_page doc
+      def add_front_matter_page(doc)
         workdir = doc.attr 'docdir'
         workdir = '.' if workdir.nil_or_empty?
 
@@ -1462,30 +1540,32 @@ body > svg {
 
           front_matter_file = File.basename front_matter, '.html'
           item = @book.add_ordered_item "#{front_matter_file}.xhtml", content: (postprocess_xhtml front_matter_content)
-          item.add_property 'svg' if SvgImgSniffRx =~ front_matter_content
+          item.add_property 'svg' if SVG_IMG_SNIFF_RX =~ front_matter_content
           # Store link to first frontmatter page
           result = item if result.nil?
 
-          front_matter_content.scan ImgSrcScanRx do
-            @book.add_item $1, content: File.join(File.dirname(front_matter), $1)
+          front_matter_content.scan IMAGE_SRC_SCAN_RX do
+            @book.add_item ::Regexp.last_match(1),
+                           content: File.join(File.dirname(front_matter), ::Regexp.last_match(1))
           end
         end
 
         result
       end
 
-      def add_profile_images doc, usernames
+      def add_profile_images(doc, usernames)
         imagesdir = (doc.attr 'imagesdir', '.').chomp '/'
         imagesdir = (imagesdir == '.' ? nil : %(#{imagesdir}/))
 
         @book.add_item %(#{imagesdir}avatars/default.jpg), content: ::File.join(DATA_DIR, 'images/default-avatar.jpg')
-        @book.add_item %(#{imagesdir}headshots/default.jpg), content: ::File.join(DATA_DIR, 'images/default-headshot.jpg')
+        @book.add_item %(#{imagesdir}headshots/default.jpg),
+                       content: ::File.join(DATA_DIR, 'images/default-headshot.jpg')
 
-        workdir = (workdir = doc.attr 'docdir').nil_or_empty? ? '.' : workdir
+        workdir = '.' if (workdir = doc.attr 'docdir').nil_or_empty?
 
         usernames.each do |username|
           avatar = %(#{imagesdir}avatars/#{username}.jpg)
-          if ::File.readable? (resolved_avatar = (::File.join workdir, avatar))
+          if ::File.readable?(resolved_avatar = (::File.join workdir, avatar))
             @book.add_item avatar, content: resolved_avatar
           else
             logger.error %(avatar for #{username} not found or readable: #{avatar}; falling back to default avatar)
@@ -1493,7 +1573,7 @@ body > svg {
           end
 
           headshot = %(#{imagesdir}headshots/#{username}.jpg)
-          if ::File.readable? (resolved_headshot = (::File.join workdir, headshot))
+          if ::File.readable?(resolved_headshot = (::File.join workdir, headshot))
             @book.add_item headshot, content: resolved_headshot
           elsif doc.attr? 'builder', 'editions'
             logger.error %(headshot for #{username} not found or readable: #{headshot}; falling back to default headshot)
@@ -1503,10 +1583,11 @@ body > svg {
         nil
       end
 
-      def nav_doc doc, items, landmarks, depth
+      def nav_doc(doc, items, landmarks, depth)
         lines = [%(<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = doc.attr 'lang', 'en'}" lang="#{lang}">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = doc.attr 'lang',
+                                                                                                                 'en'}" lang="#{lang}">
 <head>
 <title>#{sanitize_doctitle_xml doc, :cdata}</title>
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
@@ -1539,25 +1620,25 @@ body > svg {
         lines * LF
       end
 
-      def nav_level items, depth, state = {}
+      def nav_level(items, depth, state = {})
         lines = []
         lines << '<ol>'
         items.each do |item|
-          #index = (state[:index] = (state.fetch :index, 0) + 1)
+          # index = (state[:index] = (state.fetch :index, 0) + 1)
           if (chapter_name = get_chapter_name item).nil?
             item_label = sanitize_xml get_numbered_title(item), :pcdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
             # NOTE: we sanitize the chapter titles because we use formatting to control layout
-            if item.context == :document
-              item_label = sanitize_doctitle_xml item, :cdata
-            else
-              item_label = sanitize_xml get_numbered_title(item), :cdata
-            end
+            item_label = if item.context == :document
+                           sanitize_doctitle_xml item, :cdata
+                         else
+                           sanitize_xml get_numbered_title(item), :cdata
+                         end
             item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
           end
           lines << %(<li><a href="#{item_href}">#{item_label}</a>)
-          if depth == 0 || (child_sections = item.sections).empty?
+          if depth.zero? || (child_sections = item.sections).empty?
             lines[-1] = %(#{lines[-1]}</li>)
           else
             lines << (nav_level child_sections, depth - 1, state)
@@ -1569,26 +1650,26 @@ body > svg {
         lines * LF
       end
 
-      def ncx_doc doc, items, depth
+      def ncx_doc(doc, items, depth)
         # TODO: populate docAuthor element based on unique authors in work
         lines = [%(<?xml version="1.0" encoding="utf-8"?>
 <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="#{doc.attr 'lang', 'en'}">
 <head>
 <meta name="dtb:uid" content="#{@book.identifier}"/>
-%{depth}
+%<depth>s
 <meta name="dtb:totalPageCount" content="0"/>
 <meta name="dtb:maxPageNumber" content="0"/>
 </head>
 <docTitle><text>#{sanitize_doctitle_xml doc, :cdata}</text></docTitle>
 <navMap>)]
         lines << (ncx_level items, depth, state = {})
-        lines[0] = lines[0].sub '%{depth}', %(<meta name="dtb:depth" content="#{state[:max_depth]}"/>)
+        lines[0] = lines[0].sub '%<depth>s', %(<meta name="dtb:depth" content="#{state[:max_depth]}"/>)
         lines << %(</navMap>
 </ncx>)
         lines * LF
       end
 
-      def ncx_level items, depth, state = {}
+      def ncx_level(items, depth, state = {})
         lines = []
         state[:max_depth] = (state.fetch :max_depth, 0) + 1
         items.each do |item|
@@ -1598,17 +1679,17 @@ body > svg {
             item_label = sanitize_xml get_numbered_title(item), :cdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
-            if item.context == :document
-              item_label = sanitize_doctitle_xml item, :cdata
-            else
-              item_label = sanitize_xml get_numbered_title(item), :cdata
-            end
+            item_label = if item.context == :document
+                           sanitize_doctitle_xml item, :cdata
+                         else
+                           sanitize_xml get_numbered_title(item), :cdata
+                         end
             item_href = (state[:content_doc_href] = %(#{chapter_name}.xhtml))
           end
           lines << %(<navPoint id="#{item_id}" playOrder="#{index}">)
           lines << %(<navLabel><text>#{item_label}</text></navLabel>)
           lines << %(<content src="#{item_href}"/>)
-          unless depth == 0 || (child_sections = item.sections).empty?
+          unless depth.zero? || (child_sections = item.sections).empty?
             lines << (ncx_level child_sections, depth - 1, state)
           end
           lines << %(</navPoint>)
@@ -1619,40 +1700,41 @@ body > svg {
 
       # Swap fonts in CSS based on the value of the document attribute 'scripts',
       # then return the list of fonts as well as the font CSS.
-      def select_fonts font_css, scripts = 'latin'
+      def select_fonts(font_css, scripts = 'latin')
         font_css = font_css.gsub(/(?<=-)latin(?=\.ttf\))/, scripts) unless scripts == 'latin'
 
         # match CSS font urls in the forms of:
         # src: url(../fonts/notoserif-regular-latin.ttf);
         # src: url(../fonts/notoserif-regular-latin.ttf) format("truetype");
-        font_list = font_css.scan(/url\(\.\.\/([^)]+?\.ttf)\)/).flatten
+        font_list = font_css.scan(%r{url\(\.\./([^)]+?\.ttf)\)}).flatten
 
         [font_list, font_css]
       end
 
-      def load_css_file filename
+      def load_css_file(filename)
         template = File.read filename
         load_paths = [File.dirname(filename)]
         sass_engine = Sass::Engine.new template, syntax: :scss, cache: false, load_paths: load_paths, style: :compressed
         sass_engine.render
       end
 
-      def postprocess_xhtml content
+      def postprocess_xhtml(content)
         return content.to_ios unless @format == :kf8
+
         # TODO: convert regular expressions to constants
         content
           .gsub(/<img([^>]+) style="width: (\d\d)%;"/, '<img\1 style="width: \2%; height: \2%;"')
-          .gsub(/<script type="text\/javascript">.*?<\/script>\n?/m, '')
+          .gsub(%r{<script type="text/javascript">.*?</script>\n?}m, '')
           .to_ios
       end
 
-      def get_kindlegen_command
+      def build_kindlegen_command
         unless @kindlegen_path.nil?
           logger.debug %(Using ebook-kindlegen-path attribute: #{@kindlegen_path})
           return [@kindlegen_path]
         end
 
-        unless (result = ENV['KINDLEGEN']).nil?
+        unless (result = ENV.fetch('KINDLEGEN', nil)).nil?
           logger.debug %(Using KINDLEGEN env variable: #{result})
           return [result]
         end
@@ -1668,18 +1750,23 @@ body > svg {
         end
       end
 
-      def distill_epub_to_mobi epub_file, target, compress
-        mobi_file = ::File.basename target.sub(EpubExtensionRx, '.mobi')
-        compress_flag = KindlegenCompression[compress ? (compress.empty? ? '1' : compress.to_s) : '0']
+      def distill_epub_to_mobi(epub_file, target, compress)
+        mobi_file = ::File.basename target.sub(EPUB_EXTENSION_RX, '.mobi')
+        compress_flag = KINDLEGEN_COMPRESSION[if compress
+                                                compress.empty? ? '1' : compress.to_s
+                                              else
+                                                '0'
+                                              end]
 
-        argv = get_kindlegen_command + ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
+        argv = build_kindlegen_command + ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
         begin
           # This duplicates Kindlegen.run, but we want to override executable
           out, err, res = Open3.capture3(*argv) do |r|
             r.force_encoding 'UTF-8' if ::Gem.win_platform? && r.respond_to?(:force_encoding)
           end
         rescue Errno::ENOENT => e
-          raise 'Unable to run KindleGen. Either install the kindlegen gem or place `kindlegen` executable on PATH or set KINDLEGEN environment variable with path to it', cause: e
+          raise 'Unable to run KindleGen. Either install the kindlegen gem or place `kindlegen` executable on PATH or set KINDLEGEN environment variable with path to it',
+                cause: e
         end
 
         out.each_line do |line|
@@ -1697,13 +1784,13 @@ body > svg {
         end
       end
 
-      def get_epubcheck_command
+      def build_epubcheck_command
         unless @epubcheck_path.nil?
           logger.debug %(Using ebook-epubcheck-path attribute: #{@epubcheck_path})
           return [@epubcheck_path]
         end
 
-        unless (result = ENV['EPUBCHECK']).nil?
+        unless (result = ENV.fetch('EPUBCHECK', nil)).nil?
           logger.debug %(Using EPUBCHECK env variable: #{result})
           return [result]
         end
@@ -1718,12 +1805,13 @@ body > svg {
         end
       end
 
-      def validate_epub epub_file
-        argv = get_epubcheck_command + ['-w', epub_file]
+      def validate_epub(epub_file)
+        argv = build_epubcheck_command + ['-w', epub_file]
         begin
           out, err, res = Open3.capture3(*argv)
         rescue Errno::ENOENT => e
-          raise 'Unable to run EPUBCheck. Either install epubcheck-ruby gem or place `epubcheck` executable on PATH or set EPUBCHECK environment variable with path to it', cause: e
+          raise 'Unable to run EPUBCheck. Either install epubcheck-ruby gem or place `epubcheck` executable on PATH or set EPUBCHECK environment variable with path to it',
+                cause: e
         end
 
         out.each_line do |line|
@@ -1736,7 +1824,7 @@ body > svg {
         logger.error %(EPUB validation failed: #{epub_file}) unless res.success?
       end
 
-      def log_line line
+      def log_line(line)
         line = line.strip
 
         case line
@@ -1753,7 +1841,7 @@ body > svg {
 
       private
 
-      def class_string node
+      def class_string(node)
         role = node.role
 
         return '' unless role_valid_class? role
@@ -1762,24 +1850,24 @@ body > svg {
       end
 
       # Handles asciidoctor 1.5.6 quirk when role can be parent
-      def role_valid_class? role
+      def role_valid_class?(role)
         role.is_a? String
       end
     end
 
     class DocumentIdGenerator
-      ReservedIds = %w(cover nav ncx)
-      CharRefRx = /&(?:([a-zA-Z][a-zA-Z]+\d{0,2})|#(\d\d\d{0,4})|#x([\da-fA-F][\da-fA-F][\da-fA-F]{0,3}));/
+      RESERVED_IDS = %w[cover nav ncx].freeze
+      CHAR_REF_RX = /&(?:([a-zA-Z][a-zA-Z]+\d{0,2})|#(\d\d\d{0,4})|#x([\da-fA-F][\da-fA-F][\da-fA-F]{0,3}));/.freeze
       if defined? __dir__
-        InvalidIdCharsRx = /[^\p{Word}]+/
-        LeadingDigitRx = /^\p{Nd}/
+        INVALID_CHARS_RX = /[^\p{Word}]+/.freeze
+        LEADING_DIGIT_RX = /^\p{Nd}/.freeze
       else
-        InvalidIdCharsRx = /[^[:word:]]+/
-        LeadingDigitRx = /^[[:digit:]]/
+        INVALID_CHARS_RX = /[^[:word:]]+/.freeze
+        LEADING_DIGIT_RX = /^[[:digit:]]/.freeze
       end
 
       class << self
-        def generate_id doc, pre = nil, sep = nil
+        def generate_id(doc, pre = nil, sep = nil)
           synthetic = false
           unless (id = doc.id)
             # NOTE: we assume pre is a valid ID prefix and that pre and sep only contain valid ID chars
@@ -1787,27 +1875,39 @@ body > svg {
             sep = sep ? sep.chr : '_'
             if doc.header?
               id = doc.doctitle sanitize: true
-              id = id.gsub CharRefRx do
-                $1 ? ($1 == 'amp' ? 'and' : sep) : ((d = $2 ? $2.to_i : $3.hex) == 8217 ? '' : ([d].pack 'U*'))
-              end if id.include? '&'
-              id = id.downcase.gsub InvalidIdCharsRx, sep
+              if id.include? '&'
+                id = id.gsub CHAR_REF_RX do
+                  if ::Regexp.last_match(1)
+                    ::Regexp.last_match(1) == 'amp' ? 'and' : sep
+                  else
+                    (if (d = ::Regexp.last_match(2) ? ::Regexp.last_match(2).to_i : ::Regexp.last_match(3).hex) == 8217
+                       ''
+                     else
+                       ([d].pack 'U*')
+                     end)
+                  end
+                end
+              end
+              id = id.downcase.gsub INVALID_CHARS_RX, sep
               if id.empty?
-                id, synthetic = nil, true
+                id = nil
+                synthetic = true
               else
                 unless sep.empty?
                   if (id = id.tr_s sep, sep).end_with? sep
                     if id == sep
-                      id, synthetic = nil, true
+                      id = nil
+                      synthetic = true
                     else
-                      id = (id.start_with? sep) ? id[1..-2] : id.chop
+                      id = id.start_with?(sep) ? id[1..-2] : id.chop
                     end
                   elsif id.start_with? sep
-                    id = id[1..-1]
+                    id = id[1..]
                   end
                 end
                 unless synthetic
                   if pre.empty?
-                    id = %(_#{id}) if LeadingDigitRx =~ id
+                    id = %(_#{id}) if LEADING_DIGIT_RX =~ id
                   elsif !(id.start_with? pre)
                     id = %(#{pre}#{id})
                   end
@@ -1820,7 +1920,7 @@ body > svg {
             end
             id = %(#{pre}document#{sep}#{doc.object_id}) if synthetic
           end
-          logger.error %(chapter uses a reserved ID: #{id}) if !synthetic && (ReservedIds.include? id)
+          logger.error %(chapter uses a reserved ID: #{id}) if !synthetic && (RESERVED_IDS.include? id)
           id
         end
       end
