@@ -13,6 +13,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * escape double quotes in alt text
 * refactor `btn` styling to be more customizable (#450)
 * fix duplicate HTML IDs in case the same footnote is used multiple times (#447)
+* add initial support for `:pygments-linenums-mode: inline` (#451)
 
 == 1.5.1 (2021-04-29) - @slonopotamus
 

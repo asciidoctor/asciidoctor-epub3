@@ -1078,6 +1078,12 @@ table.table-grid-cols tbody tr > td:last-child {
   border-right-width: 0;
 }
 
+pre.pygments span.linenos,
+pre.rouge span.linenos {
+  display: inline-block;
+  margin-right: 0.75em;
+}
+
 hr.pagebreak {
   -webkit-column-break-after: always;
   page-break-after: always;
