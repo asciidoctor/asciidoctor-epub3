@@ -156,9 +156,9 @@ describe Asciidoctor::Epub3::Converter do
       expect(chapter_a).not_to be_nil
       expect(chapter_b).not_to be_nil
 
-      expect(chapter_a.content).to include 'A statement.<sup class="noteref">[<a id="noteref-1" href="#note-1" epub:type="noteref">1</a>]</sup>'
+      expect(chapter_a.content).to include 'A statement.<sup class="noteref">[<a href="#note-1" epub:type="noteref">1</a>]</sup>'
       footnote = '<aside id="note-1" epub:type="footnote">
-<p><sup class="noteref"><a href="#noteref-1">1</a></sup> Clarification about this statement.</p>
+<p>Clarification about this statement.</p>
 </aside>'
       expect(chapter_a.content).to include footnote
       expect(chapter_b.content).not_to include footnote

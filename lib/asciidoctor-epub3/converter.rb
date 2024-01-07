@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <div class="footnotes">'
           fns.each do |footnote|
             lines << %(<aside id="note-#{footnote.index}" epub:type="footnote">
-<p><sup class="noteref"><a href="#noteref-#{footnote.index}">#{footnote.index}</a></sup> #{footnote.text}</p>
+<p>#{footnote.text}</p>
 </aside>)
           end
           lines << '</div>
@@ -1254,9 +1254,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         %(<i class="conum" data-value="#{int_num}">#{num}</i>)
       end
 
+      # @param node [Asciidoctor::Inline]
+      # @return [String]
       def convert_inline_footnote(node)
         if (index = node.attr 'index')
-          %(<sup class="noteref">[<a id="noteref-#{index}" href="#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
+          attrs = []
+          attrs << %(id="#{node.id}") if node.id
+
+          %(<sup class="noteref">[<a#{prepend_space attrs * ' '}href="#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
         elsif node.type == :xref
           %(<mark class="noteref" title="Unresolved note reference">#{node.text}</mark>)
         end

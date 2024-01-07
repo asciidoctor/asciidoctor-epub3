@@ -12,6 +12,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * bump the oldest supported Asciidoctor to 2.0
 * escape double quotes in alt text
 * refactor `btn` styling to be more customizable (#450)
+* fix duplicate HTML IDs in case the same footnote is used multiple times (#447)
 
 == 1.5.1 (2021-04-29) - @slonopotamus
 
