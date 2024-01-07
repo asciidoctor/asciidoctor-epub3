@@ -61,14 +61,6 @@ RSpec.configure do |config|
     examples_dir.join(*path)
   end
 
-  def has_logger?
-    defined? Asciidoctor::LoggerManager
-  end
-
-  def skip_unless_has_logger
-    skip 'Logger is unavailable on Asciidoctor < 1.5.7' unless has_logger?
-  end
-
   def skip_unless_has_kindlegen
     require 'kindlegen'
   rescue LoadError

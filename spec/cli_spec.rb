@@ -15,9 +15,7 @@ describe 'asciidoctor-epub3' do
     expect(err).to match(/input file \/nonexistent( is)? missing/)
   end
 
-  it 'exits with 1 when epub validation fails on Asciidoctor >= 1.5.7 with --failure-level=ERROR' do
-    skip_unless_has_logger
-
+  it 'exits with 1 when epub validation fails with --failure-level=ERROR' do
     _, err, res = run_command asciidoctor_epub3_bin,
         '--failure-level=ERROR',
         '-a', 'ebook-validate',
