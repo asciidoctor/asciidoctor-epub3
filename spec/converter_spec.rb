@@ -5,15 +5,15 @@ require_relative 'spec_helper'
 describe Asciidoctor::Epub3::Converter do
   describe '#convert' do
     it 'converts empty file to epub without exceptions' do
-      to_epub fixture_file('empty.adoc')
+      expect(to_epub(fixture_file('empty.adoc'))).not_to be_nil
     end
 
     it 'converts empty file to mobi without exceptions' do
-      to_mobi fixture_file('empty.adoc')
+      expect(to_mobi(fixture_file('empty.adoc'))).not_to be_nil
     end
 
     it 'converts empty heredoc document to epub without exceptions' do
-      to_epub ''
+      expect(to_epub('')).not_to be_nil
     end
 
     it 'converts minimal heredoc document to epub without exceptions' do
@@ -262,21 +262,23 @@ describe Asciidoctor::Epub3::Converter do
     end
 
     it "doesn't crash when sees inline toc" do
-      to_epub <<~EOS
+      book = to_epub <<~EOS
         = Title
 
         toc::[]
       EOS
+      expect(book).not_to be_nil
     end
 
     it 'does not crash when sees inline pass macro `m` with an icon' do
-      to_epub <<~EOS
+      book = to_epub <<~EOS
         = Test
         :icons: font
         :call-to-action: pass:m,q[icon:hand-o-right[] *Call to Action*]
 
         {call-to-action}
       EOS
+      expect(book).not_to be_nil
     end
 
     it 'supports video' do
