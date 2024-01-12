@@ -28,5 +28,5 @@ jobs:
         type: 'stream'
         topic: 'releases'
         content: |
-          Asciidoctor-EPUB3 ${{ env.RELEASE_VERSION }} is out!
+          Asciidoctor EPUB3 ${{ env.RELEASE_VERSION }} is out!
           https://github.com/asciidoctor/asciidoctor-epub3/releases/tag/${{ env.RELEASE_VERSION }}
