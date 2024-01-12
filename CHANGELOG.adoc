@@ -5,16 +5,23 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
-== Unreleased
+== 2.0.0 (2024-01-12) - @slonopotamus
 
 * fix handling of chapters with Unicode titles for Mobi (#417)
 * add XML declarations to XHTML files (#424 by @abbrev)
 * bump the oldest supported Ruby to 2.6
 * bump the oldest supported Asciidoctor to 2.0
-* escape double quotes in alt text
+* escape double quotes in alt text (#443)
 * refactor `btn` styling to be more customizable (#450)
 * fix duplicate HTML IDs in case the same footnote is used multiple times (#447)
 * add initial support for `:pygments-linenums-mode: inline` (#451)
+* line numbers are no longer selected when copying text from code snippets (#422)
+* compress CSS to reduce its size
+* preserve roles of admonition blocks (#420)
+* use prose font for verse blocks (#394)
+* add support for absolute cover image path (#419)
+* add support for floating blocks (#405)
+* fix `<hN>` tags for chapters (#388)
 
 == 1.5.1 (2021-04-29) - @slonopotamus
 
