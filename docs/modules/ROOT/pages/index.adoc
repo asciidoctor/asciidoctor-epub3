@@ -67,7 +67,7 @@ Of course, there's always room for improvement, so we'll continue to work with y
 * Respects font settings (if supported by the e-reader) without altering headings, code or icons
 * EPUB3 metadata, manifest and spine (assembled by Gepub)
 * Document metadata (title, authors, subject, keywords, etc.)
-* Internal cross reference links
+* Internal cross-reference links
 * Syntax highlighting with Rouge, CodeRay or Pygments
 * Unicode callout numbers
 * Page breaks avoided in block content (so much as it's supported by the e-reader)
@@ -388,7 +388,7 @@ You just need to specify the format (`-a ebook-format`) as `kf8`.
 
 When the script completes, you'll see the file [file]_sample-book.mobi_ as well as [file]_sample-book-kf8.epub_ (the precursor) appear in the [path]_output_ directory.
 
-KindleGen does mandatory validation so you don't need to run the `validate` command after converting to KF8/MOBI.
+KindleGen does mandatory validation, so you don't need to run the `validate` command after converting to KF8/MOBI.
 
 .What is KF8?
 ****
@@ -641,7 +641,7 @@ Some we haven't conquered.
 Yet.
 
 The <<kindle-quirks,Kindle quirks list>> shows you just a few of the constraints we encountered.
-To see all of the workarounds and why we chose certain style options, check out the code and comments in the [file]_epub3.css_ and [file]_epub3-css-only.css_ files.
+To see all the workarounds and why we chose certain style options, check out the code and comments in the [file]_epub3.css_ and [file]_epub3-css-only.css_ files.
 
 // TODO add http://www.namo.com/site/namo/menu/5074.do[Namo PubTreeViewer] (iOS, Android & Windows) and http://www.kobo.com/apps[Kobo] (iOS, Android, OSX & Windows)
 
@@ -673,7 +673,7 @@ So it's a good way to acceptance test your custom styles to discover which ones 
 ==== Look Inside
 
 The Amazon Kindle store offers a “Look Inside” feature for reader.
-This so-called feature aims to gives readers a glimpse at the contents of the book.
+This so-called feature aims to give readers a glimpse at the contents of the book.
 Sadly, it does no such thing.
 Instead, it shows pages from the legacy MOBI document that kindlegen adds to your e-book file, not the higher fidelity KF8 document.
 This means the preview won't look at all like what the Kindle reader or application will actually show.
