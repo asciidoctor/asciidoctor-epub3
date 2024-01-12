@@ -841,7 +841,7 @@ div.verse {
   page-break-inside: avoid;
 }
 
-/* TODO we may want to reenable hyphens here, but not for kf8 */
+/* TODO we may want to reenable hyphens here */
 div.verse > pre {
   font-family: "M+ 1p", sans-serif;
   background-color: transparent;
@@ -1160,7 +1160,10 @@ nav[hidden~="hidden"] {
 }
 
 @media amzn-mobi {
-  /* NOTE mobi7 doesn't support custom fonts, so revert to generic ones */
+  /*
+    NOTE mobi7 doesn't support custom fonts, so revert to generic ones.
+    See https://github.com/asciidoctor/asciidoctor-epub3/issues/56.
+   */
   body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,
   table.table th, table.table td, div.verse .attribution {
     font-family: serif;

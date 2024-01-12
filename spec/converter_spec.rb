@@ -8,10 +8,6 @@ describe Asciidoctor::Epub3::Converter do
       expect(to_epub(fixture_file('empty.adoc'))).not_to be_nil
     end
 
-    it 'converts empty file to mobi without exceptions' do
-      expect(to_mobi(fixture_file('empty.adoc'))).not_to be_nil
-    end
-
     it 'converts empty heredoc document to epub without exceptions' do
       expect(to_epub('')).not_to be_nil
     end

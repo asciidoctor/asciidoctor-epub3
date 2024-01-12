@@ -12,7 +12,7 @@ image:https://img.shields.io/badge/zulip-join_chat-brightgreen.svg[project chat,
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
 image:{uri-project}/workflows/CI/badge.svg?branch=main[GitHub Actions,link={uri-ci}]
 
-{project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 and KF8/MOBI e-book formats.
+{project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 e-book format.
 
 == Documentation
 
@@ -52,15 +52,6 @@ $ asciidoctor-epub3 -D output path/to/book.adoc
 
 When the script completes, you'll see the file [file]_book.epub_ appear in the [path]_output_ directory.
 Open that file with an EPUB3 reader to view the result.
-
-You may also produce KF8/MOBI file by setting `ebook-format` attribute to `kf8`.
-
-[source,shell script]
-----
-$ asciidoctor-epub3 -D output -a ebook-format=kf8 path/to/book.adoc
-----
-
-When the script completes, the file [file]_book.mobi_ will appear in [path]_output_ directory.
 
 == Contributing
 
