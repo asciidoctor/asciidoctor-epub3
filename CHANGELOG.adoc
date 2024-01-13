@@ -5,6 +5,10 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
+== 2.0.1 (2024-01-13) - @slonopotamus
+
+* restore styling of `<strong>` and `<em>` (#461)
+
 == 2.0.0 (2024-01-12) - @slonopotamus
 
 * fix handling of chapters with Unicode titles for Mobi (#417)
@@ -22,10 +26,6 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add support for absolute cover image path (#419)
 * add support for floating blocks (#405)
 * fix `<hN>` tags for chapters (#388)
-
-== Unreleased
-
-* restore styling of `<strong>` and `<em>` (#461)
 
 == 1.5.1 (2021-04-29) - @slonopotamus
 
