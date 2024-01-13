@@ -17,6 +17,14 @@ address {
   white-space: pre-line;
 }
 
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
 b.button {
   font-weight: normal;
   text-shadow: 1px 0 0 $button-shadow;

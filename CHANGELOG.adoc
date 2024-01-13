@@ -23,6 +23,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add support for floating blocks (#405)
 * fix `<hN>` tags for chapters (#388)
 
+== Unreleased
+
+* restore styling of `<strong>` and `<em>` (#461)
+
 == 1.5.1 (2021-04-29) - @slonopotamus
 
 * update Font Awesome Solid to 5.15.1
