@@ -14,8 +14,6 @@
 * reorder sections in README; needs to flow a bit better...Getting Started is too large & after Structuring your Manuscript
 * link to https://medium.com/@sandersk/responsive-ebook-design-a-primer-8bba01328219 in style section in README
 * only uppercase document title if detected in CSS
-* add empty front matter page in kf8 version if one is specified to allow navigation to first entry from TOC
- ** why can't we navigate to first chapter on Kindle from TOC?
 * document more clearly how to provide your own CSS
  ** currently it's not possible to override the epub3-fonts.css (though it should be)
 * cleanup this sanitize XML stuff; move to Asciidoctor::Helpers?
@@ -43,7 +41,6 @@
 * MEDIUM: add icon & icon placement as attributes on btn macro
 * MEDIUM: move client sniffer JavaScript to file and read/include from converter
 * MEDIUM: use the dfn element for defining a definition of a term (not just term class); see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
-* MEDIUM: to remove text indent in mobi7, set width="0pt" (text-indent) on <p> tag; also set height="1em" (margin top)
 * MEDIUM: create back link in bibliography entry for each reference to it (currently only the first)
 * implement checklists
 
@@ -70,14 +67,12 @@
 
  table.table div.embed > *:not(p) { font-size: 1.25em; }
 
-* HIGH: kindlegen no longer strips <header> elements, so we can drop our div wrapper hack
 * HIGH: don't set text color so light on monochrome devices (use media query to detect) (#67)
 * HIGH: make justify-text a class on body that can be controlled from AsciiDoc attribute
 * HIGH: image border option (or add drop shadow to screenshots in README)
 * HIGH: review the table border color
 * HIGH: style example block
 * HIGH: allow theme to be customized using stylesheet attribute
-* HIGH: move -webkit-hyphens: auto to epub3-css3-only inside @media not amzn-kf8? (if we decide to reenable)
 * MEDIUM: headshot has too much top margin when at top of page (not below section title)
 * MEDIUM: namo pubtree is justifying preformatted blocks (still true?)
 * support both jpg and png avatars
@@ -131,13 +126,6 @@
 * Control+Shift+u to type in a unicode sequent, then press enter to accept
 * Calibre gets confused when there are local fonts that closely match font in stylesheet, uses them over embedded styles (in particular M+ weights)
 * iBooks info: http://authoradventures.blogspot.com/2013/08/ibooks-tutorial-update-version-30.html
-* use the following media query to target non-Kindle devices (works in iBooks at least)
-
- @media not amzn-kf8 {
-   @media not amzn-mobi {
-   }
- }
-
 * selector for all prose text (including symbols)
 
  body p, ul, ol, li, dl, dt, dd, figcaption, caption, footer,

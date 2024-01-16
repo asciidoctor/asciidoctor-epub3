@@ -32,6 +32,7 @@ body code, body kbd, body :not(.verse) > pre, :not(.verse) > pre :not(code) {
   font-family: "M+ 1mn", monospace !important;
 }
 
+/* TODO: DO we still need this? */
 @media amzn-kf8 {
   /* Kindle does its own margin management, so don't use an explicit margin */
   /*body {

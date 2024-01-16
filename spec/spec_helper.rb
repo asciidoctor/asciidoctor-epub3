@@ -61,12 +61,6 @@ RSpec.configure do |config|
     examples_dir.join(*path)
   end
 
-  def skip_unless_has_kindlegen
-    require 'kindlegen'
-  rescue LoadError
-    skip 'kindlegen gem is unavailable'
-  end
-
   def convert(input, opts = {})
     opts[:backend] = 'epub3'
     opts[:header_footer] = true
@@ -88,15 +82,6 @@ RSpec.configure do |config|
     output = Pathname.new result.attr('outfile')
     book = GEPUB::Book.parse output
     [book, output]
-  end
-
-  def to_mobi(input, opts = {})
-    skip_unless_has_kindlegen
-    (opts[:attributes] ||= {})['ebook-format'] = 'mobi'
-    doc = convert input, opts
-    output = Pathname.new(doc.attr('outfile')).sub_ext '.mobi'
-    expect(output).to exist
-    output
   end
 end
 

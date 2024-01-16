@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.name = 'asciidoctor-epub3'
   s.version = Asciidoctor::Epub3::VERSION
 
-  s.summary = 'Converts AsciiDoc documents to EPUB3 and KF8/MOBI (Kindle) e-book formats'
+  s.summary = 'Converts AsciiDoc documents to EPUB3 e-book format'
   s.description = <<~EOS
-    An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 and KF8/MOBI (Kindle) e-book archives.
+    An extension for Asciidoctor that converts AsciiDoc documents to EPUB3 e-book format.
   EOS
 
   s.authors = ['Dan Allen', 'Sarah White']
@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
     Dir['**/*']
   end
   s.files = files.grep %r{^(?:(?:data/(?:fonts|images|styles)|lib)/.+|Gemfile|Rakefile|LICENSE|(?:CHANGELOG|NOTICE|README)\.adoc|\.yardopts|#{s.name}\.gemspec)$}
-  s.executables = %w[asciidoctor-epub3 adb-push-ebook]
+  s.executables = %w[asciidoctor-epub3]
 
   s.require_paths = ['lib']
 

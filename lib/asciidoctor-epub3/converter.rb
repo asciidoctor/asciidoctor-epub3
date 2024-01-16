@@ -7,8 +7,7 @@ require_relative 'font_icon_map'
 
 module Asciidoctor
   module Epub3
-    # Public: The main converter for the epub3 backend that handles packaging the
-    # EPUB3 or KF8 publication file.
+    # Public: The main converter for the epub3 backend that handles packaging the EPUB3 publication file.
     class Converter
       include ::Asciidoctor::Converter
       include ::Asciidoctor::Logging
@@ -17,15 +16,14 @@ module Asciidoctor
       register_for 'epub3'
 
       def write(output, target)
-        epub_file = @format == :kf8 ? %(#{::Asciidoctor::Helpers.rootname target}-kf8.epub) : target
-        output.generate_epub epub_file
-        logger.debug %(Wrote #{@format.upcase} to #{epub_file})
+        output.generate_epub target
+        logger.debug %(Wrote to #{target})
         if @extract
-          extract_dir = epub_file.sub EPUB_EXTENSION_RX, ''
+          extract_dir = target.sub EPUB_EXTENSION_RX, ''
           ::FileUtils.remove_dir extract_dir if ::File.directory? extract_dir
           ::Dir.mkdir extract_dir
           ::Dir.chdir extract_dir do
-            ::Zip::File.open epub_file do |entries|
+            ::Zip::File.open target do |entries|
               entries.each do |entry|
                 next unless entry.file?
 
@@ -36,15 +34,12 @@ module Asciidoctor
               end
             end
           end
-          logger.debug %(Extracted #{@format.upcase} to #{extract_dir})
+          logger.debug %(Extracted to #{extract_dir})
         end
 
-        if @format == :kf8
-          # QUESTION: shouldn't we validate this epub file too?
-          distill_epub_to_mobi epub_file, target, @compress
-        elsif @validate
-          validate_epub epub_file
-        end
+        return unless @validate
+
+        validate_epub target
       end
 
       CSV_DELIMITED_RX = /\s*,\s*/.freeze
@@ -80,14 +75,6 @@ module Asciidoctor
       TO_HTML_SPECIAL_CHARS_RX = /[#{TO_HTML_SPECIAL_CHARS_MAP.keys.join}]/.freeze
 
       EPUB_EXTENSION_RX = /\.epub$/i.freeze
-      KINDLEGEN_COMPRESSION = {
-        '0' => '-c0',
-        '1' => '-c1',
-        '2' => '-c2',
-        'none' => '-c0',
-        'standard' => '-c1',
-        'huffdic' => '-c2'
-      }.freeze
 
       QUOTE_TAGS = begin
         tags = {
@@ -109,7 +96,7 @@ module Asciidoctor
       def initialize(backend, opts = {})
         super
         basebackend 'html'
-        outfilesuffix '.epub' # dummy outfilesuffix since it may be .mobi
+        outfilesuffix '.epub'
         htmlsyntax 'xml'
       end
 
@@ -158,19 +145,16 @@ module Asciidoctor
       end
 
       def convert_document(node)
-        @format = node.attr('ebook-format').to_sym
-
         @validate = node.attr? 'ebook-validate'
         @extract = node.attr? 'ebook-extract'
         @compress = node.attr 'ebook-compress'
-        @kindlegen_path = node.attr 'ebook-kindlegen-path'
         @epubcheck_path = node.attr 'ebook-epubcheck-path'
         @xrefs_seen = ::Set.new
         @media_files = {}
         @footnotes = []
 
         @book = GEPUB::Book.new 'EPUB/package.opf'
-        @book.epub_backward_compat = @format != :kf8
+        @book.epub_backward_compat = true
         @book.language node.attr('lang', 'en'), id: 'pub-language'
 
         if node.attr? 'uuid'
@@ -239,7 +223,7 @@ module Asciidoctor
         landmarks = []
 
         front_cover = add_cover_page node, 'front-cover'
-        if front_cover.nil? && @format != :kf8 && node.doctype == 'book'
+        if front_cover.nil? && node.doctype == 'book'
           # TODO(#352): add textual front cover similar to PDF
         end
 
@@ -289,9 +273,9 @@ module Asciidoctor
           }
         end
 
-        nav_item.add_content postprocess_xhtml(nav_doc(node, toc_items, landmarks, outlinelevels))
+        nav_item.add_content nav_doc(node, toc_items, landmarks, outlinelevels).to_ios
         # User is not supposed to see landmarks, so pass empty array here
-        toc_item&.add_content postprocess_xhtml(nav_doc(node, toc_items, [], toclevels))
+        toc_item&.add_content nav_doc(node, toc_items, [], toclevels).to_ios
 
         # NOTE: gepub doesn't support building a ncx TOC with depth > 1, so do it ourselves
         toc_ncx = ncx_doc node, toc_items, outlinelevels
@@ -406,10 +390,8 @@ module Asciidoctor
         end
 
         header = if title || subtitle
-                   %(<header>
-<div class="chapter-header">
+                   %(<header class="chapter-header">
 #{byline}<h1 class="chapter-title">#{title}#{subtitle ? %(<small class="subtitle">#{subtitle}</small>) : ''}</h1>
-</div>
 </header>)
                  else
                    ''
@@ -419,7 +401,6 @@ module Asciidoctor
         # in order to avoid style duplication across chapter files
         linkcss = true
 
-        # NOTE: kindlegen seems to mangle the <header> element, so we wrap its content in a div
         lines = [%(<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang',
@@ -455,9 +436,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         unless (fns = node.document.footnotes - @footnotes).empty?
           @footnotes += fns
 
-          # NOTE: kindlegen seems to mangle the <footer> element, so we wrap its content in a div
-          lines << '<footer>
-<div class="chapter-footer">
+          lines << '<footer class="chapter-footer">
 <div class="footnotes">'
           fns.each do |footnote|
             lines << %(<aside id="note-#{footnote.index}" epub:type="footnote">
@@ -465,7 +444,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </aside>)
           end
           lines << '</div>
-</div>
 </footer>'
         end
 
@@ -479,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines << '</body>
 </html>'
 
-        chapter_item.add_content postprocess_xhtml lines * LF
+        chapter_item.add_content((lines * LF).to_ios)
         epub_properties = node.attr 'epub-properties'
         chapter_item.add_property 'svg' if epub_properties&.include? 'svg'
 
@@ -1386,7 +1364,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def add_theme_assets(doc)
-        format = @format
         workdir = if doc.attr? 'epub3-stylesdir'
                     stylesdir = doc.attr 'epub3-stylesdir'
                     # FIXME: make this work for Windows paths!!
@@ -1404,13 +1381,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         # TODO: improve design/UX of custom theme functionality, including custom fonts
         %w[epub3 epub3-css3-only].each do |f|
           css = load_css_file File.join(workdir, %(#{f}.scss))
-          if format == :kf8
-            # NOTE: add layer of indirection so Kindle Direct Publishing (KDP) doesn't strip font-related CSS rules
-            @book.add_item %(styles/#{f}.css), content: %(@import url("#{f}-proxied.css");).to_ios
-            @book.add_item %(styles/#{f}-proxied.css), content: css.to_ios
-          else
-            @book.add_item %(styles/#{f}.css), content: css.to_ios
-          end
+          @book.add_item %(styles/#{f}.css), content: css.to_ios
         end
 
         syntax_hl = doc.syntax_highlighter
@@ -1433,15 +1404,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         @book.add_item 'styles/epub3-fonts.css', content: font_css.to_ios
         unless font_files.empty?
           # NOTE: metadata property in oepbs package manifest doesn't work; must use proprietary iBooks file instead
-          # (@book.metadata.add_metadata 'meta', 'true')['property'] = 'ibooks:specified-fonts' unless format == :kf8
-          unless format == :kf8
-            @book.add_optional_file 'META-INF/com.apple.ibooks.display-options.xml', '<?xml version="1.0" encoding="UTF-8"?>
+          @book.add_optional_file 'META-INF/com.apple.ibooks.display-options.xml', '<?xml version="1.0" encoding="UTF-8"?>
 <display_options>
 <platform name="*">
 <option name="specified-fonts">true</option>
 </platform>
 </display_options>'.to_ios
-          end
 
           font_files.each do |font_file|
             @book.add_item font_file, content: File.join(DATA_DIR, font_file)
@@ -1486,8 +1454,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           return nil
         end
 
-        return nil if @format == :kf8
-
         unless !image_attrs.empty? && (width = image_attrs['width']) && (height = image_attrs['height'])
           width = 1050
           height = 1600
@@ -1522,9 +1488,9 @@ body > svg {
   width="100%" height="100%" viewBox="0 0 #{width} #{height}" preserveAspectRatio="xMidYMid meet">
 <image width="#{width}" height="#{height}" xlink:href="#{image_href}"/>
 </svg></body>
-</html>).to_ios
+</html>)
 
-        @book.add_ordered_item %(#{name}.xhtml), content: content, id: name
+        @book.add_ordered_item %(#{name}.xhtml), content: content.to_ios, id: name
       end
 
       def get_frontmatter_files(doc, workdir)
@@ -1559,7 +1525,7 @@ body > svg {
           front_matter_content = ::File.read front_matter
 
           front_matter_file = File.basename front_matter, '.html'
-          item = @book.add_ordered_item "#{front_matter_file}.xhtml", content: (postprocess_xhtml front_matter_content)
+          item = @book.add_ordered_item "#{front_matter_file}.xhtml", content: front_matter_content.to_ios
           item.add_property 'svg' if SVG_IMG_SNIFF_RX =~ front_matter_content
           # Store link to first frontmatter page
           result = item if result.nil?
@@ -1615,8 +1581,8 @@ body > svg {
 </head>
 <body>
 <section class="chapter">
-<header>
-<div class="chapter-header"><h1 class="chapter-title"><small class="subtitle">#{doc.attr 'toc-title'}</small></h1></div>
+<header class="chapter-header">
+<h1 class="chapter-title"><small class="subtitle">#{doc.attr 'toc-title'}</small></h1>
 </header>
 <nav epub:type="toc" id="toc">)]
         lines << (nav_level items, [depth, 0].max)
@@ -1738,72 +1704,6 @@ body > svg {
         sass_engine.render
       end
 
-      def postprocess_xhtml(content)
-        return content.to_ios unless @format == :kf8
-
-        # TODO: convert regular expressions to constants
-        content
-          .gsub(/<img([^>]+) style="width: (\d\d)%;"/, '<img\1 style="width: \2%; height: \2%;"')
-          .gsub(%r{<script type="text/javascript">.*?</script>\n?}m, '')
-          .to_ios
-      end
-
-      def build_kindlegen_command
-        unless @kindlegen_path.nil?
-          logger.debug %(Using ebook-kindlegen-path attribute: #{@kindlegen_path})
-          return [@kindlegen_path]
-        end
-
-        unless (result = ENV.fetch('KINDLEGEN', nil)).nil?
-          logger.debug %(Using KINDLEGEN env variable: #{result})
-          return [result]
-        end
-
-        begin
-          require 'kindlegen' unless defined? ::Kindlegen
-          result = ::Kindlegen.command.to_s
-          logger.debug %(Using KindleGen from gem: #{result})
-          [result]
-        rescue LoadError => e
-          logger.debug %(#{e}; Using KindleGen from PATH)
-          [%(kindlegen#{::Gem.win_platform? ? '.exe' : ''})]
-        end
-      end
-
-      def distill_epub_to_mobi(epub_file, target, compress)
-        mobi_file = ::File.basename target.sub(EPUB_EXTENSION_RX, '.mobi')
-        compress_flag = KINDLEGEN_COMPRESSION[if compress
-                                                compress.empty? ? '1' : compress.to_s
-                                              else
-                                                '0'
-                                              end]
-
-        argv = build_kindlegen_command + ['-dont_append_source', compress_flag, '-o', mobi_file, epub_file].compact
-        begin
-          # This duplicates Kindlegen.run, but we want to override executable
-          out, err, res = Open3.capture3(*argv) do |r|
-            r.force_encoding 'UTF-8' if ::Gem.win_platform? && r.respond_to?(:force_encoding)
-          end
-        rescue Errno::ENOENT => e
-          raise 'Unable to run KindleGen. Either install the kindlegen gem or place `kindlegen` executable on PATH or set KINDLEGEN environment variable with path to it',
-                cause: e
-        end
-
-        out.each_line do |line|
-          log_line line
-        end
-        err.each_line do |line|
-          log_line line
-        end
-
-        output_file = ::File.join ::File.dirname(epub_file), mobi_file
-        if res.success?
-          logger.debug %(Wrote MOBI to #{output_file})
-        else
-          logger.error %(KindleGen failed to write MOBI to #{output_file})
-        end
-      end
-
       def build_epubcheck_command
         unless @epubcheck_path.nil?
           logger.debug %(Using ebook-epubcheck-path attribute: #{@epubcheck_path})
@@ -1875,27 +1775,6 @@ body > svg {
       end
     end
 
-    class NumericIdGenerator
-      def initialize
-        @counter = 1
-      end
-
-      # @param node [Asciidoctor::AbstractNode]
-      # @return [void]
-      def generate_id(node)
-        if node.chapter? || node.is_a?(Asciidoctor::Document)
-          node.id = %(_generated_id_#{@counter})
-          @counter += 1
-        end
-
-        # Recurse
-        node.blocks.each do |subnode|
-          # dlist contains array of *arrays* of blocks, so just skip them
-          generate_id subnode if subnode.is_a?(Asciidoctor::AbstractBlock)
-        end
-      end
-    end
-
     Extensions.register do
       if (document = @document).backend == 'epub3'
         document.set_attribute 'listing-caption', 'Listing'
@@ -1904,33 +1783,22 @@ body > svg {
         document.set_attribute 'pygments-style', 'bw' unless document.attr? 'pygments-style'
         document.set_attribute 'rouge-style', 'bw' unless document.attr? 'rouge-style'
 
-        case (ebook_format = document.attributes['ebook-format'])
-        when 'epub3', 'kf8'
-          # all good
-        when 'mobi'
-          ebook_format = document.attributes['ebook-format'] = 'kf8'
-        else
-          # QUESTION: should we display a warning?
-          ebook_format = document.attributes['ebook-format'] = 'epub3'
-        end
-        document.attributes[%(ebook-format-#{ebook_format})] = ''
+        # Backward compatibility for documents that were created before we dropped MOBI support
+        document.set_attribute 'ebook-format', 'epub3'
+        document.set_attribute 'ebook-format-epub3', ''
 
         # Enable generation of section ids because we use them for chapter filenames
         document.set_attribute 'sectids'
         treeprocessor do
           process do |doc|
-            if ebook_format == 'kf8'
-              # Kindlegen doesn't support unicode ids
-              NumericIdGenerator.new.generate_id doc
-            else
-              # :sectids: doesn't generate id for top-level section (why?), do it manually
-              doc.id = Section.generate_id(doc.first_section&.title || doc.attr('docname') || 'document', doc) if doc.id.nil_or_empty?
+            # :sectids: doesn't generate id for top-level section (why?), do it manually
+            doc.id = Section.generate_id(doc.first_section&.title || doc.attr('docname') || 'document', doc) if doc.id.nil_or_empty?
 
-              if (preamble = doc.blocks[0]) && preamble.context == :preamble && preamble.id.nil_or_empty?
-                # :sectids: doesn't generate id for preamble (because it is not a section), do it manually
-                preamble.id = Section.generate_id(preamble.title || 'preamble', doc)
-              end
+            if (preamble = doc.blocks[0]) && preamble.context == :preamble && preamble.id.nil_or_empty?
+              # :sectids: doesn't generate id for preamble (because it is not a section), do it manually
+              preamble.id = Section.generate_id(preamble.title || 'preamble', doc)
             end
+
             nil
           end
         end

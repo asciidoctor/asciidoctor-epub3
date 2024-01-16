@@ -37,17 +37,6 @@ describe 'asciidoctor-epub3' do
     expect(File).to exist(out_file)
   end
 
-  it 'converts sample book to mobi' do
-    in_file = example_file 'sample-book.adoc'
-    out_file = temp_file 'sample-book.mobi'
-
-    _, err, res = to_mobi in_file, out_file
-    expect(res.exitstatus).to eq(0)
-    expect(err).not_to include 'ERROR'
-    expect(err).not_to include 'invalid reference'
-    expect(File).to exist(out_file)
-  end
-
   it 'prints errors to stderr when converts invalid book to epub' do
     _, err, res = to_epub fixture_file('invalid.adoc'), temp_file('invalid.epub')
     expect(res.exitstatus).to eq(0)
@@ -55,17 +44,6 @@ describe 'asciidoctor-epub3' do
     expect(err).to include 'ERROR(RSC-012)'
     # Error from converter.rb
     expect(err).to include 'EPUB validation failed'
-  end
-
-  it 'prints errors to stderr when converts invalid book to mobi' do
-    _, err, res = to_mobi fixture_file('invalid.adoc'), temp_file('invalid.mobi')
-    expect(err).to include 'ERROR'
-    expect(res.exitstatus).to eq(0)
-  end
-
-  def to_mobi(in_file, out_file)
-    skip_unless_has_kindlegen
-    run_command asciidoctor_epub3_bin, '-a', 'ebook-format=mobi', in_file.to_s, '-o', out_file.to_s
   end
 
   def to_epub(in_file, out_file = nil)

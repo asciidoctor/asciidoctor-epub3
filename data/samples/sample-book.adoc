@@ -6,7 +6,7 @@ v1.0, 2014-04-15
 :doctype: book
 :epub-chapter-level: 2
 :producer: Asciidoctor
-:keywords: Asciidoctor, samples, e-book, EPUB3, KF8, MOBI, Asciidoctor.js
+:keywords: Asciidoctor, samples, e-book, EPUB3, Asciidoctor.js
 :copyright: CC-BY-SA 3.0
 :username: graphitefriction
 :description: This guide describes the Asciidoctor attributes, values, and layout options available for producing a customized and polished document.
