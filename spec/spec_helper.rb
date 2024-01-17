@@ -54,7 +54,7 @@ RSpec.configure do |config|
   end
 
   def examples_dir
-    Pathname.new(__dir__).join '..', 'data', 'samples'
+    Pathname.new(__dir__).join '..', 'samples'
   end
 
   def example_file *path

@@ -284,7 +284,7 @@ This command should be available on your PATH if you installed the `asciidoctor-
 Otherwise, you can find the command in the [path]_bin_ folder of the project.
 We also recommend specifying an output directory using the `-D` option flag.
 
- $ asciidoctor-epub3 -D output data/samples/sample-book.adoc
+ $ asciidoctor-epub3 -D output samples/sample-book.adoc
 
 When the script completes, you'll see the file [file]_sample-book.epub_ appear in the [path]_output_ directory.
 Open that file with an EPUB reader (aka e-reader) to view the result.
@@ -316,7 +316,7 @@ TIP: As another example, point `asciidoctor-epub3` at the {uri-github-guides-for
 Next, let's validate the EPUB3 archive to ensure it built correctly.
 
 .EPUB3 with validation
- $ asciidoctor-epub3 -D output -a ebook-validate data/samples/sample-book.adoc
+ $ asciidoctor-epub3 -D output -a ebook-validate samples/sample-book.adoc
 
 .Validation success
 [.output]
@@ -348,7 +348,7 @@ EPUBCheck parses and validates the file against the EPUB schema.
 If you want to browse the contents of the EPUB3 file that is generated, or preview the XHTML files in a regular web browser, add the `-a ebook-extract` flag to the `asciidoctor-epub3` command.
 The EPUB3 file will be extracted to a directory adjacent to the generated file, but without the file extension.
 
- $ asciidoctor-epub3 -D output -a ebook-extract data/samples/sample-book.adoc
+ $ asciidoctor-epub3 -D output -a ebook-extract samples/sample-book.adoc
 
 In this example, the contents of the EPUB3 will be extracted to the [path]_output/sample-book_ directory.
 
