@@ -834,7 +834,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <ol>']
         num = CALLOUT_START_NUM
         node.items.each_with_index do |item, i|
-          lines << %(<li><i class="conum" data-value="#{i + 1}">#{num}</i> #{item.text}</li>)
+          lines << %(<li><i class="conum" data-value="#{i + 1}">#{num}</i> #{item.text}#{item.content if item.blocks?}</li>)
           num = num.next
         end
         lines << '</ol>

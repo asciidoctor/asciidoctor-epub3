@@ -327,6 +327,21 @@ describe Asciidoctor::Epub3::Converter do
       expect(audio.media_type).to eq('audio/mpeg')
     end
 
+    it 'supports blocks in colist' do
+      book, = to_epub <<~EOS
+        = Article
+
+        ----
+        Callout target <.>
+        ----
+        <.> Callout with list
+        * List Item 1
+      EOS
+      article = book.item_by_href '_article.xhtml'
+      expect(article).not_to be_nil
+      expect(article.content).to include 'List Item 1'
+    end
+
     it 'supports horizontal dlist' do
       book = to_epub <<~EOS
         = Article
