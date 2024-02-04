@@ -9,6 +9,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 * drop MOBI support
 * add support for blocks in callouts (#463)
+* stop packaging samples into gem (#462)
 
 == 2.0.1 (2024-01-13) - @slonopotamus
 
