@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pygments.rb', '~> 2.4.0'
   s.add_development_dependency 'rake', '~> 13.1.0'
   s.add_development_dependency 'rouge', '~> 3.0'
-  s.add_development_dependency 'rspec', '~> 3.12.0'
+  s.add_development_dependency 'rspec', '~> 3.13.0'
   s.add_development_dependency 'rubocop', '~> 1.50.2'
   s.add_development_dependency 'rubocop-rake', '~> 0.6.0'
   s.add_development_dependency 'rubocop-rspec', '~> 2.20.0'
