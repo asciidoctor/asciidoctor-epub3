@@ -2,7 +2,7 @@
 
 require 'mime/types'
 require 'open3'
-require 'sass'
+require 'sass-embedded'
 require_relative 'font_icon_map'
 
 module Asciidoctor
@@ -1698,10 +1698,7 @@ body > svg {
       end
 
       def load_css_file(filename)
-        template = File.read filename
-        load_paths = [File.dirname(filename)]
-        sass_engine = Sass::Engine.new template, syntax: :scss, cache: false, load_paths: load_paths, style: :compressed
-        sass_engine.render
+        Sass.compile(filename, style: :compressed).css
       end
 
       def build_epubcheck_command
