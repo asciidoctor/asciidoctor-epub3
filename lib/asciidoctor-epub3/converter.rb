@@ -1019,9 +1019,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def register_media_file(node, target, media_type)
         if target.end_with?('.svg') || target.start_with?('data:image/svg+xml')
           chapter = get_enclosing_chapter node
-          chapter.set_attr 'epub-properties', [] unless chapter.attr? 'epub-properties'
-          epub_properties = chapter.attr 'epub-properties'
-          epub_properties << 'svg' unless epub_properties.include? 'svg'
+          if chapter
+            chapter.set_attr 'epub-properties', [] unless chapter.attr? 'epub-properties'
+            epub_properties = chapter.attr 'epub-properties'
+            epub_properties << 'svg' unless epub_properties.include? 'svg'
+          end
         end
 
         return if target.start_with? 'data:'
