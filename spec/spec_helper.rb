@@ -79,8 +79,12 @@ RSpec.configure do |config|
     result = convert input, opts
     return result if result.is_a?(GEPUB::Book)
 
-    book = GEPUB::Book.parse File.new result.attr('outfile')
-    [book, Pathname.new(result.attr('outfile'))]
+    output = Pathname.new result.attr('outfile')
+    book = GEPUB::Book.parse output
+    [book, output]
+
+    # book = GEPUB::Book.parse File.new result.attr('outfile')
+    # [book, Pathname.new(result.attr('outfile'))]
   end
 end
 
