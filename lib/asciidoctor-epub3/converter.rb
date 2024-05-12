@@ -95,6 +95,11 @@ module Asciidoctor
 
       def initialize(backend, opts = {})
         super
+
+        @xrefs_seen = Set.new
+        @media_files = {}
+        @footnotes = []
+
         basebackend 'html'
         outfilesuffix '.epub'
         htmlsyntax 'xml'
@@ -149,9 +154,6 @@ module Asciidoctor
         @extract = node.attr? 'ebook-extract'
         @compress = node.attr 'ebook-compress'
         @epubcheck_path = node.attr 'ebook-epubcheck-path'
-        @xrefs_seen = ::Set.new
-        @media_files = {}
-        @footnotes = []
 
         @book = GEPUB::Book.new 'EPUB/package.opf'
         @book.epub_backward_compat = true

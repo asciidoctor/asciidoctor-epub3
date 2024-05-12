@@ -277,6 +277,20 @@ describe Asciidoctor::Epub3::Converter do
       expect(book).not_to be_nil
     end
 
+    # Test for https://github.com/asciidoctor/asciidoctor-epub3/issues/472
+    it 'does not crash when sees inline anchor' do
+      book = to_epub <<~EOS
+        = Test
+        :doctype: book
+
+        [[chapter-1]]
+        == Chapter 1
+
+        == <<chapter-1>> Chapter 2
+      EOS
+      expect(book).not_to be_nil
+    end
+
     it 'supports video' do
       book, = to_epub fixture_file('video/book.adoc')
       chapter = book.item_by_href '_chapter.xhtml'
