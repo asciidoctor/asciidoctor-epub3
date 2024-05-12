@@ -80,8 +80,12 @@ RSpec.configure do |config|
     return result if result.is_a?(GEPUB::Book)
 
     output = Pathname.new result.attr('outfile')
-    book = GEPUB::Book.parse output
-    [book, output]
+    [
+      output.open do |f|
+        GEPUB::Book.parse f
+      end,
+      output
+    ]
   end
 end
 
