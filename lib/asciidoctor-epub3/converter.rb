@@ -959,7 +959,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
         lines << %(<ol#{ol_class_attr}#{ol_start_attr}#{node.option?('reversed') ? ' reversed="reversed"' : ''}>)
         node.items.each do |item|
-          li_classes = [item.style, item.role].compact
+          li_classes = [item.role].compact
           li_class_attr = li_classes.empty? ? '' : %( class="#{li_classes * ' '}")
           lines << %(<li#{li_class_attr}>
 <span class="principal">#{item.text}</span>)
@@ -988,7 +988,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
         lines << %(<ul#{ul_class_attr}>)
         node.items.each do |item|
-          li_classes = [item.style, item.role].compact
+          li_classes = [item.role].compact
           li_class_attr = li_classes.empty? ? '' : %( class="#{li_classes * ' '}")
           lines << %(<li#{li_class_attr}>
 <span class="principal">#{item.text}</span>)
