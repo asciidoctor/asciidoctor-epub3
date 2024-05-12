@@ -5,7 +5,7 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
-== Unreleased
+== 2.1.1 (2024-05-12) - @slonopotamus
 
 * fix crash when section title contains inline anchor (#472)
 * fix crash on an SVG image inside table cell (#470)
