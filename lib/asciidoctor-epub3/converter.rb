@@ -76,6 +76,10 @@ module Asciidoctor
 
       EPUB_EXTENSION_RX = /\.epub$/i.freeze
 
+      # This is a workaround for https://github.com/asciidoctor/asciidoctor/issues/4380
+      # Currently, there is no access to parent cell from inner document
+      PARENT_CELL_FIELD_NAME = :@epub3_parent_cell
+
       QUOTE_TAGS = begin
         tags = {
           monospaced: ['<code>', '</code>', true],
@@ -796,6 +800,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                 else
                   case cell.style
                   when :asciidoc
+                    cell.inner_document.instance_variable_set(PARENT_CELL_FIELD_NAME, cell)
                     cell_content = %(<div class="embed">#{cell.content}</div>)
                   when :verse
                     cell_content = %(<div class="verse">#{cell.text}</div>)
@@ -1156,7 +1161,11 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           return nil if node.nil?
           return node unless get_chapter_filename(node).nil?
 
-          node = node.parent
+          node = if node.instance_variable_defined?(PARENT_CELL_FIELD_NAME)
+                   node.instance_variable_get(PARENT_CELL_FIELD_NAME)
+                 else
+                   node.parent
+                 end
         end
       end
 

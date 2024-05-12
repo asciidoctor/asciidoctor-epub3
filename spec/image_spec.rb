@@ -81,6 +81,13 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(chapter.content).to include '<img src="square.png" alt="invalid&quot;" width="25em" />'
   end
 
+  # Test for https://github.com/asciidoctor/asciidoctor-epub3/issues/470
+  it 'supports image inside table cell' do
+    book, = to_epub fixture_file('image-in-table/book.adoc')
+    chapter = book.item_by_href '_chapter.xhtml'
+    expect(chapter).not_to be_nil
+  end
+
   # If this test fails for you, make sure you're using gepub >= 1.0.11
   it 'adds SVG attribute to EPUB manifest if chapter contains SVG images' do
     book, = to_epub fixture_file('svg/book.adoc')
