@@ -1,0 +1,9 @@
+= Image in table
+:doctype: book
+
+== Chapter
+
+|===
+a|
+image::circle.svg[]
+|===
