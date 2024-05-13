@@ -45,7 +45,7 @@ Gem::Specification.new do |s|
   # Temporarily ban gepub 1.0.16
   # Looks like it stopped properly closing files after writing
   # See https://github.com/skoji/gepub/pull/140#issuecomment-2106238457
-  s.add_runtime_dependency 'gepub', '>= 1.0.0', '<= 1.0.15'
+  s.add_runtime_dependency 'gepub', '>= 1.0.0', '<= 1.0.17'
   # s.add_runtime_dependency 'gepub', '~> 1.0.0'
 
   s.add_runtime_dependency 'mime-types', '~> 3.0'
