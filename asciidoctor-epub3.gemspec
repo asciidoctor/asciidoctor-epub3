@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'asciidoctor-diagram', '~> 2.0'
   s.add_development_dependency 'asciimath', '~> 2.0'
   s.add_development_dependency 'coderay', '~> 1.1.0'
-  s.add_development_dependency 'pygments.rb', '~> 2.4.0'
+  s.add_development_dependency 'pygments.rb', '~> 3.0.0'
   s.add_development_dependency 'rake', '~> 13.2.0'
   s.add_development_dependency 'rouge', '~> 3.0'
   s.add_development_dependency 'rspec', '~> 3.13.0'
