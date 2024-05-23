@@ -83,4 +83,20 @@ describe 'Asciidoctor::Epub3::Converter - Xref' do
     expect(article).not_to be_nil
     expect(article.content).to include '<a id="xref-_subsection" href="#_subsection" class="xref">link text</a>'
   end
+
+  it 'adds xref id to sidebar' do
+    book = to_epub <<~EOS
+      = Article
+
+      [id=one]
+      ****
+      This is a sidebar
+      ****
+
+      More text
+    EOS
+    article = book.item_by_href '_article.xhtml'
+    expect(article).not_to be_nil
+    expect(article.content).to include '<aside id="one" class="sidebar" epub:type="sidebar">'
+  end
 end
