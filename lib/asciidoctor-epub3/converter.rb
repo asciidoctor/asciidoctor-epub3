@@ -735,6 +735,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_sidebar(node)
+        id_attribute = node.id ? %( id="#{node.id}") : ''
         classes = ['sidebar']
         if node.title?
           classes << 'titled'
@@ -747,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           title_attr = title_el = ''
         end
 
-        %(<aside class="#{classes * ' '}"#{title_attr} epub:type="sidebar">
+        %(<aside#{id_attribute} class="#{classes * ' '}"#{title_attr} epub:type="sidebar">
 #{title_el}<div class="content">
 #{output_content node}
 </div>
