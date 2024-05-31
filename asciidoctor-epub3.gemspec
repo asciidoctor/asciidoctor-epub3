@@ -44,6 +44,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'gepub', '~> 1.0.0'
   s.add_runtime_dependency 'mime-types', '~> 3.0'
 
-  # TODO: switch to 'sass-embedded' when we drop Ruby 2.5 support
-  s.add_runtime_dependency 'sass'
+  s.add_runtime_dependency 'sass-embedded', '~> 1.58'
 end
