@@ -8,6 +8,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 == Unreleased
 
 * fix crash when running in environments with non-Unicode locale (#475)
+* update Font Awesome Solid to 6.6.0
 
 == 2.1.3 (2024-05-12) - @slonopotamus
 
