@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/asciidoctor/asciidoctor-epub3'
   s.license = 'MIT'
 
-  s.required_ruby_version = '>= 2.6.0'
+  s.required_ruby_version = '>= 2.7.0'
 
   files = begin
     (result = Open3.popen3('git ls-files -z') { |_, out| out.read }.split %(\0)).empty? ? Dir['**/*'] : result
