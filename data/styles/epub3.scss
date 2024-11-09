@@ -1045,6 +1045,38 @@ table.table th {
   font-weight: bold;
 }
 
+table.table-grid-all th,
+table.table-grid-all td {
+  border-width: 1px 1px 1px 1px;
+  border-style: solid;
+  border-color: $table-border;
+}
+
+hr.pagebreak {
+  -webkit-column-break-after: always;
+  page-break-after: always;
+  border: none;
+  margin: 0;
+}
+
+/* REVIEW */
+hr.pagebreak + * {
+  margin-top: 0 !important;
+}
+
+#_about_the_author {
+  -webkit-column-break-before: always;
+  page-break-before: always;
+  border-bottom: 1px solid $about-author-border;
+}
+
+table.table-grid-cols th,
+table.table-grid-cols td {
+  border-width: 0 1px 0 0;
+  border-style: solid;
+  border-color: $table-border;
+}
+
 table.table thead th {
   border-bottom: 1px solid $table-border;
 }
@@ -1078,32 +1110,9 @@ table.table-framed-sides {
   border-color: $table-border;
 }
 
-table.table-grid-all th,
-table.table-grid-all td {
-  border-width: 1px 1px 1px 1px;
-  border-style: solid;
-  border-color: $table-border;
-}
-
-table.table-grid-all thead tr > *:last-child {
-  border-right-width: 0;
-}
-
-table.table-grid-all tbody tr:last-child > th,
-table.table-grid-all tbody tr:last-child > td {
-  border-bottom-width: 0;
-}
-
 table.table-grid-rows tbody th,
 table.table-grid-rows tbody td {
   border-width: 1px 0 0 0;
-  border-style: solid;
-  border-color: $table-border;
-}
-
-table.table-grid-cols th,
-table.table-grid-cols td {
-  border-width: 0 1px 0 0;
   border-style: solid;
   border-color: $table-border;
 }
@@ -1116,28 +1125,19 @@ table.table-grid-cols tbody tr > td:last-child {
   border-right-width: 0;
 }
 
+table.table-grid-all thead tr > *:last-child {
+  border-right-width: 0;
+}
+
+table.table-grid-all tbody tr:last-child > th,
+table.table-grid-all tbody tr:last-child > td {
+  border-bottom-width: 0;
+}
+
 pre.pygments span.linenos,
 pre.rouge span.linenos {
   display: inline-block;
   margin-right: 0.75em;
-}
-
-hr.pagebreak {
-  -webkit-column-break-after: always;
-  page-break-after: always;
-  border: none;
-  margin: 0;
-}
-
-/* REVIEW */
-hr.pagebreak + * {
-  margin-top: 0 !important;
-}
-
-#_about_the_author {
-  -webkit-column-break-before: always;
-  page-break-before: always;
-  border-bottom: 1px solid $about-author-border;
 }
 
 img.headshot {
