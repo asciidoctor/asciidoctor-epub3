@@ -195,6 +195,15 @@ body p {
   orphans: 2;
 }
 
+th, td {
+  /* forward-compatible CSS to enable kerning (if we want ligatures, add "liga" and "dlig") */
+  /* WebKits that don't recognize these properties don't kern well, hence why we don't simply enable kerning via text-rendering */
+  -webkit-font-feature-settings: "kern";
+  font-feature-settings: "kern";
+  font-kerning: normal;
+  /* NOTE see Kindle hack in epub3-css3-only.css for additional kerning settings (disabled) */
+}
+
 body p,
 ul, ol, li, dl, dt, dd, footer,
 div.verse .attribution, table.table th, table.table td,
@@ -217,7 +226,7 @@ code, kbd, pre {
 /* QUESTION should we kern preformatted text blocks? */
 h1, h2, h3, h4, h5, h6,
 body p, li, dd, blockquote > footer,
-th, td, figcaption, caption {
+figcaption, caption {
   /* forward-compatible CSS to enable kerning (if we want ligatures, add "liga" and "dlig") */
   /* WebKits that don't recognize these properties don't kern well, hence why we don't simply enable kerning via text-rendering */
   -webkit-font-feature-settings: "kern";
@@ -238,6 +247,58 @@ p.last::after {
 ul li, ol li {
   /* minimum margin in case there is no paragraph content */
   margin-top: 0.4em;
+}
+
+ul {
+  /* QUESTION do we need important here? */
+  margin-left: 1em !important;
+
+  > li::before {
+    float: left;
+    margin-left: -1em;
+    margin-top: -0.05em;
+    padding-left: 0.25em;
+    /* guarantee it's out of the flow */
+    width: 0;
+    display: block;
+
+    content: "▪";
+    color: $list-lvl1;
+  }
+
+  ul {
+    > li::before {
+      content: "◦";
+      color: $list-lvl2;
+    }
+
+    ul {
+      > li::before {
+        content: "•";
+        color: $list-lvl3;
+      }
+
+      ul {
+        > li::before {
+          content: "▫";
+          color: $list-lvl4;
+        }
+      }
+    }
+  }
+}
+
+ol {
+  list-style-type: decimal;
+  margin-left: 1.75em !important;
+
+  ol {
+    list-style-type: lower-alpha;
+
+    ol {
+      list-style-type: lower-roman;
+    }
+  }
 }
 
 /* use paragraph-size gaps between list items */
@@ -263,11 +324,6 @@ dt > span.term > code.literal {
   font-style: normal;
 }
 */
-
-dl dd {
-  /* minimum margin in case there is no paragraph content */
-  margin-top: 0.25em;
-}
 
 td.hdlist1 {
   font-weight: bold;
@@ -342,61 +398,14 @@ div.stack-subject li strong.subject {
   display: block;
 }
 
-ul {
-  /* QUESTION do we need important here? */
-  margin-left: 1em !important;
-
-  > li::before {
-    float: left;
-    margin-left: -1em;
-    margin-top: -0.05em;
-    padding-left: 0.25em;
-    /* guarantee it's out of the flow */
-    width: 0;
-    display: block;
-
-    content: "▪";
-    color: $list-lvl1;
-  }
-
-  ul {
-    > li::before {
-      content: "◦";
-      color: $list-lvl2;
-    }
-
-    ul {
-      > li::before {
-        content: "•";
-        color: $list-lvl3;
-      }
-
-      ul {
-        > li::before {
-          content: "▫";
-          color: $list-lvl4;
-        }
-      }
-    }
-  }
-}
-
-ol {
-  list-style-type: decimal;
-  margin-left: 1.75em !important;
-
-  ol {
-    list-style-type: lower-alpha;
-
-    ol {
-      list-style-type: lower-roman;
-    }
-  }
-}
-
 /* REVIEW */
 dd {
   margin-left: 1.5rem !important;
+}
+
+dl dd {
+  /* minimum margin in case there is no paragraph content */
+  margin-top: 0.25em;
 }
 
 /* Kindle does not justify list-item element, must wrap in nested block element */
@@ -428,6 +437,16 @@ li strong.subject a:link {
 ul.bibliography > li > span.principal,
 ul.references > li > span.principal {
   text-align: left;
+}
+
+figure.image {
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+figure.image img {
+  display: block;
+  margin: 0 auto;
 }
 
 /* sized based on the major third modular scale (4:5, 16px, 24px) */
@@ -725,6 +744,25 @@ th.valign-middle, td.valign-middle, th.valign-middle > p, td.valign-middle > p {
   vertical-align: middle;
 }
 
+div.verse {
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* TODO we may want to reenable hyphens here */
+div.verse > pre {
+  font-family: "M+ 1p", sans-serif;
+  background-color: transparent;
+  border: none;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+div.verse .attribution {
+  display: block;
+  margin-top: 1.4em;
+}
+
 figure,
 aside.sidebar {
   margin-top: 1em;
@@ -738,16 +776,6 @@ aside.sidebar {
   margin-bottom: 1em;
 }
 */
-
-figure.image {
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-figure.image img {
-  display: block;
-  margin: 0 auto;
-}
 
 figure.coalesce {
   -webkit-column-break-inside: avoid;
@@ -834,25 +862,6 @@ aside.sidebar > div.content {
 /* QUESTION same for ordered-list? */
 aside.sidebar > div.content > div.itemized-list > ul {
   margin-left: 0.5em !important;
-}
-
-div.verse {
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-/* TODO we may want to reenable hyphens here */
-div.verse > pre {
-  font-family: "M+ 1p", sans-serif;
-  background-color: transparent;
-  border: none;
-  font-size: 1.2em;
-  text-align: center;
-}
-
-div.verse .attribution {
-  display: block;
-  margin-top: 1.4em;
 }
 
 aside.admonition {
