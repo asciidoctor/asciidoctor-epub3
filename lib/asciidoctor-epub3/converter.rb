@@ -852,12 +852,12 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           num = 1
           lines << '<table class="callout-list">'
           node.items.each_with_index do |item, i|
-             lines << '<tr>'
-             lines << %(<td class="conum"><img class="conum" src="#{node.icon_uri "callouts/#{num}"}" alt="#{num}"/></td>)
-             lines << %(<td>#{item.text}#{item.blocks? ? LF + item.content : ''}</td>)
-             lines << '</tr>'
-             register_media_file node, "#{node.icon_uri "callouts/#{i + 1}"}", 'image'
-             num = num.next
+            lines << '<tr>'
+            lines << %(<td class="conum"><img class="conum" src="#{node.icon_uri "callouts/#{num}"}" alt="#{num}"/></td>)
+            lines << %(<td>#{item.text}#{item.blocks? ? LF + item.content : ''}</td>)
+            lines << '</tr>'
+            register_media_file node, (node.icon_uri "callouts/#{i + 1}").to_s, 'image'
+            num = num.next
           end
           lines << '</table>'
         end
