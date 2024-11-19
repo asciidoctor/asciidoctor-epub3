@@ -64,7 +64,7 @@ body code, body kbd, body :not(.verse) > pre, :not(.verse) > pre :not(code) {
 .icon {
   display: inline-block;
   /* !important required to override custom font setting in Kindle (since .icon can appear inside a span) */
-  font-family: "FontAwesome" !important;
+  font-family: "Font Awesome 6 Free Solid", monospace !important;
   font-style: normal !important;
   font-weight: normal !important;
   line-height: 1;
