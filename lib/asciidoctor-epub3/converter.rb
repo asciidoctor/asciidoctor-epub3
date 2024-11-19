@@ -1258,7 +1258,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_inline_callout(node)
-        lines = ''
         font_icons = (node.document.attr? 'icons', 'font')
         if font_icons
           num = CALLOUT_START_NUM
@@ -1267,7 +1266,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           %(<i class="conum" data-value="#{int_num}">#{num}</i>)
         else
           src = node.icon_uri("callouts/#{node.text}")
-          lines << %(<img src="#{src}" class="inline conum"/>)
+          %(<img src="#{src}" class="inline conum"/>)
         end
       end
 
