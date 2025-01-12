@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'asciidoctor-diagram', '~> 2.0'
   s.add_development_dependency 'asciimath', '~> 2.0'
   s.add_development_dependency 'coderay', '~> 1.1.0'
+  s.add_development_dependency 'concurrent-ruby', '~> 1.0'
   s.add_development_dependency 'pygments.rb', '~> 3.0.0'
   s.add_development_dependency 'rake', '~> 13.2.0'
   s.add_development_dependency 'rouge', '~> 3.0'
@@ -39,6 +40,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rubocop', '~> 1.50.2'
   s.add_development_dependency 'rubocop-rake', '~> 0.6.0'
   s.add_development_dependency 'rubocop-rspec', '~> 2.20.0'
+  s.add_development_dependency 'slim', '~> 5.0'
+  s.add_development_dependency 'tilt', '~> 2.0'
 
   s.add_runtime_dependency 'asciidoctor', '~> 2.0'
   s.add_runtime_dependency 'gepub', '~> 1.0.0'

@@ -105,8 +105,10 @@ module Asciidoctor
         @footnotes = []
 
         basebackend 'html'
+        filetype 'epub'
         outfilesuffix '.epub'
         htmlsyntax 'xml'
+        supports_templates true
       end
 
       def convert(node, name = nil, _opts = {})
