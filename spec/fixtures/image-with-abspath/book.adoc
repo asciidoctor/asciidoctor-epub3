@@ -1,0 +1,4 @@
+= Image with absolute path
+:imagesdir: {docdir}
+
+image::./circle.svg[]

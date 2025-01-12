@@ -30,6 +30,15 @@ describe 'Asciidoctor::Epub3::Converter - Image' do
     expect(book).to have_item_with_href('imagez/wolpertinger.jpg')
   end
 
+  # Test for https://github.com/asciidoctor/asciidoctor-epub3/issues/465
+  it 'supports absolute image paths' do
+    book, out_file = to_epub fixture_file('image-with-abspath/book.adoc')
+    out_dir = out_file.dirname
+
+    expect(out_dir.join('circle.svg')).to exist
+    expect(book).to have_item_with_href('circle.svg')
+  end
+
   it 'does not duplicate images in manifest' do
     book, = to_epub fixture_file('inline-image/book.adoc')
     expect(book.items.keys.select { |k| k.include? 'wolpertinger' }.size).to eq(1)
