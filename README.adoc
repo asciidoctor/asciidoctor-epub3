@@ -21,7 +21,7 @@ Detailed installation and usage instructions can be found on the https://docs.as
 == Installation
 
 {project-name} is published on RubyGems.org.
-{project-name} requires Ruby 2.7 or newer.
+{project-name} requires Ruby 2.6 or newer.
 You can install the published gem using the following command:
 
 [source,shell script]
