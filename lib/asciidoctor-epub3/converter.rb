@@ -104,7 +104,9 @@ module Asciidoctor
         @media_files = {}
         @footnotes = []
 
-        init_backend_traits basebackend: 'docbook', filetype: 'xml', outfilesuffix: '.xml', supports_templates: true
+        basebackend 'html'
+        outfilesuffix '.epub'
+        htmlsyntax 'xml'
       end
 
       def convert(node, name = nil, _opts = {})
