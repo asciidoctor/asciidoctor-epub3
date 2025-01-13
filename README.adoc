@@ -10,7 +10,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://g
 
 image:https://img.shields.io/badge/zulip-join_chat-brightgreen.svg[project chat,link=https://asciidoctor.zulipchat.com/]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
-image:{uri-project}/workflows/CI/badge.svg?branch=main[GitHub Actions,link={uri-ci}]
+image:{uri-project}/actions/workflows/ci.yml/badge.svg?branch=main[GitHub Actions,link={uri-ci}]
 
 {project-name} is a set of Asciidoctor extensions for converting AsciiDoc documents directly to the EPUB3 e-book format.
 
