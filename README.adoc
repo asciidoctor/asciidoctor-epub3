@@ -7,8 +7,11 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://g
 :uri-ci: {uri-project}/actions?query=branch%3Amain
 :uri-issues: {uri-project}/issues
 :uri-rvm: https://rvm.io
+:uri-zulip: https://asciidoctor.zulipchat.com/
+:experimental:
+:icons: font
 
-image:https://img.shields.io/badge/zulip-join_chat-brightgreen.svg[project chat,link=https://asciidoctor.zulipchat.com/]
+image:https://img.shields.io/badge/zulip-join_chat-brightgreen.svg[project chat,link={uri-zulip}]
 image:https://img.shields.io/gem/v/asciidoctor-epub3.svg[Latest Release,link={uri-gem}]
 image:{uri-project}/actions/workflows/ci.yml/badge.svg?branch=main[GitHub Actions,link={uri-ci}]
 
@@ -59,7 +62,7 @@ In the spirit of free software, _everyone_ is encouraged to help improve this pr
 
 To contribute code, simply fork the project on GitHub, hack away and send a pull request with your proposed changes.
 
-Feel free to use the {uri-issues}[issue tracker] or {uri-discuss}[Asciidoctor mailing list] to provide feedback or suggestions in other ways.
+Feel free to use the {uri-issues}[issue tracker] or {uri-zulip}[Asciidoctor Chat] to provide feedback or suggestions in other ways.
 
 == Development
 
@@ -75,10 +78,10 @@ You can retrieve {project-name} in one of two ways:
 
 ==== Option 1: Fetch Using `git clone`
 
-If you want to clone the git repository, simply copy the {uri-repo}[GitHub repository URL] and pass it to the `git clone` command:
+If you want to clone the git repository, simply copy the {uri-project}[GitHub repository URL] and pass it to the `git clone` command:
 
 [subs=attributes+]
-$ git clone {uri-repo}
+$ git clone {uri-project}
 
 Next, change to the project directory:
 
@@ -149,7 +152,7 @@ or
 
 You're now ready to test drive the development version of {project-name}!
 
-Jump back to <<Getting Started>> to learn how to create an AsciiDoc document and convert it to EPUB3.
+Jump back to <<Usage>> to learn how to create an AsciiDoc document and convert it to EPUB3.
 
 === Fonts
 
