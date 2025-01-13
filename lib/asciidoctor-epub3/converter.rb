@@ -1508,7 +1508,8 @@ body > svg {
 </svg></body>
 </html>)
 
-        @book.add_ordered_item %(#{name}.xhtml), content: content.to_ios, id: name
+        @book.prefixes['calibre'] = 'https://calibre-ebook.com'
+        @book.add_ordered_item(%(#{name}.xhtml), content: content.to_ios, id: name).add_property('calibre:title-page')
       end
 
       def get_frontmatter_files(doc, workdir)
