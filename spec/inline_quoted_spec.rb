@@ -5,7 +5,7 @@ require_relative 'spec_helper'
 describe 'Asciidoctor::Epub3::Converter - Inline Quoted' do
   subject { Asciidoctor::Epub3::Converter.new('epub3').convert_inline_quoted node }
 
-  let(:parent) { instance_double(parent).as_null_object }
+  let(:parent) { instance_double('parent').as_null_object }
   let(:node) { Asciidoctor::Inline.new parent, :bar, 'text', type: type }
 
   it 'resolves inline quotes' do
