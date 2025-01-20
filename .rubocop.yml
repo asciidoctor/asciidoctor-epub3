@@ -2,8 +2,7 @@ require:
   - rubocop-rake
   - rubocop-rspec
 AllCops:
-  NewCops: enable
-  TargetRubyVersion: 2.7
+  NewCops: disable
 Gemspec/RequireMFA:
   Enabled: false
 Layout/LineLength:
@@ -32,11 +31,11 @@ RSpec/DescribeClass:
   Enabled: false
 RSpec/ExampleLength:
   Enabled: false
-RSpec/FilePath:
-  Enabled: false
 RSpec/MultipleExpectations:
   Enabled: false
 RSpec/NamedSubject:
+  Enabled: false
+RSpec/SpecFilePathFormat:
   Enabled: false
 RSpec/VerifiedDoubleReference:
   Enabled: false

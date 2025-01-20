@@ -29,6 +29,13 @@ Gem::Specification.new do |s|
 
   s.require_paths = ['lib']
 
+  s.add_dependency 'asciidoctor', '~> 2.0'
+  s.add_dependency 'gepub', '~> 1.0.0'
+  s.add_dependency 'mime-types', '~> 3.0'
+
+  # TODO: switch to 'sass-embedded' when we drop Ruby 2.5 support
+  s.add_dependency 'sass'
+
   s.add_development_dependency 'asciidoctor-diagram', '~> 2.0'
   s.add_development_dependency 'asciimath', '~> 2.0'
   s.add_development_dependency 'coderay', '~> 1.1.0'
@@ -43,11 +50,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rubocop-rspec', '~> 3.3'
   s.add_development_dependency 'slim', '~> 5.0'
   s.add_development_dependency 'tilt', '~> 2.0'
-
-  s.add_runtime_dependency 'asciidoctor', '~> 2.0'
-  s.add_runtime_dependency 'gepub', '~> 1.0.0'
-  s.add_runtime_dependency 'mime-types', '~> 3.0'
-
-  # TODO: switch to 'sass-embedded' when we drop Ruby 2.5 support
-  s.add_runtime_dependency 'sass'
 end
