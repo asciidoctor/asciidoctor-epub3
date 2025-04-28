@@ -13,6 +13,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * teach Calibre that cover page is in fact a cover page, so cover is not duplicated when Calibre converts our EPUBs to PDF
 * bump the oldest supported Ruby to 2.7
 * fix Ruby 3.4 compatibility
+* fix captions in example blocks (#497)
 
 == 2.1.3 (2024-05-12) - @slonopotamus
 

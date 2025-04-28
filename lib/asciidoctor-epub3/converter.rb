@@ -589,8 +589,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def convert_example(node)
         id_attr = node.id ? %( id="#{node.id}") : ''
         title_div = if node.title?
-                      %(<div class="example-title">#{node.title}</div>
-)
+                      %(<div class="example-title">#{node.captioned_title}</div>)
                     else
                       ''
                     end
