@@ -552,6 +552,7 @@ Here's a list of some of the e-readers we know to have good EPUB3 support and th
 * http://www.kobo.com/apps[Kobo] (Android, iOS, OSX and Windows)
 * http://www.namo.com/site/namo/menu/5074.do[Namo PubTreeViewer] (Android, iOS and Windows)
 * http://calibre-ebook.com[Calibre (ebook-viewer)] (Linux, OSX, Windows)
+* https://readk.it/[readk.it] (Web)
 
 IMPORTANT: To get the full experience, *ensure that the e-reader is configured to use the publisher's styles*.
 Different e-readers word this setting in different ways.
