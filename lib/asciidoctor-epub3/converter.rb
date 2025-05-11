@@ -1626,31 +1626,35 @@ body > svg {
 
       def nav_level(items, depth, state = {})
         lines = []
-        lines << '<ol>'
-        items.each do |item|
-          # index = (state[:index] = (state.fetch :index, 0) + 1)
-          if (chapter_filename = get_chapter_filename item).nil?
-            item_label = sanitize_xml get_numbered_title(item), :pcdata
-            item_href = %(#{state[:content_doc_href]}##{item.id})
-          else
-            # NOTE: we sanitize the chapter titles because we use formatting to control layout
-            item_label = if item.context == :document
-                           sanitize_doctitle_xml item, :cdata
-                         else
-                           sanitize_xml get_numbered_title(item), :cdata
-                         end
-            item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
+
+        if depth.positive?
+          lines << '<ol>'
+          items.each do |item|
+            # index = (state[:index] = (state.fetch :index, 0) + 1)
+            if (chapter_filename = get_chapter_filename item).nil?
+              item_label = sanitize_xml get_numbered_title(item), :pcdata
+              item_href = %(#{state[:content_doc_href]}##{item.id})
+            else
+              # NOTE: we sanitize the chapter titles because we use formatting to control layout
+              item_label = if item.context == :document
+                             sanitize_doctitle_xml item, :cdata
+                           else
+                             sanitize_xml get_numbered_title(item), :cdata
+                           end
+              item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
+            end
+            lines << %(<li><a href="#{item_href}">#{item_label}</a>)
+            if (child_sections = item.sections).empty?
+              lines[-1] = %(#{lines[-1]}</li>)
+            else
+              lines << (nav_level child_sections, depth - 1, state)
+              lines << '</li>'
+            end
+            state.delete :content_doc_href unless chapter_filename.nil?
           end
-          lines << %(<li><a href="#{item_href}">#{item_label}</a>)
-          if depth.zero? || (child_sections = item.sections).empty?
-            lines[-1] = %(#{lines[-1]}</li>)
-          else
-            lines << (nav_level child_sections, depth - 1, state)
-            lines << '</li>'
-          end
-          state.delete :content_doc_href unless chapter_filename.nil?
+          lines << '</ol>'
         end
-        lines << '</ol>'
+
         lines * LF
       end
 
