@@ -18,8 +18,8 @@ body.gitden-reader pre {
   white-space: pre-wrap !important; /* Gitden must be applying white-space: pre !important */
 }
 
-body h1, body h2, body h3:not(.list-heading), body h4, body h5, body h6,
-h1 :not(code), h2 :not(code), h3:not(.list-heading) :not(code), h4 :not(code), h5 :not(code), h6 :not(code) {
+body h1, body h2, body h3, body h4, body h5, body h6,
+h1 :not(code), h2 :not(code), h3 :not(code), h4 :not(code), h5 :not(code), h6 :not(code) {
   /* !important required to override custom font setting in Kindle / Gitden / Namo */
   /* Gitden requires the extra weight of a parent selector; it also makes headings bold when custom font is specified */
   /* Kindle and Gitden require the override on heading child elements */

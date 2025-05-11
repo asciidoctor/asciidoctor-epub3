@@ -868,7 +868,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         class_attribute = %( class="#{classes.join ' '}")
 
         lines << %(<div#{id_attribute}#{class_attribute}>)
-        lines << %(<div class="title">#{node.title}</div>) if node.title?
+        lines << %(<div class="list-heading">#{node.title}</div>) if node.title?
 
         case (style = node.style)
         when 'itemized', 'ordered'
@@ -958,7 +958,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         ol_start_attr = node.attr?('start') ? %( start="#{node.attr 'start'}") : ''
         id_attribute = node.id ? %( id="#{node.id}") : ''
         lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
-        lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
+        lines << %(<div class="list-heading">#{node.title}</div>) if node.title?
         lines << %(<ol#{ol_class_attr}#{ol_start_attr}#{node.option?('reversed') ? ' reversed="reversed"' : ''}>)
         node.items.each do |item|
           li_classes = [item.role].compact
@@ -987,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         ul_class_attr = ul_classes.empty? ? '' : %( class="#{ul_classes * ' '}")
         id_attribute = node.id ? %( id="#{node.id}") : ''
         lines = [%(<div#{id_attribute} class="#{div_classes * ' '}">)]
-        lines << %(<h3 class="list-heading">#{node.title}</h3>) if node.title?
+        lines << %(<div class="list-heading">#{node.title}</div>) if node.title?
         lines << %(<ul#{ul_class_attr}>)
         node.items.each do |item|
           li_classes = [item.role].compact
