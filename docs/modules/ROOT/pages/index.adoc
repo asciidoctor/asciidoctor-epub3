@@ -484,6 +484,26 @@ To do so, use an attribute entry to set the value of the `imagesdir` attribute o
 \include::chapter-two.adoc[]
 ----
 
+== Supplemental Content with Docinfo
+
+It’s possible to inject supplemental content into the output document using https://docs.asciidoctor.org/asciidoc/latest/docinfo/[docinfo files].
+
+Currently, there are three insertion locations for docinfo content in a EPUB3 document:
+
+head::
+content is inserted after the last child of the `<head>` element.
+Filename: `docinfo-epub.html`.
+header::
+content is inserted as the first child of the `<body>` element.
+Filename: `docinfo-header-epub.html`.
+footer::
+content is inserted as the last child of the `<body>` element.
+Filename:  `docinfo-footer-epub.html`.
+
+In order to enable inclusion docinfo files, you need to define `:docinfo:` attribute.
+For example, `:docinfo: shared`.
+Refer to https://docs.asciidoctor.org/asciidoc/latest/docinfo/[docinfo files] documentation for possible values and their meanings.
+
 == About the Theme
 
 EPUB3 files are styled using CSS3.
