@@ -76,7 +76,6 @@
 * MEDIUM: headshot has too much top margin when at top of page (not below section title)
 * MEDIUM: namo pubtree is justifying preformatted blocks (still true?)
 * support both jpg and png avatars
-* add docinfo support
 * add navigation links in meta, e.g.,
 
   <link rel="up" href="#{node.attr 'up-uri'}" title="#{node.attr 'up-title'}"/>

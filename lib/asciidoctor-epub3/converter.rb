@@ -435,8 +435,19 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                                                    self_closing_tag_slash: '/')
         end
 
-        lines << %(</head>
+        unless (docinfo_content = node.document.docinfo :head, '-epub.html').empty?
+          lines << docinfo_content
+        end
+
+        lines << '</head>
 <body>
+'
+
+        unless (docinfo_content = node.document.docinfo :header, '-epub.html').empty?
+          lines << docinfo_content
+        end
+
+        lines << %(
 <section class="chapter" title=#{chapter_title.encode xml: :attr}#{epub_type_attr} id="#{filename}">
 #{header}
         #{content})
@@ -460,6 +471,10 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         if syntax_hl&.docinfo? :footer
           lines << (syntax_hl.docinfo :footer, node.document, linkcss: linkcss,
                                                               self_closing_tag_slash: '/')
+        end
+
+        unless (docinfo_content = node.document.docinfo :footer, '-epub.html').empty?
+          lines << docinfo_content
         end
 
         lines << '</body>

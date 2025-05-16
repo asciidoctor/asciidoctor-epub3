@@ -1,0 +1,2 @@
+= Article
+:docinfo: shared-header
