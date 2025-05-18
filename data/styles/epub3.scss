@@ -363,6 +363,12 @@ div.callout-list li > i.conum {
   width: 1.25em;
 }
 
+div.example-title {
+  display: block;
+  font-family: "M+ 1p", sans-serif;
+  font-style: italic;
+}
+
 div.itemized-list, div.ordered-list, div.description-list {
   margin-top: 1em;
   padding-bottom: 0.25em; /* REVIEW maybe, maybe not */
