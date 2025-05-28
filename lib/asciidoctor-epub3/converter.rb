@@ -1272,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           attrs = []
           attrs << %(id="#{node.id}") if node.id
 
-          %(<sup class="noteref">[<a#{prepend_space attrs * ' '}href="#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
+          %(<sup class="noteref">[<a#{prepend_space attrs * ' '} href="#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
         elsif node.type == :xref
           %(<mark class="noteref" title="Unresolved note reference">#{node.text}</mark>)
         end
