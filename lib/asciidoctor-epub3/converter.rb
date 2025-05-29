@@ -1392,7 +1392,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       # Prepend a space to the value if it's non-nil, otherwise return empty string.
       def prepend_space(value)
-        value ? %( #{value}) : ''
+        value.nil_or_empty? ? '' : %( #{value})
       end
 
       def add_theme_assets(doc)
