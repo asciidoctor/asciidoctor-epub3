@@ -9,6 +9,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 * add docinfo support (#502)
 * fix footnote HTML markup (#506)
+* add list styles support #(508)
 
 == 2.2.0 (2025-05-11) - @slonopotamus
 
