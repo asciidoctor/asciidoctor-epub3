@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'epubcheck-ruby', '~> 5.2.0.0'
   s.add_development_dependency 'pygments.rb', '~> 3.0.0'
   s.add_development_dependency 'rake', '~> 13.2.0'
-  s.add_development_dependency 'rouge', '~> 3.0'
+  s.add_development_dependency 'rouge', '~> 4.5'
   s.add_development_dependency 'rspec', '~> 3.13.0'
   s.add_development_dependency 'rubocop', '~> 1.70.0'
   s.add_development_dependency 'rubocop-rake', '~> 0.6.0'
