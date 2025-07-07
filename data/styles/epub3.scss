@@ -207,7 +207,7 @@ th, td {
 body p,
 ul, ol, li, dl, dt, dd, footer,
 div.verse .attribution, table.table th, table.table td,
-figcaption, caption {
+figcaption, caption, div.example-title {
   /* NOTE iBooks will forcefully override font-family of text inside div, p and span elements when font other than Original is selected */
   /* NOTE iBooks honors Original font for prose text if declared in display-options.xml */
   font-family: "Noto Serif", serif;
@@ -361,6 +361,16 @@ div.callout-list li > i.conum {
   margin-left: -1.25em;
   display: block;
   width: 1.25em;
+}
+
+div.example-title {
+  margin-top: 1em;
+}
+
+.example-content > * {
+  margin-top: 0.25em;
+  border: 1px solid $aside-border;
+  padding: 0.25em;
 }
 
 div.itemized-list, div.ordered-list, div.description-list {
@@ -813,7 +823,8 @@ figure.coalesce {
 }
 
 figcaption,
-caption {
+caption,
+div.example-title {
   font-size: 0.9em;
   font-style: italic;
   color: $caption-text;
