@@ -388,9 +388,9 @@ module Asciidoctor
         if icon_names.empty?
           icon_css_head = ''
         else
-          icon_defs = icon_names.map { |name|
+          icon_defs = icon_names.map do |name|
             %(.i-#{name}::before { content: "#{FontIconMap.unicode name}"; })
-          } * LF
+          end * LF
           icon_css_head = %(<style>
 #{icon_defs}
 </style>
