@@ -36,7 +36,9 @@ Gem::Specification.new do |s|
   # TODO: switch to 'sass-embedded' when we drop Ruby 2.5 support
   s.add_dependency 'sass'
 
-  s.add_development_dependency 'asciidoctor-diagram', '~> 2.0'
+  s.add_development_dependency 'asciidoctor-diagram', '~> 3.0'
+  s.add_development_dependency 'asciidoctor-diagram-ditaamini', '~> 1.0'
+  s.add_development_dependency 'asciidoctor-diagram-plantuml', '~> 1.2025'
   s.add_development_dependency 'asciimath', '~> 2.0'
   s.add_development_dependency 'coderay', '~> 1.1.0'
   s.add_development_dependency 'concurrent-ruby', '~> 1.0'
