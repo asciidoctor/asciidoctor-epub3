@@ -257,6 +257,52 @@ describe Asciidoctor::Epub3::Converter do
       expect(toc.href).to eq('toc.xhtml')
     end
 
+    it 'supports toclevels in simple documents' do
+      book = to_epub <<~EOS
+        = level 0
+        :toclevels: 2
+        :toc:
+
+        == level 1
+
+        === level 2
+
+        ==== level 3
+
+        Text
+      EOS
+      toc = book.items['toc']
+      expect(toc).not_to be_nil
+      expect(toc.content).to include('level 1')
+      expect(toc.content).to include('level 2')
+      expect(toc.content).not_to include('level 3')
+    end
+
+    it 'supports toclevels in multi-part books' do
+      book = to_epub <<~EOS
+        = level 0
+        :doctype: book
+        :toclevels: 2
+        :toc:
+
+        = level 0
+
+        == level 1
+
+        === level 2
+
+        ==== level 3
+
+        Text
+      EOS
+      toc = book.items['toc']
+      expect(toc).not_to be_nil
+      expect(toc.content).to include('level 0')
+      expect(toc.content).to include('level 1')
+      expect(toc.content).to include('level 2')
+      expect(toc.content).not_to include('level 3')
+    end
+
     it "doesn't crash when sees inline toc" do
       book = to_epub <<~EOS
         = Title

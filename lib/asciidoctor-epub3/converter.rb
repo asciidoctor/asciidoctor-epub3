@@ -245,6 +245,7 @@ module Asciidoctor
 
         nav_item = @book.add_item('nav.xhtml', id: 'nav').nav
 
+        # TODO: Why we default to toclevels=1?
         toclevels = [(node.attr 'toclevels', 1).to_i, 0].max
         outlinelevels = [(node.attr 'outlinelevels', toclevels).to_i, 0].max
 
@@ -1602,7 +1603,7 @@ body > svg {
         nil
       end
 
-      def nav_doc(doc, items, landmarks, depth)
+      def nav_doc(doc, items, landmarks, levels)
         lines = [%(<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="#{lang = doc.attr 'lang',
@@ -1618,7 +1619,7 @@ body > svg {
 <h1 class="chapter-title"><small class="subtitle">#{doc.attr 'toc-title'}</small></h1>
 </header>
 <nav epub:type="toc" id="toc">)]
-        lines << (nav_level items, [depth, 0].max)
+        lines << (nav_level items, levels)
         lines << '</nav>'
 
         unless landmarks.empty?
@@ -1639,41 +1640,40 @@ body > svg {
         lines * LF
       end
 
-      def nav_level(items, depth, state = {})
+      def nav_level(items, levels, state = {})
         lines = []
 
-        if depth.positive?
-          lines << '<ol>'
-          items.each do |item|
-            # index = (state[:index] = (state.fetch :index, 0) + 1)
-            if (chapter_filename = get_chapter_filename item).nil?
-              item_label = sanitize_xml get_numbered_title(item), :pcdata
-              item_href = %(#{state[:content_doc_href]}##{item.id})
-            else
-              # NOTE: we sanitize the chapter titles because we use formatting to control layout
-              item_label = if item.context == :document
-                             sanitize_doctitle_xml item, :cdata
-                           else
-                             sanitize_xml get_numbered_title(item), :cdata
-                           end
-              item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
-            end
-            lines << %(<li><a href="#{item_href}">#{item_label}</a>)
-            if (child_sections = item.sections).empty?
-              lines[-1] = %(#{lines[-1]}</li>)
-            else
-              lines << (nav_level child_sections, depth - 1, state)
-              lines << '</li>'
-            end
-            state.delete :content_doc_href unless chapter_filename.nil?
+        items.each do |item|
+          next if item.level > levels
+
+          # index = (state[:index] = (state.fetch :index, 0) + 1)
+          if (chapter_filename = get_chapter_filename item).nil?
+            item_label = sanitize_xml get_numbered_title(item), :pcdata
+            item_href = %(#{state[:content_doc_href]}##{item.id})
+          else
+            # NOTE: we sanitize the chapter titles because we use formatting to control layout
+            item_label = if item.context == :document
+                           sanitize_doctitle_xml item, :cdata
+                         else
+                           sanitize_xml get_numbered_title(item), :cdata
+                         end
+            item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
           end
-          lines << '</ol>'
+          lines << %(<li><a href="#{item_href}">#{item_label}</a>)
+          if (child_sections = item.sections).empty?
+            lines[-1] = %(#{lines[-1]}</li>)
+          else
+            lines << (nav_level child_sections, levels, state)
+            lines << '</li>'
+          end
+          state.delete :content_doc_href unless chapter_filename.nil?
         end
 
+        lines = ['<ol>', *lines, %(</ol>)] unless lines.empty?
         lines * LF
       end
 
-      def ncx_doc(doc, items, depth)
+      def ncx_doc(doc, items, levels)
         # TODO: populate docAuthor element based on unique authors in work
         lines = [%(<?xml version="1.0" encoding="utf-8"?>
 <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="#{doc.attr 'lang', 'en'}">
@@ -1685,17 +1685,19 @@ body > svg {
 </head>
 <docTitle><text>#{sanitize_doctitle_xml doc, :cdata}</text></docTitle>
 <navMap>)]
-        lines << (ncx_level items, depth, state = {})
+        lines << (ncx_level items, levels, state = {})
         lines[0] = lines[0].sub '%<depth>s', %(<meta name="dtb:depth" content="#{state[:max_depth]}"/>)
         lines << %(</navMap>
 </ncx>)
         lines * LF
       end
 
-      def ncx_level(items, depth, state = {})
+      def ncx_level(items, levels, state = {})
         lines = []
         state[:max_depth] = (state.fetch :max_depth, 0) + 1
         items.each do |item|
+          next if item.level > levels
+
           index = (state[:index] = (state.fetch :index, 0) + 1)
           item_id = %(nav_#{index})
           if (chapter_filename = get_chapter_filename item).nil?
@@ -1712,8 +1714,8 @@ body > svg {
           lines << %(<navPoint id="#{item_id}" playOrder="#{index}">)
           lines << %(<navLabel><text>#{item_label}</text></navLabel>)
           lines << %(<content src="#{item_href}"/>)
-          unless depth.zero? || (child_sections = item.sections).empty?
-            lines << (ncx_level child_sections, depth - 1, state)
+          unless (child_sections = item.sections).empty?
+            lines << (ncx_level child_sections, levels, state)
           end
           lines << %(</navPoint>)
           state.delete :content_doc_href unless chapter_filename.nil?

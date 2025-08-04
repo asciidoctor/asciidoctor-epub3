@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add docinfo support (#502)
 * fix footnote HTML markup (#506)
 * add list styles support #(508)
+* fix off-by-one `:toclevels:` handling in multi-part books (#492)
 
 == 2.2.0 (2025-05-11) - @slonopotamus
 
@@ -20,7 +21,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * bump the oldest supported Ruby to 2.7
 * fix Ruby 3.4 compatibility
 * fix captions in example blocks (#497)
-* fix TOC being off-by-one when `:toclevels:` is set (#492)
+* fix off-by-one `:toclevels:` handling (#492)
 * stop using H3 for list headings (#491)
 
 == 2.1.3 (2024-05-12) - @slonopotamus
