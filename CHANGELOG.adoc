@@ -5,7 +5,7 @@
 This document provides a high-level view of the changes to the {project-name} by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
 
-== Unreleased
+== 2.3.0 (2025-08-31) - @slonopotamus
 
 * add docinfo support (#502)
 * fix footnote HTML markup (#506)
