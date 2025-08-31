@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 * add docinfo support (#502)
 * fix footnote HTML markup (#506)
 * add list styles support #(508)
+* improve CSS styles for example blocks (#516)
 * fix off-by-one `:toclevels:` handling in multi-part books (#492)
 
 == 2.2.0 (2025-05-11) - @slonopotamus
