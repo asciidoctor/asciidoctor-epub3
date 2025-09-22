@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'asciidoctor', '~> 2.0'
-  s.add_dependency 'gepub', '~> 1.0.0'
+  s.add_dependency 'gepub', '>= 1.0', '< 2.1'
   s.add_dependency 'mime-types', '~> 3.0'
 
   # TODO: switch to 'sass-embedded' when we drop Ruby 2.5 support
