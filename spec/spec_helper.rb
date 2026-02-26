@@ -26,7 +26,7 @@ RSpec.configure do |config|
     bin_script 'asciidoctor-epub3'
   end
 
-  def run_command cmd, *args
+  def run_command(cmd, *args)
     Dir.chdir __dir__ do
       if cmd.is_a?(Array)
         args.unshift(*cmd)
@@ -41,7 +41,7 @@ RSpec.configure do |config|
     Pathname.new(__dir__).join 'temp'
   end
 
-  def temp_file *path
+  def temp_file(*path)
     temp_dir.join(*path)
   end
 
@@ -49,7 +49,7 @@ RSpec.configure do |config|
     Pathname.new(__dir__).join 'fixtures'
   end
 
-  def fixture_file *path
+  def fixture_file(*path)
     fixtures_dir.join(*path)
   end
 
@@ -57,7 +57,7 @@ RSpec.configure do |config|
     Pathname.new(__dir__).join '..', 'samples'
   end
 
-  def example_file *path
+  def example_file(*path)
     examples_dir.join(*path)
   end
 
