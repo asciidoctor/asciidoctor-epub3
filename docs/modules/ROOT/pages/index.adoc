@@ -513,7 +513,7 @@ All we've got to say is _thank goodness for CSS hacks, media queries and years o
 The theme provided with {project-name} has been crafted to display EPUB3 files as consistently as possible across the most common EPUB3 platforms and to degrade gracefully in select EPUB2 platforms.
 The theme maintains readability regardless of the reading mode (i.e., day, night or sepia) or the display device's pixel density and screen resolution.
 
-The theme's CSS files are located in the [path]_data/style_ directory.
+The theme's CSS files are located in the [path]_data/styles_ directory.
 
 IMPORTANT: {project-name} only provides one theme, and, at this time, you can not replace it with a custom theme using the `stylesheet` attribute.
 However, you can use your own [path]_epub3.css_ and [path]_epub3-css3-only.css_ files by specifying the directory where they are located using the `epub3-stylesdir` attribute.
