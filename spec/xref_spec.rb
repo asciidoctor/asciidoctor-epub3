@@ -4,6 +4,13 @@ require_relative 'spec_helper'
 
 describe 'Asciidoctor::Epub3::Converter - Xref' do
   context 'inter-chapter' do
+    it 'resolves xref to top of document' do
+      book, = to_epub fixture_file('doc-xref/book.adoc')
+      first_chapter = book.item_by_href '_first_chapter.xhtml'
+      expect(first_chapter).not_to be_nil
+      expect(first_chapter.content).to include '<a id="xref--_preamble" href="_preamble.xhtml" class="xref">Book Title</a>'
+    end
+
     it 'resolves xref to top of chapter' do
       book, = to_epub fixture_file('inter-chapter-xref/book.adoc')
       chapter_a = book.item_by_href 'chapter-a.xhtml'
