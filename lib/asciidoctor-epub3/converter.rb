@@ -1203,10 +1203,13 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             logger.warn %(#{::File.basename doc.attr('docfile')}: <<chapter#>> xref syntax isn't supported anymore. Use either <<chapter>> or <<chapter#anchor>>)
           elsif refid
             ref = doc.references[:refs][refid]
-            our_chapter = get_enclosing_chapter node
-            ref_chapter = get_enclosing_chapter ref
+            if !(ref_chapter = get_enclosing_chapter ref) && (ref&.is_a? Document) && doc.doctype == 'book' && doc.blocks?
+              ref_chapter = doc.blocks[0]
+              refid = get_chapter_filename ref_chapter
+            end
             if ref_chapter
               ref_docname = get_chapter_filename ref_chapter
+              our_chapter = get_enclosing_chapter node
               if ref_chapter == our_chapter
                 # ref within same chapter file
                 id_attr = %( id="xref-#{refid}")

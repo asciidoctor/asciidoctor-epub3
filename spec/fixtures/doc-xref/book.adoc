@@ -1,0 +1,9 @@
+[#docid]
+= Book Title
+:doctype: book
+
+This is the preface.
+
+== First Chapter
+
+This is the first chapter of <<docid>>.
