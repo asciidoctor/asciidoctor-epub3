@@ -76,6 +76,8 @@ module Asciidoctor
 
       EPUB_EXTENSION_RX = /\.epub$/i.freeze
 
+      RESERVED_FILENAMES = %w[back-cover front-cover nav toc].freeze
+
       # This is a workaround for https://github.com/asciidoctor/asciidoctor/issues/4380
       # Currently, there is no access to parent cell from inner document
       PARENT_CELL_FIELD_NAME = :@epub3_parent_cell
@@ -124,7 +126,9 @@ module Asciidoctor
       # @param node [Asciidoctor::AbstractNode]
       # @return [String, nil]
       def get_chapter_filename(node)
-        node.id if node.chapter?
+        if node.chapter? && (name = node.id)
+          RESERVED_FILENAMES.include?(name) ? %(#{name}_) : name
+        end
       end
 
       def get_numbered_title(node)

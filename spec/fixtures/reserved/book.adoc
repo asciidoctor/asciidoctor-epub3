@@ -1,0 +1,13 @@
+= Book Title
+:doctype: book
+:toc:
+
+[#nav]
+== All About Navigation
+
+content
+
+[#toc]
+== All About the Table of Contents
+
+content
