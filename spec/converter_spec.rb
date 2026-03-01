@@ -26,6 +26,16 @@ describe Asciidoctor::Epub3::Converter do
       end
     end
 
+    it 'renames chapter filename to avoid ID conflict with reserved filenames' do
+      _, out_file = to_epub fixture_file('reserved/book.adoc')
+      Zip::File.open out_file do |zip|
+        expect(zip.find_entry('EPUB/nav.xhtml')).not_to be_nil
+        expect(zip.find_entry('EPUB/nav_.xhtml')).not_to be_nil
+        expect(zip.find_entry('EPUB/toc.xhtml')).not_to be_nil
+        expect(zip.find_entry('EPUB/toc_.xhtml')).not_to be_nil
+      end
+    end
+
     it 'extracts book when given ebook-extract attribute' do
       _, out_file = to_epub fixture_file('minimal/book.adoc'), attributes: { 'ebook-extract' => '' }
       out_dir = out_file.dirname
