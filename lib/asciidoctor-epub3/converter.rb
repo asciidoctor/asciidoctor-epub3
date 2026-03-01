@@ -859,15 +859,30 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_colist(node)
-        lines = ['<div class="callout-list">
-<ol>']
-        num = CALLOUT_START_NUM
-        node.items.each_with_index do |item, i|
-          lines << %(<li><i class="conum" data-value="#{i + 1}">#{num}</i> #{item.text}#{item.content if item.blocks?}</li>)
-          num = num.next
+        lines = ['<div class="callout-list">']
+        font_icons = (node.document.attr? 'icons', 'font')
+        if font_icons
+          num = CALLOUT_START_NUM
+          lines << '<ol>'
+          node.items.each_with_index do |item, i|
+            lines << %(<li><i class="conum" data-value="#{i + 1}">#{num}</i> #{item.text}#{item.content if item.blocks?}</li>)
+            num = num.next
+          end
+          lines << '</ol>'
+        else
+          num = 1
+          lines << '<table class="callout-list">'
+          node.items.each_with_index do |item, i|
+            lines << '<tr>'
+            lines << %(<td class="conum"><img class="conum" src="#{node.icon_uri "callouts/#{num}"}" alt="#{num}"/></td>)
+            lines << %(<td>#{item.text}#{item.blocks? ? LF + item.content : ''}</td>)
+            lines << '</tr>'
+            register_media_file node, (node.icon_uri "callouts/#{i + 1}").to_s, 'image'
+            num = num.next
+          end
+          lines << '</table>'
         end
-        lines << '</ol>
-</div>'
+        lines << '</div>'
       end
 
       # TODO: add complex class if list has nested blocks
@@ -1264,10 +1279,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_inline_callout(node)
-        num = CALLOUT_START_NUM
-        int_num = node.text.to_i
-        (int_num - 1).times { num = num.next }
-        %(<i class="conum" data-value="#{int_num}">#{num}</i>)
+        font_icons = (node.document.attr? 'icons', 'font')
+        if font_icons
+          num = CALLOUT_START_NUM
+          int_num = node.text.to_i
+          (int_num - 1).times { num = num.next }
+          %(<i class="conum" data-value="#{int_num}">#{num}</i>)
+        else
+          src = node.icon_uri("callouts/#{node.text}")
+          %(<img src="#{src}" class="inline conum"/>)
+        end
       end
 
       # @param node [Asciidoctor::Inline]
