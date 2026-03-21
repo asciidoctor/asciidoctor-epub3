@@ -131,27 +131,27 @@ module Asciidoctor
         end
       end
 
-      def get_numbered_title(node)
+      def get_numbered_title(node, opts = {})
         doc_attrs = node.document.attributes
         level = node.level
+        ntitle = opts[:toc] ? node.toc_title : node.title
         if node.caption
-          node.captioned_title
+          opts[:toc] ? node.captioned_toc_title : node.captioned_title
         elsif node.respond_to?(:numbered) && node.numbered && level <= (doc_attrs['sectnumlevels'] || 3).to_i
           if level < 2 && node.document.doctype == 'book'
             case node.sectname
             when 'chapter'
-              %(#{(signifier = doc_attrs['chapter-signifier']) ? "#{signifier} " : ''}#{node.sectnum} #{node.title})
+              %(#{(signifier = doc_attrs['chapter-signifier']) ? "#{signifier} " : ''}#{node.sectnum} #{ntitle})
             when 'part'
-              %(#{(signifier = doc_attrs['part-signifier']) ? "#{signifier} " : ''}#{node.sectnum nil,
-                                                                                                  ':'} #{node.title})
+              %(#{(signifier = doc_attrs['part-signifier']) ? "#{signifier} " : ''}#{node.sectnum nil, ':'} #{ntitle})
             else
-              %(#{node.sectnum} #{node.title})
+              %(#{node.sectnum} #{ntitle})
             end
           else
-            %(#{node.sectnum} #{node.title})
+            %(#{node.sectnum} #{ntitle})
           end
         else
-          node.title
+          ntitle
         end
       end
 
@@ -1652,14 +1652,14 @@ body > svg {
 
           # index = (state[:index] = (state.fetch :index, 0) + 1)
           if (chapter_filename = get_chapter_filename item).nil?
-            item_label = sanitize_xml get_numbered_title(item), :pcdata
+            item_label = sanitize_xml get_numbered_title(item, toc: true), :pcdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
             # NOTE: we sanitize the chapter titles because we use formatting to control layout
             item_label = if item.context == :document
                            sanitize_doctitle_xml item, :cdata
                          else
-                           sanitize_xml get_numbered_title(item), :cdata
+                           sanitize_xml get_numbered_title(item, toc: true), :cdata
                          end
             item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
           end
@@ -1705,13 +1705,13 @@ body > svg {
           index = (state[:index] = (state.fetch :index, 0) + 1)
           item_id = %(nav_#{index})
           if (chapter_filename = get_chapter_filename item).nil?
-            item_label = sanitize_xml get_numbered_title(item), :cdata
+            item_label = sanitize_xml get_numbered_title(item, toc: true), :cdata
             item_href = %(#{state[:content_doc_href]}##{item.id})
           else
             item_label = if item.context == :document
                            sanitize_doctitle_xml item, :cdata
                          else
-                           sanitize_xml get_numbered_title(item), :cdata
+                           sanitize_xml get_numbered_title(item, toc: true), :cdata
                          end
             item_href = (state[:content_doc_href] = %(#{chapter_filename}.xhtml))
           end
