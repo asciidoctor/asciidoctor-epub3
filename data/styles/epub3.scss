@@ -418,6 +418,28 @@ dl dd {
   margin-top: 0.25em;
 }
 
+.index-category {
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+
+  > :first-child {
+    margin-top: 1.5em;
+    margin-bottom: 0.25em;
+  }
+
+  .index-entries {
+    margin-left: 1.5em;
+  }
+
+  > .index-entries {
+    margin-left: 0;
+  }
+
+  .index-entry {
+    margin-bottom: 0.25em;
+  }
+}
+
 /* Kindle does not justify list-item element, must wrap in nested block element */
 li > span.principal, dd > span.principal {
   display: block;

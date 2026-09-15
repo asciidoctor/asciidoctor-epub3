@@ -160,6 +160,7 @@ module Asciidoctor
       end
 
       def convert_document(node)
+        @index_section = node.find_by(context: :section).find { |section| section.sectname == 'index' }
         @validate = node.attr? 'ebook-validate'
         @extract = node.attr? 'ebook-extract'
         @compress = node.attr 'ebook-compress'
@@ -386,7 +387,7 @@ module Asciidoctor
         mark_last_paragraph node unless node.document.doctype == 'book'
 
         @xrefs_seen.clear
-        content = node.content
+        content = node.respond_to?(:sectname) && node.sectname == 'index' ? convert_index_section(node) : node.content
 
         # NOTE: must run after content is resolved
         # TODO perhaps create dynamic CSS file?
@@ -511,6 +512,67 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           #{content})
                                                    end}
 </section>)
+      end
+
+      def convert_index_section(node)
+        content = node.content
+        index = node.document.catalog[:indexterms]
+        return content unless index && !index.empty?
+
+        index.link_associations
+        result = content.empty? ? [] : [content]
+        index.categories.each do |category|
+          result << %(<div class="index-category">
+<h2>#{category.name}</h2>
+#{convert_index_terms category.terms, node}
+</div>)
+        end
+        result.join LF
+      end
+
+      def convert_index_terms(terms, index_section)
+        result = ['<div class="index-entries" role="list">']
+        terms.each do |term|
+          entry = %(<div id="#{term.anchor}" class="index-entry" role="listitem">#{term.name}#{convert_index_term_references term, index_section})
+          unless term.leaf?
+            entry = %(#{entry}
+#{convert_index_terms term.subterms, index_section})
+          end
+          result << %(#{entry}</div>)
+        end
+        result << '</div>'
+        result.join LF
+      end
+
+      def convert_index_term_references(term, index_section)
+        if (see = term.see)
+          %(, see #{convert_index_association see})
+        else
+          result = term.dests.map do |dest|
+            href = index_destination_href dest, index_section
+            %(<a href="#{href}">#{index_destination_label dest[:node], index_section.document}</a>)
+          end
+          if (see_also = term.see_also)
+            result << %(see also #{see_also.map { |associated_term| convert_index_association associated_term }.join ', '})
+          end
+          result.empty? ? '' : %(, #{result.join '; '})
+        end
+      end
+
+      def convert_index_association(term)
+        term.respond_to?(:anchor) ? %(<a href="##{term.anchor}">#{term.name}</a>) : term.name
+      end
+
+      def index_destination_href(dest, index_section)
+        source = dest[:node]
+        anchor = %i[section document].include?(source.context) && source.id ? source.id : dest[:anchor]
+        chapter = get_enclosing_chapter source
+        chapter == index_section ? %(##{anchor}) : %(#{get_chapter_filename chapter}.xhtml##{anchor})
+      end
+
+      def index_destination_label(node, doc)
+        node = node.parent until node.nil? || node.context == :section
+        node ? node.xreftext : (doc.doctitle use_fallback: true)
       end
 
       # NOTE: embedded is used for AsciiDoc table cell content
@@ -1307,7 +1369,8 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_inline_indexterm(node)
-        node.type == :visible ? node.text : ''
+        text = node.type == :visible ? node.text : ''
+        node.id && @index_section ? %(<span id="#{node.id}" class="indexterm"></span>#{text}) : text
       end
 
       def convert_inline_kbd(node)
