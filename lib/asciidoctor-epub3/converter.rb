@@ -860,8 +860,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 
       def convert_colist(node)
         lines = ['<div class="callout-list">']
-        font_icons = (node.document.attr? 'icons', 'font')
-        if font_icons
+        if node.document.attr? 'icons', 'font'
           num = CALLOUT_START_NUM
           lines << '<ol>'
           node.items.each_with_index do |item, i|
@@ -1282,8 +1281,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       end
 
       def convert_inline_callout(node)
-        font_icons = (node.document.attr? 'icons', 'font')
-        if font_icons
+        if node.document.attr? 'icons', 'font'
           num = CALLOUT_START_NUM
           int_num = node.text.to_i
           (int_num - 1).times { num = num.next }
@@ -1844,6 +1842,9 @@ body > svg {
 
     Extensions.register do
       if (document = @document).backend == 'epub3'
+        # Default to font icons
+        document.set_attribute 'icons', 'font' unless document.attr? 'icons'
+
         document.set_attribute 'listing-caption', 'Listing'
 
         # TODO: bw theme for CodeRay

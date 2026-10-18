@@ -410,6 +410,22 @@ describe Asciidoctor::Epub3::Converter do
       article = book.item_by_href '_article.xhtml'
       expect(article).not_to be_nil
       expect(article.content).to include 'List Item 1'
+      # when icons attribute is not set, font icons are the default
+      expect(article.content).to include '<i class="conum" data-value="1">①</i>'
+    end
+
+    it 'supports image-based callouts' do
+      book, = to_epub fixture_file('image-callouts/book.adoc')
+
+      article = book.item_by_href '_article.xhtml'
+      expect(article).not_to be_nil
+      expect(article.content).to include '<img src="./images/icons/callouts/1.png" class="inline conum"/>'
+      expect(article.content).to include %(<td class="conum"><img class="conum" src="./images/icons/callouts/1.png" alt="1"/></td>)
+
+      callout_image = book.item_by_href 'images/icons/callouts/1.png'
+      expect(callout_image).not_to be_nil
+      expect(callout_image.media_type).to eq 'image/png'
+      expect(callout_image.content.size).to be > 0
     end
 
     it 'supports horizontal dlist' do
