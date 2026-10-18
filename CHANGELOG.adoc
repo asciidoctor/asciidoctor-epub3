@@ -9,6 +9,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 * rename chapter filename to avoid conflict with reserved filenames (#536)
 * add support for xref to own document when doctype is book (#538)
+* add support for image-based callouts (#486)
 
 == 2.3.0 (2025-08-31) - @slonopotamus
 
