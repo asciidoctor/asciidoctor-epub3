@@ -1437,7 +1437,6 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
                     ::File.join DATA_DIR, 'styles'
                   end
 
-        # TODO: improve design/UX of custom theme functionality, including custom fonts
         %w[epub3 epub3-css3-only].each do |f|
           css = load_css_file File.join(workdir, %(#{f}.scss))
           @book.add_item %(styles/#{f}.css), content: css.to_ios
@@ -1458,7 +1457,15 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           end
         end
 
-        font_files, font_css = select_fonts load_css_file(File.join(DATA_DIR, 'styles/epub3-fonts.scss')),
+        fonts_filedir = DATA_DIR
+        fonts_styledir = ::File.join DATA_DIR, 'styles'
+
+        if stylesdir && ::File.file?(::File.join(workdir, 'epub3-fonts.scss'))
+          fonts_filedir = workdir
+          fonts_styledir = workdir
+        end
+
+        font_files, font_css = select_fonts load_css_file(File.join(fonts_styledir, 'epub3-fonts.scss')),
                                             (doc.attr 'scripts', 'latin')
         @book.add_item 'styles/epub3-fonts.css', content: font_css.to_ios
         unless font_files.empty?
@@ -1471,7 +1478,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </display_options>'.to_ios
 
           font_files.each do |font_file|
-            @book.add_item font_file, content: File.join(DATA_DIR, font_file)
+            @book.add_item font_file, content: File.join(fonts_filedir, font_file)
           end
         end
         nil
