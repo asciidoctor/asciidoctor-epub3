@@ -163,6 +163,8 @@ module Asciidoctor
       end
 
       def convert_document(node)
+        # Parsing titles can register notes before header attributes are restored.
+        node.set_attr 'footnote-number', node.footnotes[-1].index if node.footnotes?
         @validate = node.attr? 'ebook-validate'
         @extract = node.attr? 'ebook-extract'
         @compress = node.attr 'ebook-compress'
@@ -332,6 +334,8 @@ module Asciidoctor
 
       # FIXME: move to Asciidoctor::Helpers
       def sanitize_xml(content, content_spec)
+        # A cached title reference belongs only to the visible heading, not its labels.
+        content = (content.gsub %r{<sup class="noteref">.*?</sup>}, '').strip if content.include? '<sup class="noteref">'
         if content_spec != :pcdata && (content.include? '<') && ((content = (content.gsub XML_ELEMENT_RX,
                                                                                           '').strip).include? ' ')
           content = content.tr_s ' ', ' '
@@ -376,6 +380,7 @@ module Asciidoctor
           title = nil
           subtitle = nil
         end
+        chapter_title = sanitize_xml chapter_title, :plain_text
 
         if node.document.doctype == 'book'
           byline = ''
@@ -423,7 +428,7 @@ module Asciidoctor
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:mml="http://www.w3.org/1998/Math/MathML" xml:lang="#{lang = node.document.attr 'lang',
                                                                                                                                                                           'en'}" lang="#{lang}">
 <head>
-<title>#{chapter_title}</title>
+<title>#{chapter_title.encode xml: :text}</title>
 <link rel="stylesheet" type="text/css" href="styles/epub3.css"/>
 <link rel="stylesheet" type="text/css" href="styles/epub3-css3-only.css" media="(min-device-width: 0px)"/>
 #{icon_css_head}<script type="text/javascript"><![CDATA[
@@ -461,12 +466,19 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 #{header}
         #{content})
 
-        unless (fns = node.document.footnotes - @footnotes).empty?
+        # Cached titles in later chapters may already have registered their notes.
+        # Only a converter-owned defining link rendered here belongs in this footer.
+        references = %(#{header}#{content})
+        fns = (node.document.footnotes - @footnotes).select do |footnote|
+          references.include? %(<a id="#{@footnote_references[footnote.index]}" href="#note-#{footnote.index}")
+        end
+        unless fns.empty?
           @footnotes += fns
 
           lines << '<footer class="chapter-footer">
 <div class="footnotes">'
           fns.each do |footnote|
+            @footnote_chapters[footnote.index] = @current_chapter
             lines << %(<aside id="note-#{footnote.index}" epub:type="footnote">
 <p><a href="##{@footnote_references[footnote.index]}">#{footnote.index}</a>. #{footnote.text}</p>
 </aside>)
@@ -490,22 +502,21 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </html>'
 
         content = lines * LF
-        # Anonymous references use private temporary IDs so authored lookalike
+        # Defining references use private temporary IDs so authored lookalike
         # links cannot be mistaken for converter output. Allocate their public
         # IDs only after all author IDs in the chapter have been rendered.
-        if fns.any? { |footnote| footnote.id.nil? }
+        unless fns.empty?
           ids = Nokogiri::XML(content).xpath('//@id').map(&:value).tally
+          ids.merge! fns.filter_map { |footnote| [footnote.id, 0] if footnote.id }.to_h
           fns.each do |footnote|
-            next if footnote.id
-
             reference_id = @footnote_references[footnote.index]
             raise 'Temporary footnote reference ID is not unique' unless ids[reference_id] == 1
 
-            unique_id = %(noteref-#{footnote.index})
-            unique_id += '_' while ids.key? unique_id
-            content.sub!(%(<a id="#{reference_id}" href="#note-#{footnote.index}"), %(<a id="#{unique_id}" href="#note-#{footnote.index}"))
+            unique_id = footnote.id || %(noteref-#{footnote.index})
+            unique_id += '_' while !footnote.id && ids.key?(unique_id)
+            content.sub!(%(<a id="#{reference_id}" href="#note-#{footnote.index}")) { %(<a id="#{unique_id}" href="#note-#{footnote.index}") }
             prefix = %(<aside id="note-#{footnote.index}" epub:type="footnote">#{LF}<p><a href=")
-            content.sub!(%(#{prefix}##{reference_id}">), %(#{prefix}##{unique_id}">))
+            content.sub!(%(#{prefix}##{reference_id}">)) { %(#{prefix}##{unique_id}">) }
             @footnote_references[footnote.index] = unique_id
             ids[unique_id] = 1
           end
@@ -528,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
         epub_type_attr = node.sectname == 'section' ? '' : %( epub:type="#{node.sectname}")
         div_classes = [%(sect#{node.level}), node.role].compact
         title = get_numbered_title node
-        %(<section class="#{div_classes * ' '}" title=#{title.encode xml: :attr}#{epub_type_attr}>
+        %(<section class="#{div_classes * ' '}" title=#{(sanitize_xml title, :plain_text).encode xml: :attr}#{epub_type_attr}>
 <h#{hlevel} id="#{node.id}">#{title}</h#{hlevel}>#{if (content = node.content).empty?
                                                      ''
                                                    else
@@ -1325,7 +1336,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           # Like the HTML5 converter, link back to the definition, not repeated references.
           unless node.type == :xref
             @footnote_chapters[index] = @current_chapter
-            @footnote_references[index] = reference_id = node.id || %(epub3-noteref-#{SecureRandom.hex 16})
+            @footnote_references[index] = reference_id = %(epub3-noteref-#{SecureRandom.hex 16})
             attrs << %(id="#{reference_id}")
           end
           chapter = @footnote_chapters[index]
