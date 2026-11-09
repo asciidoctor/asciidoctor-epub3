@@ -108,6 +108,7 @@ module Asciidoctor
         @footnotes = []
         @footnote_chapters = {}
         @footnote_references = {}
+        @footnote_xrefs = {}
 
         basebackend 'html'
         filetype 'epub'
@@ -520,6 +521,19 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             @footnote_references[footnote.index] = unique_id
             ids[unique_id] = 1
           end
+        end
+        # Heading references can be cached before their chapter is known.
+        # Resolve only converter-owned links once the definitions are assigned.
+        @footnote_xrefs.delete_if do |reference, index|
+          marker = %(href="#{reference}" epub:type="noteref")
+          next false unless content.include? marker
+
+          raise 'Temporary footnote reuse is not unique' unless content.scan(marker).size == 1
+
+          chapter = @footnote_chapters.fetch index
+          target = chapter == @current_chapter ? '' : %(#{chapter}.xhtml)
+          content.sub!(marker) { %(href="#{target}#note-#{index}" epub:type="noteref") }
+          true
         end
         chapter_item.add_content(content.to_ios)
         epub_properties = node.attr 'epub-properties'
@@ -1339,10 +1353,14 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
             @footnote_references[index] = reference_id = %(epub3-noteref-#{SecureRandom.hex 16})
             attrs << %(id="#{reference_id}")
           end
-          chapter = @footnote_chapters[index]
-          href = %(#{chapter}.xhtml) if chapter && chapter != @current_chapter
+          if node.type == :xref
+            href = %(epub3-noteref-#{SecureRandom.hex 16})
+            @footnote_xrefs[href] = index
+          else
+            href = %(#note-#{index})
+          end
 
-          %(<sup class="noteref">[<a#{prepend_space attrs * ' '} href="#{href}#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
+          %(<sup class="noteref">[<a#{prepend_space attrs * ' '} href="#{href}" epub:type="noteref">#{index}</a>]</sup>)
         elsif node.type == :xref
           %(<mark class="noteref" title="Unresolved note reference">#{node.text}</mark>)
         end

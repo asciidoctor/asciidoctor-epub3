@@ -207,6 +207,54 @@ describe 'Footnote reference IDs' do
     check_note_targets xml
   end
 
+  it 'resolves a cached chapter heading reuse to its defining chapter' do
+    book = to_epub <<~EOS
+      = Book
+      :doctype: book
+      :toc:
+
+      == First footnote:shared[Note.]
+
+      Ordinary body.footnote:shared[]
+
+      == Second footnote:shared[]
+
+      More body.footnote:shared[]
+    EOS
+    first = chapter_with_note book
+    second = book.items.values.find { |item| item.href.end_with?('.xhtml') && item.content.include?('More body.') }
+    definition = Nokogiri::XML first.content
+    reuse = Nokogiri::XML second.content
+    check_note_targets definition
+    expect(definition.at_xpath('//*[@id="shared"]')['href']).to eq '#note-1'
+    expect(definition.xpath('//*[@epub:type="noteref"]', 'epub' => 'http://www.idpf.org/2007/ops').map { |a| a['href'] }).to eq ['#note-1', '#note-1']
+    expect(reuse.xpath('//*[@epub:type="noteref"]', 'epub' => 'http://www.idpf.org/2007/ops').map { |a| a['href'] }).to eq [%(#{first.href}#note-1), %(#{first.href}#note-1)]
+    expect(reuse.xpath('//*[local-name()="aside"]')).to be_empty
+    expect(reuse.xpath('//*[@id="shared"]')).to be_empty
+    expect(first.content + second.content).not_to include 'epub3-noteref-'
+  end
+
+  it 'keeps cached heading and body reuses local within a single article' do
+    book = to_epub <<~EOS
+      = Article
+      :doctype: article
+
+      == First footnote:shared[Note.]
+
+      Ordinary body.footnote:shared[]
+
+      == Second footnote:shared[]
+
+      More body.footnote:shared[]
+    EOS
+    chapter = chapter_with_note book
+    xml = Nokogiri::XML chapter.content
+    check_note_targets xml
+    expect(xml.xpath('//*[@epub:type="noteref"]', 'epub' => 'http://www.idpf.org/2007/ops').map { |a| a['href'] }).to eq ['#note-1'] * 4
+    expect(xml.xpath('//*[@id="shared"]').size).to eq 1
+    expect(chapter.content).not_to include 'epub3-noteref-'
+  end
+
   [0, 7].each do |seed|
     it %(keeps title and body notes unique across chapters with counter seed #{seed}) do
       book = to_epub <<~EOS
