@@ -7,6 +7,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+* restore footnote backlinks without duplicate reference IDs, including references across chapters (#447, #546)
 * rename chapter filename to avoid conflict with reserved filenames (#536)
 * add support for xref to own document when doctype is book (#538)
 * add support for image-based callouts (#486)

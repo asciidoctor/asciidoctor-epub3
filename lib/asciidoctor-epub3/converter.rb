@@ -105,6 +105,8 @@ module Asciidoctor
         @xrefs_seen = Set.new
         @media_files = {}
         @footnotes = []
+        @footnote_chapters = {}
+        @footnote_references = {}
 
         basebackend 'html'
         filetype 'epub'
@@ -356,6 +358,7 @@ module Asciidoctor
         return nil if filename.nil?
 
         chapter_item = @book.add_ordered_item %(#{filename}.xhtml)
+        @current_chapter = filename
 
         doctitle = node.document.doctitle partition: true, use_fallback: true
         chapter_title = doctitle.combined
@@ -464,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 <div class="footnotes">'
           fns.each do |footnote|
             lines << %(<aside id="note-#{footnote.index}" epub:type="footnote">
-<p>#{footnote.text}</p>
+<p><a href="##{@footnote_references[footnote.index]}">#{footnote.index}</a>. #{footnote.text}</p>
 </aside>)
           end
           lines << '</div>
@@ -1297,9 +1300,16 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
       def convert_inline_footnote(node)
         if (index = node.attr 'index')
           attrs = []
-          attrs << %(id="#{node.id}") if node.id
+          # Like the HTML5 converter, link back to the definition, not repeated references.
+          unless node.type == :xref
+            @footnote_chapters[index] = @current_chapter
+            @footnote_references[index] = reference_id = node.id || %(noteref-#{index})
+            attrs << %(id="#{reference_id}")
+          end
+          chapter = @footnote_chapters[index]
+          href = %(#{chapter}.xhtml) if chapter && chapter != @current_chapter
 
-          %(<sup class="noteref">[<a#{prepend_space attrs * ' '} href="#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
+          %(<sup class="noteref">[<a#{prepend_space attrs * ' '} href="#{href}#note-#{index}" epub:type="noteref">#{index}</a>]</sup>)
         elsif node.type == :xref
           %(<mark class="noteref" title="Unresolved note reference">#{node.text}</mark>)
         end
