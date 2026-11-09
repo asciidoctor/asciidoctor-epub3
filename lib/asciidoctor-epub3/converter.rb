@@ -3,6 +3,7 @@
 require 'mime/types'
 require 'open3'
 require 'sass'
+require 'securerandom'
 require_relative 'font_icon_map'
 
 module Asciidoctor
@@ -489,17 +490,18 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
 </html>'
 
         content = lines * LF
-        # Named notes and other author IDs may appear after an anonymous reference.
-        # Resolve collisions only once all IDs in this chapter have been rendered.
+        # Anonymous references use private temporary IDs so authored lookalike
+        # links cannot be mistaken for converter output. Allocate their public
+        # IDs only after all author IDs in the chapter have been rendered.
         if fns.any? { |footnote| footnote.id.nil? }
           ids = Nokogiri::XML(content).xpath('//@id').map(&:value).tally
           fns.each do |footnote|
             next if footnote.id
 
             reference_id = @footnote_references[footnote.index]
-            next unless ids.fetch(reference_id, 0) > 1
+            raise 'Temporary footnote reference ID is not unique' unless ids[reference_id] == 1
 
-            unique_id = %(#{reference_id}_)
+            unique_id = %(noteref-#{footnote.index})
             unique_id += '_' while ids.key? unique_id
             content.sub!(%(<a id="#{reference_id}" href="#note-#{footnote.index}"), %(<a id="#{unique_id}" href="#note-#{footnote.index}"))
             prefix = %(<aside id="note-#{footnote.index}" epub:type="footnote">#{LF}<p><a href=")
@@ -1323,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', function(event, reader) {
           # Like the HTML5 converter, link back to the definition, not repeated references.
           unless node.type == :xref
             @footnote_chapters[index] = @current_chapter
-            @footnote_references[index] = reference_id = node.id || %(noteref-#{index})
+            @footnote_references[index] = reference_id = node.id || %(epub3-noteref-#{SecureRandom.hex 16})
             attrs << %(id="#{reference_id}")
           end
           chapter = @footnote_chapters[index]

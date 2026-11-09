@@ -12,6 +12,7 @@ describe 'Footnote reference IDs' do
       targets = xml.xpath '//*[local-name()="a"]'
       targets = targets.select { |a| %(##{a['id']}) == backlink['href'] }
       expect(targets.size).to eq 1
+      expect(targets[0].attribute_with_ns('type', 'http://www.idpf.org/2007/ops').value).to eq 'noteref'
       expect(targets[0]['href']).to eq %(##{note['id']})
     end
   end
@@ -77,5 +78,47 @@ describe 'Footnote reference IDs' do
     xml = Nokogiri::XML book.item_by_href('_book.xhtml').content
     expect(xml.xpath('//*[local-name()="p"]/*[local-name()="a" and text()="1" and @href="#noteref-1"]').size).to eq 1
     check_note_targets xml
+  end
+
+  it 'preserves an earlier authored link with the same ID and note destination' do
+    book = to_epub <<~EOS
+      = Book
+
+      pass:[<a id="noteref-1" href="#note-1">Jump to note</a>] before One.footnote:[First.]
+    EOS
+    xml = Nokogiri::XML book.item_by_href('_book.xhtml').content
+    authored = xml.at_xpath '//*[local-name()="a" and text()="Jump to note"]'
+    expect(authored['id']).to eq 'noteref-1'
+    expect(authored['href']).to eq '#note-1'
+    expect(authored.attribute_with_ns('type', 'http://www.idpf.org/2007/ops')).to be_nil
+    defining = xml.at_xpath '//*[local-name()="sup" and @class="noteref"]/*[local-name()="a"]'
+    expect(defining['id']).to eq 'noteref-1_'
+    expect(defining.attribute_with_ns('type', 'http://www.idpf.org/2007/ops').value).to eq 'noteref'
+    expect(xml.at_xpath('//*[@id="note-1"]//*[local-name()="a"]')['href']).to eq %(##{defining['id']})
+    check_note_targets xml
+  end
+
+  it 'distinguishes an authored noteref lookalike from the defining reference' do
+    book = to_epub <<~EOS
+      = Book
+
+      pass:[<sup class="noteref">[<a id="noteref-1" href="#note-1" epub:type="noteref">1</a>]</sup>] before One.footnote:[First.]
+    EOS
+    xml = Nokogiri::XML book.item_by_href('_book.xhtml').content
+    references = xml.xpath '//*[local-name()="sup" and @class="noteref"]/*[local-name()="a"]'
+    expect(references.size).to eq 2
+    expect(references.map { |reference| reference['id'] }).to eq %w[noteref-1 noteref-1_]
+    expect(references.map { |reference| reference['href'] }).to eq %w[#note-1 #note-1]
+    expect(xml.at_xpath('//*[@id="note-1"]//*[local-name()="a"]')['href']).to eq '#noteref-1_'
+    check_note_targets xml
+  end
+
+  it 'keeps anonymous reference output reproducible without temporary IDs' do
+    input = "= Book\n:reproducible:\n\nOne.footnote:[First.] Two.footnote:noteref-1[Second.]"
+    first = to_epub(input).item_by_href('_book.xhtml').content
+    second = to_epub(input).item_by_href('_book.xhtml').content
+    expect(first).to eq second
+    expect(first).not_to include 'epub3-noteref-'
+    check_note_targets Nokogiri::XML(first)
   end
 end
